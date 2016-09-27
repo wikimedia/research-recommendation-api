@@ -1,5 +1,5 @@
 import json
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, send_from_directory
 
 from recommendation.utils import configuration
 from recommendation.utils import language_pairs
@@ -23,3 +23,8 @@ def home():
         seed=seed,
         event_logger_url=configuration.get_config_value('endpoints', 'event_logger')
     )
+
+
+@gapfinder.route('/static/resource/<path:filename>')
+def resource(filename):
+    return send_from_directory(configuration.get_config_value('gapfinder', 'resource_path'), filename=filename)
