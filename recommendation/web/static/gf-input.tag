@@ -78,7 +78,7 @@
 
             $.ajax({
                 url: url
-            }).complete(function () {
+            }).always(function () {
                 self.fetching = false;
                 self.update();
             }).done(function (data) {

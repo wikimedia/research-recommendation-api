@@ -16,7 +16,7 @@ setup_parameters = dict(
                       'PyYAML',
                       'requests',
                       'numpy'],
-    package_data={'recommendation.web': ['static/*',
+    package_data={'recommendation.web': ['static/*.*',
                                          'static/i18n/*',
                                          'static/images/*',
                                          'static/suggest-searches/*',
