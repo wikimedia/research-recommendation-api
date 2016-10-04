@@ -136,6 +136,7 @@
 
         self.onSelectSource = function (code) {
             self.setSource(code);
+            writeCookie('sourceLanguage', self.source);
             self.origin = 'language_select';
             $('input[name=seedArticle]').val('');
             if (self.target) {
@@ -158,6 +159,7 @@
 
         self.onSelectTarget = function (code) {
             self.setTarget(code);
+            writeCookie('targetLanguage', self.target);
             self.origin = 'language_select';
             self.fetchArticles();
         };
@@ -308,6 +310,7 @@
         };
 
         self.populateDefaults = function (sourceLanguages, targetLanguages) {
+            // Check if there were URL parameters
             if (window.translationAppGlobals.s in sourceLanguages) {
                 self.setSource(window.translationAppGlobals.s);
                 self.origin = 'url_parameters';
@@ -317,6 +320,19 @@
                 self.origin = 'url_parameters';
             }
 
+            // Check for cookies
+            var sourceLanguageCookieValue = getCookie('sourceLanguage');
+            var targetLanguageCookieValue = getCookie('targetLanguage');
+            if (!self.source && sourceLanguageCookieValue) {
+                self.setSource(sourceLanguageCookieValue);
+                self.origin = 'browser_settings';
+            }
+            if (!self.target && targetLanguageCookieValue) {
+                self.setTarget(targetLanguageCookieValue);
+                self.origin = 'browser_settings';
+            }
+
+            // Try to set based on browser languages
             var browserLanguages = navigator.languages || [ navigator.language || navigator.userLanguage ];
             browserLanguages = browserLanguages.filter(function (language) {
                 return language in sourceLanguages;
@@ -334,12 +350,19 @@
                 browserLanguages.splice(index, 1);
             }
             if (!self.target && browserLanguages.length > 0) {
-                if (browserLanguages.length) {
-                    self.setTarget(browserLanguages[Math.floor(Math.random() * browserLanguages.length)]);
-                    self.origin = 'browser_settings';
+                while (browserLanguages.length > 0) {
+                    index = Math.floor(Math.random() * browserLanguages.length);
+                    var candidateLanguage = browserLanguages[index];
+                    if (candidateLanguage !== self.source) {
+                        self.setTarget(candidateLanguage);
+                        self.origin = 'browser_settings';
+                        break;
+                    }
+                    browserLanguages.splice(index, 1);
                 }
             }
 
+            // Set the seed based on URL parameter
             $('input[name=seedArticle]').val(window.translationAppGlobals.seed);
         };
 
