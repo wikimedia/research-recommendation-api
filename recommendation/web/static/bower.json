@@ -8,7 +8,8 @@
     "riot": "~2.2.2",
     "store2": "~2.3.0",
     "uls": "https://github.com/wikimedia/jquery.uls.git#8b0c7c66e67236811f649a12e77e51ba0f8d2d0e",
-    "i18n": "wikimedia/jquery.i18n"
+    "i18n": "wikimedia/jquery.i18n",
+    "cldrpluralruleparser": "santhoshtr/CLDRPluralRuleParser"
   },
   "license": "Apache 2.0"
 }

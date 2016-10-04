@@ -11,7 +11,7 @@
                 <span class="gf-suggestion-text">{description}</span>
             </div>
             <div class="gf-suggestion-footer-container dropup">
-                <span class="gf-suggestion-views text-muted">{$.i18n('article-pageviews', pageviews)}</span>
+                <span class="gf-suggestion-views text-muted">{formatPageviews(pageviews)}</span>
                 <span class="gf-suggestion-flag gf-icon gf-icon-flag gf-clickable dropdown-toggle" data-toggle="dropdown"
                       title={$.i18n('article-flag')}></span>
                 <div class="dropdown-menu dropdown-menu-right">
@@ -72,6 +72,20 @@
                 self.update();
 
             });
+        };
+
+        self.formatPageviews = function (pageviews) {
+            var buckets = [
+                {value: 1E6, symbol: 'M', digits: 1},
+                {value: 1E3, symbol: 'k', digits: 0}
+            ];
+            for (var i=0; i<buckets.length; ++i) {
+                if (pageviews >= buckets[i].value) {
+                    pageviews = (pageviews / buckets[i].value).toFixed(buckets[i].digits) + buckets[i].symbol;
+                    break;
+                }
+            }
+            return $.i18n('article-pageviews', pageviews);
         };
 
         self.remove = function (article, personal) {
