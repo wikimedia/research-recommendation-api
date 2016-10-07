@@ -59,14 +59,14 @@ var getUserToken = function () {
     var token = getCookie('userToken');
     if (!token) {
         token = generateToken();
-        document.cookie = 'userToken=' + token;
+        writeCookie('userToken', token);
     }
     return token;
 };
 
 var getNewRequestToken = function () {
     var token = generateToken();
-    document.cookie = 'requestToken=' + token;
+    writeCookie('requestToken', token);
     return token;
 };
 
@@ -86,12 +86,6 @@ var generateToken = function () {
         return (c=='x' ? r : (r&0x3|0x8)).toString(16);
     });
     return uuid;
-};
-
-var getCookie = function (name) {
-    // adapted from
-    // https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie/Simple_document.cookie_framework
-    return document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + name + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") || null;
 };
 
 var logEvent = function(schema, revision, event) {
