@@ -137,6 +137,14 @@
     border-width: 1.25rem;
 }
 
+.gf-selector-source:hover::before {
+    border-color: transparent transparent transparent #adadad;
+}
+
+.gf-selector-source:hover::after {
+    border-color: transparent transparent transparent #e6e6e6;
+}
+
 /**
  * Seed
  *
