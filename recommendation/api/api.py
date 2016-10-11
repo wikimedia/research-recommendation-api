@@ -52,6 +52,7 @@ def after_request(response):
 
 finder_map = {
     'morelike': candidate_finders.MorelikeCandidateFinder(),
+    'wiki': candidate_finders.MorelikeCandidateFinder(),
     'mostpopular': candidate_finders.PageviewCandidateFinder(),
 }
 

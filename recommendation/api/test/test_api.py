@@ -43,6 +43,7 @@ def client():
     get_query_string(dict(s='xx', t='yy', article='')),
     get_query_string(dict(s='xx', t='yy', pageviews='false')),
     get_query_string(dict(s='xx', t='yy', search='morelike')),
+    get_query_string(dict(s='xx', t='yy', search='wiki')),
 ])
 @pytest.mark.usefixtures('recommend_response')
 def test_good_arg_parsing(client, url):
@@ -122,3 +123,9 @@ def test_generated_recommend_response_is_marshalled(client, monkeypatch):
     monkeypatch.setattr(filters, 'apply_filters', lambda source, target, recs, count: recs)
     result = client.get(get_query_string(dict(s='xx', t='yy', pageviews=False)))
     assert GOOD_RESPONSE == json.loads(result.data.decode('utf-8'))
+
+
+@pytest.mark.usefixtures('recommend_response')
+def test_cors_is_present(client):
+    result = client.get(get_query_string(dict(s='xx', t='yy')))
+    assert '*' == result.headers.get('Access-Control-Allow-Origin')

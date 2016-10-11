@@ -78,6 +78,7 @@ parameters:
     type: string
     enum:
       - morelike
+      - wiki
     default: morelike
 
 paths:
