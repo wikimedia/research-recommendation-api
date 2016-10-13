@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ilja.mos",
+			"Mashoi7"
+		]
+	},
+	"title-wikipedia": "Wikipedii",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-source-code": "Lähtehkoudu",
+	"selector-source": "Lähteh",
+	"selector-target": "Kohteh",
+	"modal-close": "Salbua",
+	"modal-new-window": "Avua tämä kirjutus uvves ikkunas",
+	"modal-previous": "Ielline kirjutus",
+	"modal-next": "Tulii kirjutus",
+	"modal-translate": "Kiännä",
+	"modal-create-from-scratch": "Luaji uuzi tyhjäs",
+	"modal-preview-fail": "Ei Internet-yhtevytty",
+	"create-title": "Uuzi kirjutus",
+	"create-action": "Luaji"
+}
