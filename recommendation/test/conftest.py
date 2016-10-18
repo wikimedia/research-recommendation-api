@@ -14,7 +14,7 @@ def change_config_and_setup_responses(request):
      to apply a decorator to every test function
     """
     configuration._config = configuration.get_configuration('', recommendation.__name__,
-                                                            'api/test/test_recommendation.ini')
+                                                            'api/types/translation/test/test_recommendation.ini')
     logger.initialize_logging()
     responses._default_mock.__enter__()
 

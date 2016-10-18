@@ -3,9 +3,9 @@ import responses
 import datetime
 import re
 
-from recommendation.api import pageviews
-from recommendation.api import data_fetcher
-from recommendation.api import utils
+from recommendation.api.types.translation import pageviews
+from recommendation.api.types.translation import data_fetcher
+from recommendation.api.types.translation import utils
 from recommendation.utils import configuration
 
 TITLE = 'Sample_Title'

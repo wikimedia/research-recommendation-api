@@ -66,7 +66,7 @@
 
             var mappedSource = self.mapLanguageToDomainCode(self.source);
             var mappedTarget = self.mapLanguageToDomainCode(self.target);
-            var url = '/api/?s=' + mappedSource + '&t=' + mappedTarget;
+            var url = translationAppGlobals.translationPath + '?s=' + mappedSource + '&t=' + mappedTarget;
 
             var seed;
             if (this.seedArticle.value) {
@@ -88,7 +88,7 @@
                     return;
                 }
 
-                var articles = self.filter(data.articles);
+                var articles = self.filter(data);
                 if (!articles || !articles.length) {
                     self.error_msg = articles['error'];
                     self.error = true;

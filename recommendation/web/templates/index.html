@@ -69,7 +69,9 @@
                 eventLoggerUrl: '{{ event_logger_url }}',
 
                 i18nGapFinderPath: '{{ url_for('.static', filename='i18n/') }}',
-                i18nUlsPath: '{{ url_for('.resource', filename='bower_components/uls/i18n/') }}'
+                i18nUlsPath: '{{ url_for('.resource', filename='bower_components/uls/i18n/') }}',
+
+                translationPath: '{{ url_for('translation.v1_article') }}'
             };
 
             riot.mount('gf-disclaimer, gf-title, gf-input');

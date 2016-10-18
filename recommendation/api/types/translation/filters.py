@@ -1,6 +1,6 @@
 import logging
 
-from recommendation.api import data_fetcher
+from recommendation.api.types.translation import data_fetcher
 
 log = logging.getLogger(__name__)
 
