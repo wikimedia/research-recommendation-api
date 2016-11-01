@@ -1,26 +1,34 @@
 {
 	"@metadata": {
 		"authors": [
-			"Chrumps"
+			"Chrumps",
+			"Woytecr"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
 	"title-gapfinder": "GapFinder",
 	"title-beta": "beta",
+	"menu-how-to": "Instrukcja",
 	"menu-about": "O stronie",
 	"menu-feedback": "Opinie",
 	"menu-source-code": "Kod źródłowy",
 	"menu-privacy-statement": "Ochrona danych osobowych",
 	"selector-source": "Źródło",
 	"selector-target": "Cel",
+	"search-placeholder": "Szukaj artykułów do utworzenia",
+	"status-preparing": "Przygotowywanie zaleceń artykułów...",
 	"status-must-be-different": "Język źródłowy i docelowy musi być różny",
 	"status-invalid-language": "Nieprawidłowy język źródłowy lub docelowy",
+	"article-pageviews": "Ostatnio odwiedzono $1 {{PLURAL:$1|raz|razy}}",
 	"article-flag": "Oznacz ten artykuł...",
 	"article-flag-not-interesting": "Nieinteresujący",
+	"article-flag-not-notable": "Nie jest encyklopedyczne dla Wikipedii $1",
 	"modal-close": "Zamknij",
 	"modal-new-window": "Otwórz ten artykuł w nowym oknie",
 	"modal-previous": "Poprzedni artykuł",
 	"modal-next": "Następny artykuł",
+	"modal-translate": "Przetłumacz",
+	"modal-create-from-scratch": "Utwórz od podstaw",
 	"modal-loading": "Ładowanie...",
 	"modal-preview-fail": "Brak połączenia z Internetem",
 	"create-title": "Nowy artykuł",
@@ -29,5 +37,6 @@
 	"create-action": "Utwórz",
 	"create-error-empty": "Tytuł nie może być pusty",
 	"create-error-invalid-character": "Nieprawidłowy znak w tytule ('|')",
-	"create-error-exists": "Strona już istnieje pod $1"
+	"create-error-exists": "Strona już istnieje pod $1",
+	"create-error-invalid-page": "Strona jest nieprawidłowa w $1"
 }
