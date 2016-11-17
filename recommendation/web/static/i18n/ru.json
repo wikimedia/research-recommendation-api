@@ -3,7 +3,9 @@
 		"authors": [
 			"Okras",
 			"Mailman",
-			"Irus"
+			"Irus",
+			"Kareyac",
+			"MaxBioHazard"
 		]
 	},
 	"title-wikipedia": "Википедия",
@@ -21,7 +23,7 @@
 	"status-must-be-different": "Исходный и целевой языки должны быть разными",
 	"status-invalid-language": "Недопустимый исходный или целевой язык",
 	"article-pageviews": "$1 {{PLURAL:$1|просмотр|просмотров|просмотра}}",
-	"article-flag": "Флаг этой статье...",
+	"article-flag": "Отметить эту статью...",
 	"article-flag-not-interesting": "Не интересует",
 	"article-flag-not-notable": "Не заметные для $1 Википедия",
 	"modal-close": "Закрыть",
@@ -39,5 +41,5 @@
 	"create-error-empty": "Заголовок не должен быть пустым",
 	"create-error-invalid-character": "Недопустимый символ в названии ('|')",
 	"create-error-exists": "Страница уже существует в $1",
-	"create-error-invalid-page": "Страница не является в $1"
+	"create-error-invalid-page": "Страница некорректна в $1"
 }
