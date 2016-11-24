@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robin Owain"
+		]
+	},
+	"title-wikipedia": "Wicipedia",
+	"title-gapfinder": "Teclyn Canfod Erthyglau Newydd",
+	"title-beta": "beta",
+	"menu-how-to": "Sut i fynd ati",
+	"menu-about": "Disgrifiad",
+	"menu-feedback": "Adborth",
+	"menu-source-code": "Y cod ffynhonnell",
+	"menu-privacy-statement": "Datganiad am breifatrwydd",
+	"selector-source": "Ffynhonnell",
+	"selector-target": "Targed",
+	"search-placeholder": "Chwilio am erthyglau i'w creu",
+	"status-preparing": "Paratoi erthyglau i'w hargymell",
+	"status-must-be-different": "Mae'n rhaid i'r iaith wreiddiol a'r iaith darged fod yn wahanol",
+	"status-invalid-language": "Iaith annilys",
+	"article-pageviews": "$1 {{PLURAL:$1|darlleniad|darlleniadau}} diweddar",
+	"article-flag": "Fflagiwch yr erthygl...",
+	"article-flag-not-interesting": "Anniddorol",
+	"article-flag-not-notable": "Ddim yn Nodedig",
+	"modal-close": "Cau",
+	"modal-new-window": "Agor yr erthygl hon mewn ffenestr newydd",
+	"modal-previous": "Yr erthygl ddiwethaf a grewyd",
+	"modal-next": "Yr erthygl nesaf",
+	"modal-translate": "Cyfieithwch",
+	"modal-create-from-scratch": "Creu o'r cychwyn",
+	"modal-loading": "Yn llwytho...",
+	"modal-preview-fail": "Dim cysylltiad i'r we",
+	"create-title": "Erthygl Newydd",
+	"create-title-input-placeholder": "Teitl y Cyfieithiad",
+	"create-warning": "Gofal!",
+	"create-action": "Creu",
+	"create-error-empty": "Mae'n rhaid cael teitl",
+	"create-error-invalid-character": "Ni chaniateir defnyddio '|' yn y teitl",
+	"create-error-exists": "Y ddalen $1 ar gael yn barod",
+	"create-error-invalid-page": "Dalen annilys yn $1"
+}

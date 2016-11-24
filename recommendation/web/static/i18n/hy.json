@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac"
+		]
+	},
+	"title-wikipedia": "Վիքիպեդիա",
+	"title-gapfinder": "GapFinder",
+	"menu-how-to": "Ինչպես",
+	"menu-about": "Նախագծի մասին",
+	"menu-feedback": "Հետադարձ կապ",
+	"menu-privacy-statement": "Գաղտնիության քաղաքականություն",
+	"selector-source": "Աղբյուր",
+	"selector-target": "Նպատակ",
+	"status-must-be-different": "Բնօրինակը և նպատակային պետք է լինեն տարբեր",
+	"status-invalid-language": "Անթույլատրելի աղբյուրը կամ նպատակային լեզուն",
+	"article-pageviews": "$1 վերջին {{PLURAL:$1|դիտում|դիտումներ}}",
+	"article-flag": "Նշել այս հոդվածը",
+	"article-flag-not-interesting": "Չի հետաքրքրում",
+	"article-flag-not-notable": "Ոչ նշանակալի $1 Վիքիպեդիայի համար",
+	"modal-close": "Փակել",
+	"modal-new-window": "Բացել այս հոդվածը նոր պատուհանում",
+	"modal-previous": "Նախորդ հոդվածը",
+	"modal-next": "Հաջորդ հոդված",
+	"modal-translate": "Թարգմանել",
+	"modal-loading": "Բեռնվում է…",
+	"create-title": "Նոր հոդված",
+	"create-title-input-placeholder": "Թարգմանության անվանումը",
+	"create-warning": "Զգուշացում",
+	"create-action": "Ստեղծել",
+	"create-error-empty": "Վերնագիր պետք է լինի դատարկ",
+	"create-error-exists": "Էջը արդեն գոյություն ունի $1"
+}
