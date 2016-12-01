@@ -2,9 +2,9 @@ import random
 import datetime
 import logging
 
-from recommendation.api.utils import Article
+from recommendation.api.types.translation.utils import Article
 from recommendation.utils import configuration
-from recommendation.api import data_fetcher
+from recommendation.api.types.translation import data_fetcher
 
 log = logging.getLogger(__name__)
 

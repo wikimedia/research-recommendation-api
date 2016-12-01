@@ -5,7 +5,7 @@ import urllib
 import json
 import re
 
-from recommendation.api import candidate_finders
+from recommendation.api.types.translation import candidate_finders
 
 PAGEVIEW_RESPONSE = {
     'items': [

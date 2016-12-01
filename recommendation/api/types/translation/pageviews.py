@@ -1,6 +1,6 @@
 import concurrent.futures
 
-from recommendation.api import data_fetcher
+from recommendation.api.types.translation import data_fetcher
 
 
 def set_pageview_data(source, articles):

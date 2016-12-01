@@ -2,9 +2,9 @@ import pytest
 import responses
 import re
 
-from recommendation.api import filters
+from recommendation.api.types.translation import filters
 from recommendation.utils import configuration
-from recommendation.api import utils
+from recommendation.api.types.translation import utils
 
 SOURCE = 'xx'
 
