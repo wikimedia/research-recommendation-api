@@ -1,0 +1,15 @@
+[Unit]
+Description=Recommendation tool service
+After=syslog.target
+
+[Service]
+ExecStart=/usr/local/bin/uwsgi --ini /etc/recommendation/uwsgi.ini
+User=www-data
+Group=www-data
+Restart=always
+StandardError=syslog
+NotifyAccess=all
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

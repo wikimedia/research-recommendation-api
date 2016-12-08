@@ -1,6 +1,6 @@
 import concurrent.futures
 
-from recommendation.api.types.translation import data_fetcher
+from recommendation.api.external_data import fetcher
 
 
 def set_pageview_data(source, articles):
@@ -11,6 +11,6 @@ def set_pageview_data(source, articles):
 
 
 def _get_and_set_pageview_data(source, article):
-    pageviews = data_fetcher.get_pageviews(source, article.title)
+    pageviews = fetcher.get_pageviews(source, article.title)
     article.pageviews = pageviews
     return article

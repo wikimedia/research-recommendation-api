@@ -6,6 +6,7 @@ import json
 import re
 
 from recommendation.api.types.translation import candidate_finders
+from recommendation.api.external_data import fetcher
 
 PAGEVIEW_RESPONSE = {
     'items': [
@@ -170,7 +171,7 @@ def test_wiki_search_paths(seed, query, expected_calls, seed_response, morelike_
         fallback=(query, 10, False, MORELIKE_RESPONSE)
     )
     for query, count, morelike, response in search_pattern.values():
-        url, params = candidate_finders.build_wiki_search('en', query, count, morelike)
+        url, params = fetcher.build_wiki_search('en', query, count, morelike)
         url += '?' + urllib.parse.urlencode(params)
         responses.add(responses.GET, url, json=response, status=200, match_querystring=True)
     finder.get_candidates('en', seed, 10)

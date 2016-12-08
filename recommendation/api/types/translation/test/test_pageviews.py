@@ -1,10 +1,11 @@
-import pytest
-import responses
 import datetime
 import re
 
+import pytest
+import responses
+
+from recommendation.api.external_data import fetcher
 from recommendation.api.types.translation import pageviews
-from recommendation.api.types.translation import data_fetcher
 from recommendation.api.types.translation import utils
 from recommendation.utils import configuration
 
@@ -64,7 +65,7 @@ def test_getter_queries_correct_url():
     run_getter()
     assert 1 == len(responses.calls)
     assert configuration.get_config_value('endpoints', 'pageviews') in responses.calls[0].request.url
-    assert data_fetcher.get_pageview_query_url(SOURCE, TITLE) == responses.calls[0].request.url
+    assert fetcher.get_pageview_query_url(SOURCE, TITLE) == responses.calls[0].request.url
 
 
 def test_date_range(monkeypatch):

@@ -7,7 +7,7 @@ from flask_restplus import fields
 from recommendation.api import helper
 from recommendation.web import gapfinder
 
-api = helper.build_api('api', __name__)
+api = helper.build_api('types', __name__, url_prefix='/types')
 
 TypeSpec = collections.namedtuple('Type', ['name', 'spec_path'])
 
@@ -17,7 +17,7 @@ type_model = api.model(TypeSpec.__name__, TypeSpec(
 )._asdict())
 
 
-@api.route('/types')
+@api.route('/')
 class Type(flask_restplus.Resource):
 
     @api.marshal_with(type_model, as_list=True)

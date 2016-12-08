@@ -24,7 +24,13 @@ GOOD_RESPONSE = [
     '/api/'
 ])
 def get_url(request):
-    return lambda input_dict: request.param + '?' + urllib.parse.urlencode(input_dict)
+    legacy_to_v1 = {'s': 'source',
+                    't': 'target',
+                    'n': 'count',
+                    'article': 'seed',
+                    'pageviews': 'include_pageviews'}
+    return lambda input_dict: request.param + '?' + urllib.parse.urlencode(
+        {legacy_to_v1.get(k, k): v for k, v in input_dict.items()} if 'v1' in request.param else input_dict)
 
 
 @pytest.fixture
@@ -68,8 +74,13 @@ def test_good_arg_parsing(client, get_url, params):
 ])
 def test_boolean_arg_parsing(client, get_url, value, expected):
     with client as c:
-        c.get(get_url(dict(s='xx', t='yy', pageviews=value)))
-        args = translation.legacy_params.parse_args()
+        url = get_url(dict(s='xx', t='yy', pageviews=value))
+        c.get(url)
+        if 'v1' in url:
+            args = translation.v1_params.parse_args()
+        else:
+            args = translation.legacy_params.parse_args()
+
     assert expected is args['include_pageviews']
 
 
@@ -96,8 +107,12 @@ def test_bad_args(client, get_url, params):
 ])
 def test_default_params(client, get_url, params):
     with client as c:
-        c.get(get_url(params))
-        args = translation.legacy_params.parse_args()
+        url = get_url(params)
+        c.get(url)
+        if 'v1' in url:
+            args = translation.v1_params.parse_args()
+        else:
+            args = translation.legacy_params.parse_args()
     assert 12 == args['count']
     assert None is args['seed']
     assert True is args['include_pageviews']
@@ -128,6 +143,7 @@ def test_generated_recommend_response_is_marshalled(client, get_url, monkeypatch
                 article.rank = article.pageviews
                 articles.append(article)
             return articles
+
     monkeypatch.setattr(translation, 'finder_map', {'mostpopular': MockFinder})
     monkeypatch.setattr(filters, 'apply_filters', lambda source, target, recs, count: recs)
     result = client.get(get_url(dict(s='xx', t='yy', pageviews=False)))

@@ -10,6 +10,7 @@ from flask_restplus import inputs
 
 from recommendation.utils import event_logger
 from recommendation.utils import language_pairs
+from recommendation.utils import configuration
 from recommendation.api import helper
 from recommendation.api.types.translation import filters
 from recommendation.api.types.translation import candidate_finders
@@ -35,10 +36,10 @@ legacy_params.add_argument(
     required=True)
 legacy_params.add_argument(
     'n',
-    type=inputs.int_range(low=0, high=24),
+    type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
     dest='count',
     required=False,
-    default=12)
+    default=configuration.get_config_int('api', 'count_default'))
 legacy_params.add_argument(
     'article',
     type=inputs.regex(r'^([^|]+(\|[^|]+)*)?$'),
@@ -87,9 +88,48 @@ class LegacyArticle(flask_restplus.Resource):
 
 api = helper.build_api('translation', __name__, url_prefix='/types/translation')
 v1 = helper.build_namespace(api, 'v1', description='')
-v1_params = legacy_params.copy()
+
+v1_params = reqparse.RequestParser()
+
+v1_params.add_argument(
+    'source',
+    type=str,
+    required=True)
+v1_params.add_argument(
+    'target',
+    type=str,
+    required=True)
+v1_params.add_argument(
+    'count',
+    type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
+    required=False,
+    default=configuration.get_config_int('api', 'count_default'))
+v1_params.add_argument(
+    'seed',
+    type=inputs.regex(r'^([^|]+(\|[^|]+)*)?$'),
+    required=False)
+v1_params.add_argument(
+    'include_pageviews',
+    type=inputs.boolean,
+    required=False,
+    default=True)
+v1_params.add_argument(
+    'search',
+    type=str,
+    required=False,
+    default='morelike',
+    choices=['morelike', 'wiki', 'related_articles'])
+
 v1_model = legacy.clone(ArticleSpec.__name__, legacy_model)
-v1_doc = legacy_doc.copy()
+v1_doc = dict(description='Gets recommendations of source articles that are missing in the target',
+              params=dict(source='Source wiki project language code',
+                          target='Target wiki project language code',
+                          count='Number of recommendations to fetch',
+                          seed='Seed article for personalized recommendations '
+                               'that can also be a list separated by "|"',
+                          include_pageviews='Whether to include pageview counts',
+                          search='Which search algorithm to use if a seed is specified')
+              )
 
 
 @v1.route('/articles')

@@ -66,11 +66,11 @@
 
             var mappedSource = self.mapLanguageToDomainCode(self.source);
             var mappedTarget = self.mapLanguageToDomainCode(self.target);
-            var url = translationAppGlobals.translationPath + '?s=' + mappedSource + '&t=' + mappedTarget;
+            var url = translationAppGlobals.translationPath + '?source=' + mappedSource + '&target=' + mappedTarget;
 
             var seed;
             if (this.seedArticle.value) {
-                url += '&article=' + encodeURIComponent(this.seedArticle.value);
+                url += '&seed=' + encodeURIComponent(this.seedArticle.value);
                 seed = this.seedArticle.value;
             }
 

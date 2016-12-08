@@ -15,14 +15,19 @@ def get_configuration(path, package, name):
     return config
 
 
-def get_config_value(section, key):
+def get_config_value(section, key, **kwargs):
     initialize_config()
-    return _config.get(section, key)
+    return _config.get(section, key, **kwargs)
 
 
 def get_config_int(section, key):
     initialize_config()
     return _config.getint(section, key)
+
+
+def get_config_float(section, key):
+    initialize_config()
+    return _config.getfloat(section, key)
 
 
 def get_config_dict(section):

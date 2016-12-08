@@ -1,6 +1,7 @@
 import logging
 
-from recommendation.api.types.translation import data_fetcher
+from recommendation.api.external_data import fetcher
+from recommendation.api.external_data import wikidata
 
 log = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ def filter_by_missing(source, target, candidates):
     using Wikidata sitelinks
     """
     titles = [article.title for article in candidates]
-    title_id_dict = data_fetcher.get_wikidata_sitelinks(source, target, titles)
+    title_id_dict = wikidata.get_items_in_source_missing_in_target_by_titles(source, target, titles)
 
     filtered_articles = []
 
@@ -29,7 +30,7 @@ def filter_by_disambiguation(source, candidates):
     Filters out disambiguation pages
     """
     titles = [article.title for article in candidates]
-    disambiguation_pages = data_fetcher.get_disambiguation_pages(source, titles)
+    disambiguation_pages = fetcher.get_disambiguation_pages(source, titles)
     return [article for article in candidates if article.title not in disambiguation_pages]
 
 

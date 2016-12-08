@@ -1,10 +1,10 @@
-import random
 import datetime
 import logging
+import random
 
+from recommendation.api.external_data import fetcher
 from recommendation.api.types.translation.utils import Article
 from recommendation.utils import configuration
-from recommendation.api.types.translation import data_fetcher
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class PageviewCandidateFinder(CandidateFinder):
         date = (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime(date_format)
         query = query.format(source=s, date=date)
         try:
-            data = data_fetcher.get(query)
+            data = fetcher.get(query)
         except ValueError:
             return []
 
@@ -80,7 +80,7 @@ class MorelikeCandidateFinder(CandidateFinder):
         First map the query to an article via standard search,
         and then get a list of related articles via morelike search
         """
-        seed_list = wiki_search(s, query, 1)
+        seed_list = fetcher.wiki_search(s, query, 1)
 
         if len(seed_list) == 0:
             log.info('Seed does not map to an article')
@@ -89,14 +89,14 @@ class MorelikeCandidateFinder(CandidateFinder):
         seed = seed_list[0]
         if seed != query:
             log.info('Query: %s  Article: %s', query, seed)
-        results = wiki_search(s, seed, n, morelike=True)
+        results = fetcher.wiki_search(s, seed, n, morelike=True)
         if results:
             results.insert(0, seed)
             log.info('Successful Morelike Search')
             return results
         else:
             log.info('Failed Morelike Search. Reverting to standard search')
-            return wiki_search(s, query, n)
+            return fetcher.wiki_search(s, query, n)
 
     def get_candidates(self, s, seed, n):
         """
@@ -112,37 +112,3 @@ class MorelikeCandidateFinder(CandidateFinder):
             articles.append(a)
 
         return articles[:n]
-
-
-def wiki_search(s, seed, n, morelike=False):
-    """
-    A client to the Mediawiki search API
-    """
-    endpoint, params = build_wiki_search(s, seed, n, morelike)
-    try:
-        response = data_fetcher.get(endpoint, params=params)
-    except ValueError:
-        log.info('Could not search for articles related to seed in %s. Choose another language.', s)
-        return []
-
-    if 'query' not in response or 'search' not in response['query']:
-        log.info('Could not search for articles related to seed in %s. Choose another language.', s)
-        return []
-
-    response = response['query']['search']
-    results = [r['title'].replace(' ', '_') for r in response]
-    if len(results) == 0:
-        log.info('No articles similar to %s in %s. Try another seed.', seed, s)
-        return []
-
-    return results
-
-
-def build_wiki_search(source, seed, count, morelike):
-    endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
-    params = configuration.get_config_dict('wiki_search_params')
-    params['srlimit'] = count
-    if morelike:
-        seed = 'morelike:' + seed
-    params['srsearch'] = seed
-    return endpoint, params

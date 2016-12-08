@@ -47,43 +47,6 @@ def get_disambiguation_pages(source, titles):
     return list(set(page['title'].replace(' ', '_') for page in pages if 'disambiguation' in page.get('pageprops', {})))
 
 
-def get_wikidata_sitelinks(source, target, titles):
-    """
-    Returns a dictionary mapping from titles to wikidata ids
-    for the articles in source missing in target
-    """
-    endpoint = configuration.get_config_value('endpoints', 'wikidata')
-    params = configuration.get_config_dict('wikidata_params')
-    params['sites'] = params['sites'].format(source=source)
-    params['titles'] = '|'.join(titles)
-
-    title_id_dict = {}
-    try:
-        data = post(endpoint, data=params)
-    except ValueError:
-        log.info('Bad Wikidata API response')
-        return title_id_dict
-
-    source_wiki = '{}wiki'.format(source)
-    target_wiki = '{}wiki'.format(target)
-
-    if 'entities' not in data:
-        log.info('None of the titles have a Wikidata Item')
-        return title_id_dict
-
-    for wikidata_id, v in data['entities'].items():
-        sitelinks = v.get('sitelinks', None)
-        if sitelinks:
-            if source_wiki in sitelinks and target_wiki not in sitelinks:
-                title = sitelinks[source_wiki]['title'].replace(' ', '_')
-                title_id_dict[title] = wikidata_id
-
-    if len(title_id_dict) == 0:
-        log.info('None of the source articles missing in the target')
-
-    return title_id_dict
-
-
 def get_pageviews(source, title):
     """
     Get pageview counts for a single article from pageview api
@@ -111,3 +74,37 @@ def get_pageview_query_url(source, title):
 def get_relative_timestamp(relative_days):
     date_format = configuration.get_config_value('single_article_pageviews', 'date_format')
     return (datetime.datetime.utcnow() + datetime.timedelta(days=relative_days)).strftime(date_format)
+
+
+def wiki_search(source, seed, count, morelike=False):
+    """
+    A client to the Mediawiki search API
+    """
+    endpoint, params = build_wiki_search(source, seed, count, morelike)
+    try:
+        response = get(endpoint, params=params)
+    except ValueError:
+        log.info('Could not search for articles related to seed in %s. Choose another language.', source)
+        return []
+
+    if 'query' not in response or 'search' not in response['query']:
+        log.info('Could not search for articles related to seed in %s. Choose another language.', source)
+        return []
+
+    response = response['query']['search']
+    results = [r['title'].replace(' ', '_') for r in response]
+    if len(results) == 0:
+        log.info('No articles similar to %s in %s. Try another seed.', seed, source)
+        return []
+
+    return results
+
+
+def build_wiki_search(source, seed, count, morelike):
+    endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
+    params = configuration.get_config_dict('wiki_search_params')
+    params['srlimit'] = count
+    if morelike:
+        seed = 'morelike:' + seed
+    params['srsearch'] = seed
+    return endpoint, params
