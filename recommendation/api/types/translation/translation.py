@@ -166,6 +166,7 @@ finder_map = {
     'morelike': candidate_finders.MorelikeCandidateFinder(),
     'wiki': candidate_finders.MorelikeCandidateFinder(),
     'mostpopular': candidate_finders.PageviewCandidateFinder(),
+    'related_articles': candidate_finders.RelatedArticleFinder()
 }
 
 

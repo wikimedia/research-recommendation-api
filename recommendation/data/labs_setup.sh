@@ -31,7 +31,7 @@ chown -R www-data:www-data ${SRV_PATH}
 cp ${TMP_PATH}/recommendation-api/recommendation/data/* ${ETC_PATH}
 cp ${ETC_PATH}/recommendation.nginx /etc/nginx/sites-available/recommendation
 ln -s /etc/nginx/sites-available/recommendation /etc/nginx/sites-enabled/
-cp ${ETC_PATH}/recommendation.service /etc/systemd/system/multi-user.target/wants/
+cp ${ETC_PATH}/recommendation.service /etc/systemd/system/multi-user.target.wants/
 systemctl enable recommendation.service
 systemctl daemon-reload
 

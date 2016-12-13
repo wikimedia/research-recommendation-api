@@ -9,11 +9,11 @@ log = logging.getLogger(__name__)
 WikidataItem = collections.namedtuple('WikidataItem', ['id', 'title', 'url'])
 
 
-def query(params):
+def query(params, expected_sitelinks=1):
     """
     Query the wikidata endpoint and return a list of WikidataItem
 
-     This only includes items that have exactly 1 sitelink
+     This only includes items that have exactly expected_sitelinks sitelink
     """
     endpoint = configuration.get_config_value('endpoints', 'wikidata')
     try:
@@ -28,7 +28,7 @@ def query(params):
 
     for id, entity in entities.items():
         sitelinks = entity.get('sitelinks', {})
-        if len(sitelinks.keys()) != 1:
+        if len(sitelinks.keys()) != expected_sitelinks:
             continue
         sitelink = sitelinks.popitem()[1]
 
@@ -43,7 +43,12 @@ def query(params):
 def get_items_in_source_missing_in_target_by_titles(source, target, titles):
     params = configuration.get_config_dict('wikidata_titles_to_items_params')
     params['sites'] = params['sites'].format(source=source)
+    # We want the sitefilter to include both the source and target
+    # wikis. This sets up the scenario where if there is only 1 sitelink
+    # present, that means that the article is missing in the target (since
+    # the title will have come from the source wiki)
     params['sitefilter'] = params['sitefilter'].format(target=target)
+    params['sitefilter'] += '|{}wiki'.format(source)
     params['titles'] = '|'.join(titles)
 
     items = query(params)

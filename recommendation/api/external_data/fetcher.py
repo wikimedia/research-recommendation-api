@@ -108,3 +108,8 @@ def build_wiki_search(source, seed, count, morelike):
         seed = 'morelike:' + seed
     params['srsearch'] = seed
     return endpoint, params
+
+
+def get_related_articles(source, seed):
+    return get('http://recommend-related-articles.wmflabs.org/types/related_articles/v1/articles',
+               dict(source=source, seed=seed, count=500))

@@ -112,3 +112,19 @@ class MorelikeCandidateFinder(CandidateFinder):
             articles.append(a)
 
         return articles[:n]
+
+
+class RelatedArticleFinder(CandidateFinder):
+    def get_candidates(self, s, seed, n):
+        results = fetcher.get_related_articles(s, seed)
+        if len(results) == 0:
+            return MorelikeCandidateFinder().get_candidates(s, seed, n)
+
+        articles = []
+        for item in results:
+            a = Article(item['title'])
+            a.wikidata_id = item['wikidata_id']
+            a.rank = item['score']
+            articles.append(a)
+
+        return articles[:n]
