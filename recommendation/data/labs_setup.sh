@@ -5,7 +5,7 @@ SRV_PATH='/srv/recommendation'
 TMP_PATH='/tmp/recommendation'
 
 apt-get update
-apt-get install -y git nginx npm python3 python3-pip
+apt-get install -y git nginx npm python3 python3-pip libpython3.4
 pip3 install --upgrade pip
 
 rm -rf ${TMP_PATH}
@@ -17,8 +17,8 @@ mkdir -p ${ETC_PATH}
 git clone https://gerrit.wikimedia.org/r/research/recommendation-api/wheels ${TMP_PATH}/wheels
 git clone https://gerrit.wikimedia.org/r/research/recommendation-api ${TMP_PATH}/recommendation-api
 
-pip3 install --use-wheel --no-deps ${TMP_PATH}/wheels/wheels/*.whl
-pip3 install --no-deps ${TMP_PATH}/recommendation-api
+pip install --use-wheel --no-deps ${TMP_PATH}/wheels/wheels/*.whl
+pip install --no-deps ${TMP_PATH}/recommendation-api
 
 ln -s /usr/bin/nodejs /usr/bin/node
 cd ${TMP_PATH}

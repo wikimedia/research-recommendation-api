@@ -39,6 +39,7 @@
         self.target = '';
         self.sourceLanguages = {};
         self.targetLanguages = {};
+        self.search = '';
         self.fetching = false;
         self.sourceSelector = null;
         self.targetSelector = null;
@@ -70,7 +71,7 @@
 
             var seed;
             if (this.seedArticle.value) {
-                url += '&seed=' + encodeURIComponent(this.seedArticle.value);
+                url += '&search=' + self.search + '&seed=' + encodeURIComponent(this.seedArticle.value);
                 seed = this.seedArticle.value;
             }
 
@@ -318,6 +319,11 @@
             if (window.translationAppGlobals.t in targetLanguages) {
                 self.setTarget(window.translationAppGlobals.t);
                 self.origin = 'url_parameters';
+            }
+
+            self.search = window.translationAppGlobals.defaultSearch;
+            if (window.translationAppGlobals.search in ['morelike', 'related_articles']) {
+                self.search = window.translationAppGlobals.search;
             }
 
             // Check for cookies

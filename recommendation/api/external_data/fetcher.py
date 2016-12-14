@@ -111,5 +111,5 @@ def build_wiki_search(source, seed, count, morelike):
 
 
 def get_related_articles(source, seed):
-    return get('http://recommend-related-articles.wmflabs.org/types/related_articles/v1/articles',
-               dict(source=source, seed=seed, count=500))
+    endpoint = configuration.get_config_value('endpoints', 'related_articles')
+    return get(endpoint, dict(source=source, seed=seed, count=500))

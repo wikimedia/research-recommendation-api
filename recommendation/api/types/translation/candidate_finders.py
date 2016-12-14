@@ -118,6 +118,7 @@ class RelatedArticleFinder(CandidateFinder):
     def get_candidates(self, s, seed, n):
         results = fetcher.get_related_articles(s, seed)
         if len(results) == 0:
+            log.info('Failed related_articles search. Reverting to morelike. Source: %s Seed: %s', s, seed)
             return MorelikeCandidateFinder().get_candidates(s, seed, n)
 
         articles = []
