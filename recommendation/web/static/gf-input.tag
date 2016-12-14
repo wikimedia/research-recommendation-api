@@ -322,7 +322,8 @@
             }
 
             self.search = window.translationAppGlobals.defaultSearch;
-            if (window.translationAppGlobals.search in ['morelike', 'related_articles']) {
+            var validSearches = ['morelike', 'related_articles'];
+            if (validSearches.indexOf(window.translationAppGlobals.search) > -1) {
                 self.search = window.translationAppGlobals.search;
             }
 
