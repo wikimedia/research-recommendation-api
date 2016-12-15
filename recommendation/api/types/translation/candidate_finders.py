@@ -125,7 +125,7 @@ class RelatedArticleFinder(CandidateFinder):
         for item in results:
             a = Article(item['title'])
             a.wikidata_id = item['wikidata_id']
-            a.rank = item['score']
+            a.rank = 1.0 - item['score']
             articles.append(a)
 
         return articles[:n]
