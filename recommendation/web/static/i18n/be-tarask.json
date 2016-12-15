@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Red Winged Duck"
+		]
+	},
+	"title-wikipedia": "Вікіпэдыя",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "бэта",
+	"menu-how-to": "Інструкцыя",
+	"menu-about": "Пра праект",
+	"menu-feedback": "Водгукі",
+	"menu-source-code": "Крынічны код",
+	"menu-privacy-statement": "Заява пра канфідэнцыйнасьць",
+	"selector-source": "Крыніца",
+	"selector-target": "Мэта",
+	"search-placeholder": "Пошук артыкулаў для стварэньня",
+	"status-preparing": "Падрыхтоўка рэкамэндаваных артыкулаў…",
+	"status-must-be-different": "Крынічная і мэтавая мовы мусяць адрозьнівацца",
+	"status-invalid-language": "Няслушная крынічная або мэтавая мова"
+}
