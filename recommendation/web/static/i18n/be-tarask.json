@@ -17,5 +17,7 @@
 	"search-placeholder": "Пошук артыкулаў для стварэньня",
 	"status-preparing": "Падрыхтоўка рэкамэндаваных артыкулаў…",
 	"status-must-be-different": "Крынічная і мэтавая мовы мусяць адрозьнівацца",
-	"status-invalid-language": "Няслушная крынічная або мэтавая мова"
+	"status-invalid-language": "Няслушная крынічная або мэтавая мова",
+	"article-pageviews": "$1 {{PLURAL:$1|нядаўні прагляд|нядаўнія прагляды|нядаўніх праглядаў}}",
+	"article-flag-not-interesting": "Не цікава"
 }
