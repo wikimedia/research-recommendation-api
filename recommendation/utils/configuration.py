@@ -4,38 +4,37 @@ from pkg_resources import resource_filename
 import recommendation
 
 _config = None
-
-
-def get_configuration(path, package, name):
-    config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-    try:
-        config.read_file(open(path))
-    except IOError:
-        config.read_file(open(resource_filename(package, name)))
-    return config
+_config_locations = [
+    resource_filename(recommendation.__name__, 'data/recommendation.ini'),
+    '/etc/recommendation/recommendation.ini'
+]
 
 
 def get_config_value(section, key, **kwargs):
-    initialize_config()
-    return _config.get(section, key, **kwargs)
+    return _get_configuration().get(section, key, **kwargs)
 
 
 def get_config_int(section, key):
-    initialize_config()
-    return _config.getint(section, key)
+    return _get_configuration().getint(section, key)
 
 
 def get_config_float(section, key):
-    initialize_config()
-    return _config.getfloat(section, key)
+    return _get_configuration().getfloat(section, key)
 
 
 def get_config_dict(section):
-    initialize_config()
-    return dict(_config[section])
+    return dict(_get_configuration()[section])
+
+
+def _get_configuration():
+    global _config
+    if _config is None:
+        initialize_config()
+    return _config
 
 
 def initialize_config():
+    config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    config.read(_config_locations)
     global _config
-    if _config is None:
-        _config = get_configuration(recommendation.config_path, recommendation.__name__, recommendation.config_name)
+    _config = config
