@@ -1,4 +1,6 @@
 from recommendation.api.types.related_articles import candidate_finder
+from recommendation.utils import configuration
+import recommendation
 
 
 def test_embedding():
@@ -11,6 +13,10 @@ def test_embedding():
     for expected, actual in zip(expected, results):
         assert expected[0] == actual[0]
         assert isclose(expected[1], actual[1])
+
+
+def test_configuration():
+    assert recommendation.__name__ == configuration.get_config_value('related_articles', 'embedding_package')
 
 
 # math.isclose was added in 3.5
