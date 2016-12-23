@@ -112,4 +112,8 @@ def build_wiki_search(source, seed, count, morelike):
 
 def get_related_articles(source, seed):
     endpoint = configuration.get_config_value('endpoints', 'related_articles')
-    return get(endpoint, dict(source=source, seed=seed, count=500))
+    try:
+        response = get(endpoint, dict(source=source, seed=seed, count=500))
+    except ValueError:
+        return []
+    return response

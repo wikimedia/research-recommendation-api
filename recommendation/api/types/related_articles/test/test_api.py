@@ -70,7 +70,7 @@ def test_bad_args(client, get_url, params):
 def test_default_params(client, get_url, params):
     with client as c:
         c.get(get_url(params))
-        args = related_articles.v1_params.parse_args()
+        args = related_articles.v1_articles_params.parse_args()
     assert 12 == args['count']
 
 

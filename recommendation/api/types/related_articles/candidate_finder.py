@@ -31,10 +31,14 @@ def get_candidates(source, seed, count):
     # map resulting wikidata items back to articles
     results = wikidata.get_titles_from_wikidata_items(source, ids_to_scores.keys())
 
-    return [Candidate(title=item.title,
-                      wikidata_id=item.id,
-                      url=item.url,
-                      score=ids_to_scores[item.id]) for item in results][:count]
+    candidates = [Candidate(title=item.title,
+                            wikidata_id=item.id,
+                            url=item.url,
+                            score=ids_to_scores[item.id]) for item in results]
+
+    candidates = sorted(candidates, key=lambda c: c.score, reverse=True)
+
+    return candidates[:count]
 
 
 def resolve_seed(source, seed):

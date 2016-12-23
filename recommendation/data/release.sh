@@ -11,6 +11,6 @@ git clone https://gerrit.wikimedia.org/r/research/recommendation-api ${TMP_PATH}
 
 pip install --no-deps ${TMP_PATH}/recommendation-api
 
-cp ${TMP_PATH}/recommendation-api/recommendation/data/* ${ETC_PATH}
+#cp ${TMP_PATH}/recommendation-api/recommendation/data/* ${ETC_PATH}
 
 systemctl restart recommendation.service
