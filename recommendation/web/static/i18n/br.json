@@ -1,12 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Gwenn-Ael"
+			"Gwenn-Ael",
+			"Fulup"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
 	"title-gapfinder": "GapFinder",
 	"title-beta": "beta",
+	"menu-how-to": "Dornlevr",
 	"menu-about": "Diwar-benn",
 	"menu-feedback": "Evezhiadennoù",
 	"menu-source-code": "Kod mammenn",
@@ -20,6 +22,7 @@
 	"article-pageviews": "$1 {{PLURAL:$1|kuzuliadenn a-nevez|kuzuliadennoù a-nevez}}",
 	"article-flag": "Merkañ ar pennad-mañ...",
 	"article-flag-not-interesting": "N'eo ket dedennus",
+	"article-flag-not-notable": "Didalvoud evit Wikipedia e $1",
 	"modal-close": "Serriñ",
 	"modal-new-window": "Digeriñ ar pennad-mañ en ur prenestr nevez",
 	"modal-previous": "Pennad kent",
