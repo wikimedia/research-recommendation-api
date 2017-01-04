@@ -18,21 +18,26 @@ v1 = helper.build_namespace(api, 'v1', description='')
 
 ArticleSpec = collections.namedtuple('Article', ['title', 'wikidata_id', 'url', 'score'])
 
-v1_articles_params = reqparse.RequestParser()
 
-v1_articles_params.add_argument(
-    'source',
-    type=str,
-    required=True)
-v1_articles_params.add_argument(
-    'count',
-    type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
-    required=False,
-    default=configuration.get_config_int('api', 'count_default'))
-v1_articles_params.add_argument(
-    'seed',
-    type=inputs.regex(r'^[^|]+(\|[^|]+)*$'),
-    required=True)
+def get_v1_articles_params():
+    v1_articles_params = reqparse.RequestParser()
+
+    v1_articles_params.add_argument(
+        'source',
+        type=str,
+        required=True)
+    v1_articles_params.add_argument(
+        'count',
+        type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
+        required=False,
+        default=configuration.get_config_int('api', 'count_default'))
+    v1_articles_params.add_argument(
+        'seed',
+        type=inputs.regex(r'^[^|]+(\|[^|]+)*$'),
+        required=True)
+
+    return v1_articles_params
+
 
 v1_articles_model = v1.model(ArticleSpec.__name__, ArticleSpec(
     title=fields.String(description='title', required=True),
@@ -49,11 +54,11 @@ v1_articles_doc = dict(description='Gets recommendations of articles that are re
 
 @v1.route('/articles')
 class Article(flask_restplus.Resource):
-    @v1.expect(v1_articles_params)
+    @v1.expect(get_v1_articles_params())
     @v1.marshal_with(v1_articles_model, as_list=True)
     @v1.doc(**v1_articles_doc)
     def get(self):
-        args = v1_articles_params.parse_args()
+        args = get_v1_articles_params().parse_args()
         return process_request(args)
 
 

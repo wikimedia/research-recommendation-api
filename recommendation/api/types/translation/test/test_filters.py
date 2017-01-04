@@ -19,7 +19,7 @@ def the_filter(request):
 
 def query(the_filter):
     if the_filter is filters.filter_by_missing:
-        return the_filter(SOURCE, SOURCE, '')
+        return the_filter(SOURCE, SOURCE, [utils.Article('something')])
     if the_filter is filters.filter_by_disambiguation:
         return the_filter(SOURCE, '')
 

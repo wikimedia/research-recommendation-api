@@ -1,5 +1,6 @@
 import collections
 import logging
+import itertools
 
 from recommendation.utils import configuration
 from recommendation.api.external_data import fetcher
@@ -18,6 +19,8 @@ def query(params, expected_sitelinks=1):
     endpoint = configuration.get_config_value('endpoints', 'wikidata')
     try:
         data = fetcher.post(endpoint, data=params)
+        if 'warnings' in data:
+            raise ValueError()
     except ValueError:
         log.info('Bad Wikidata API response')
         return {}
@@ -40,6 +43,17 @@ def query(params, expected_sitelinks=1):
     return items
 
 
+def chunk_query_for_parameter(params, parameter, values):
+    chunk_size = configuration.get_config_int('external_api_parameters', 'wikidata_chunk_size')
+    items = []
+
+    for group in itertools.zip_longest(*[iter(values)] * chunk_size):
+        params[parameter] = '|'.join(item for item in group if item is not None)
+        items += query(params)
+
+    return items
+
+
 def get_items_in_source_missing_in_target_by_titles(source, target, titles):
     params = configuration.get_config_dict('wikidata_titles_to_items_params')
     params['sites'] = params['sites'].format(source=source)
@@ -49,9 +63,8 @@ def get_items_in_source_missing_in_target_by_titles(source, target, titles):
     # the title will have come from the source wiki)
     params['sitefilter'] = params['sitefilter'].format(target=target)
     params['sitefilter'] += '|{}wiki'.format(source)
-    params['titles'] = '|'.join(titles)
 
-    items = query(params)
+    items = chunk_query_for_parameter(params, 'titles', titles)
 
     return {item.title: item.id for item in items}
 
@@ -60,9 +73,8 @@ def get_wikidata_items_from_titles(source, titles):
     params = configuration.get_config_dict('wikidata_titles_to_items_params')
     params['sites'] = params['sites'].format(source=source)
     params['sitefilter'] = params['sitefilter'].format(target=source)
-    params['titles'] = '|'.join(titles)
 
-    items = query(params)
+    items = chunk_query_for_parameter(params, 'titles', titles)
 
     return items
 
@@ -70,8 +82,7 @@ def get_wikidata_items_from_titles(source, titles):
 def get_titles_from_wikidata_items(source, items):
     params = configuration.get_config_dict('wikidata_items_to_titles_params')
     params['sitefilter'] = params['sitefilter'].format(source=source)
-    params['ids'] = '|'.join(items)
 
-    items = query(params)
+    items = chunk_query_for_parameter(params, 'ids', items)
 
     return items

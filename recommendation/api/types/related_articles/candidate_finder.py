@@ -24,7 +24,7 @@ def get_candidates(source, seed, count):
 
     seed_title = resolve_seed(source, seed)
     seed_wikidata_item = wikidata.get_wikidata_items_from_titles(source, [seed_title])[0]
-    nearest_neighbors = get_nearest_neighbors(seed_wikidata_item, count)
+    nearest_neighbors = get_nearest_neighbors(seed_wikidata_item)
 
     ids_to_scores = {n[0]: n[1] for n in nearest_neighbors}
 
@@ -49,8 +49,8 @@ def resolve_seed(source, seed):
     return seed_list[0]
 
 
-def get_nearest_neighbors(wikidata_item, count):
-    nearest_neighbors = get_embedding().most_similar(wikidata_item.id, n=count)
+def get_nearest_neighbors(wikidata_item):
+    nearest_neighbors = get_embedding().most_similar(wikidata_item.id)
     if len(nearest_neighbors) == 0:
         log.info('Seed Item is not in the embedding or no neighbors above t.')
     return nearest_neighbors
@@ -93,9 +93,9 @@ class WikiEmbedding:
         self.E = normalize(self.E)
         self.idx2w = np.array(self.idx2w)
 
-    def most_similar(self, word, n):
+    def most_similar(self, word):
         """
-        Find the top-N most similar words to w, based on cosine similarity.
+        Find the most similar words to w, based on cosine similarity.
         As a speed optimization, only consider neighbors with a similarity
         above min_similarity
         """
@@ -106,7 +106,7 @@ class WikiEmbedding:
         scores = self.E.dot(word_vector)
         # only consider neighbors above threshold
         min_idxs = np.where(scores > self.minimum_similarity)
-        ranking = np.argsort(-scores[min_idxs])[:n]
+        ranking = np.argsort(-scores[min_idxs])
         nn_ws = self.idx2w[min_idxs][ranking]
         nn_scores = scores[min_idxs][ranking]
         return list(zip(nn_ws.tolist(), nn_scores.tolist()))
