@@ -93,8 +93,8 @@ class Item(flask_restplus.Resource):
     @v1.doc(**v1_items_doc)
     def get(self):
         args = v1_items_params.parse_args()
-        recs = candidate_finder.get_embedding().most_similar(n=args['count'], word=args['seed'])
-        return [ItemSpec(wikidata_id=rec[0], score=rec[1])._asdict() for rec in recs]
+        recs = candidate_finder.get_embedding().most_similar(word=args['seed'])
+        return [ItemSpec(wikidata_id=rec[0], score=rec[1])._asdict() for rec in recs][:args['count']]
 
 
 def process_request(args):
