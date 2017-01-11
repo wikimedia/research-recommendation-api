@@ -19,5 +19,8 @@
 	"status-must-be-different": "Крынічная і мэтавая мовы мусяць адрозьнівацца",
 	"status-invalid-language": "Няслушная крынічная або мэтавая мова",
 	"article-pageviews": "$1 {{PLURAL:$1|нядаўні прагляд|нядаўнія прагляды|нядаўніх праглядаў}}",
-	"article-flag-not-interesting": "Не цікава"
+	"article-flag": "Пазначыць гэты артыкул…",
+	"article-flag-not-interesting": "Не цікава",
+	"article-flag-not-notable": "Ня значны для Вікіпэдыі мовай: $1",
+	"modal-close": "Закрыць"
 }
