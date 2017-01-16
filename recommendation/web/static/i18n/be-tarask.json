@@ -22,5 +22,8 @@
 	"article-flag": "Пазначыць гэты артыкул…",
 	"article-flag-not-interesting": "Не цікава",
 	"article-flag-not-notable": "Ня значны для Вікіпэдыі мовай: $1",
-	"modal-close": "Закрыць"
+	"modal-close": "Закрыць",
+	"modal-new-window": "Адкрыць гэты артыкул у новым акне",
+	"modal-previous": "Папярэдні артыкул",
+	"modal-next": "Наступны артыкул"
 }
