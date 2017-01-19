@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Smcnarayan"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "KAi karaa jaae hai",
+	"menu-about": "Baare me",
+	"menu-feedback": "Sujhao do",
+	"menu-source-code": "Source code",
+	"menu-privacy-statement": "Privacy statement",
+	"selector-source": "Source",
+	"selector-target": "Target",
+	"search-placeholder": "Article jiske banaawa jaae sake hai ke khojo",
+	"status-preparing": "Article recommendations ke taiyaar karaa jaae hai...",
+	"status-must-be-different": "Source aur target bhasa me antar hoe ke chaahi",
+	"status-invalid-language": "Sourceource, nai to, target bhasa, valid nai hai",
+	"article-pageviews": "$1 recent {{PLURAL:$1|view|views}}",
+	"article-flag": "Ii article ke flag karo...",
+	"article-flag-not-interesting": "Interesting nai hai",
+	"article-flag-not-notable": "Not notable for $1 Wikipedia",
+	"modal-close": "Band karo",
+	"modal-new-window": "Ii article ke nawaa window me kholo",
+	"modal-previous": "Pahile waala article",
+	"modal-next": "Aage ke article",
+	"modal-translate": "Translate karo",
+	"modal-create-from-scratch": "Suruu se banao",
+	"modal-loading": "Loading  kara jaae hai...",
+	"modal-preview-fail": "Internet nai hai",
+	"create-title": "Nawaa article",
+	"create-title-input-placeholder": "Translation ke title",
+	"create-warning": "Chetauni:",
+	"create-action": "Banao",
+	"create-error-empty": "Title ke khaali hoe ke chaahi",
+	"create-error-invalid-character": "Title me invalid character hai ( '|' )",
+	"create-error-exists": "Panna abhi $1 pe hai",
+	"create-error-invalid-page": "Panna $1 pe valid nai hai"
+}

@@ -25,5 +25,7 @@
 	"modal-close": "Закрыць",
 	"modal-new-window": "Адкрыць гэты артыкул у новым акне",
 	"modal-previous": "Папярэдні артыкул",
-	"modal-next": "Наступны артыкул"
+	"modal-next": "Наступны артыкул",
+	"modal-translate": "Перакласьці",
+	"modal-create-from-scratch": "Стварыць з нуля"
 }
