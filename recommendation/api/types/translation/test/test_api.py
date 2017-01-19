@@ -77,9 +77,9 @@ def test_boolean_arg_parsing(client, get_url, value, expected):
         url = get_url(dict(s='xx', t='yy', pageviews=value))
         c.get(url)
         if 'v1' in url:
-            args = translation.v1_params.parse_args()
+            args = translation.get_v1_params().parse_args()
         else:
-            args = translation.legacy_params.parse_args()
+            args = translation.get_legacy_params().parse_args()
 
     assert expected is args['include_pageviews']
 
@@ -110,9 +110,9 @@ def test_default_params(client, get_url, params):
         url = get_url(params)
         c.get(url)
         if 'v1' in url:
-            args = translation.v1_params.parse_args()
+            args = translation.get_v1_params().parse_args()
         else:
-            args = translation.legacy_params.parse_args()
+            args = translation.get_legacy_params().parse_args()
     assert 12 == args['count']
     assert None is args['seed']
     assert True is args['include_pageviews']

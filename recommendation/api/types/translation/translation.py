@@ -22,41 +22,46 @@ legacy = helper.build_api('legacy', __name__, url_prefix='/api')
 
 ArticleSpec = collections.namedtuple('Article', ['pageviews', 'title', 'wikidata_id'])
 
-legacy_params = reqparse.RequestParser()
 
-legacy_params.add_argument(
-    's',
-    type=str,
-    dest='source',
-    required=True)
-legacy_params.add_argument(
-    't',
-    type=str,
-    dest='target',
-    required=True)
-legacy_params.add_argument(
-    'n',
-    type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
-    dest='count',
-    required=False,
-    default=configuration.get_config_int('api', 'count_default'))
-legacy_params.add_argument(
-    'article',
-    type=inputs.regex(r'^([^|]+(\|[^|]+)*)?$'),
-    dest='seed',
-    required=False)
-legacy_params.add_argument(
-    'pageviews',
-    type=inputs.boolean,
-    dest='include_pageviews',
-    required=False,
-    default=True)
-legacy_params.add_argument(
-    'search',
-    type=str,
-    required=False,
-    default='morelike',
-    choices=['morelike', 'wiki'])
+def get_legacy_params():
+    legacy_params = reqparse.RequestParser()
+
+    legacy_params.add_argument(
+        's',
+        type=str,
+        dest='source',
+        required=True)
+    legacy_params.add_argument(
+        't',
+        type=str,
+        dest='target',
+        required=True)
+    legacy_params.add_argument(
+        'n',
+        type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
+        dest='count',
+        required=False,
+        default=configuration.get_config_int('api', 'count_default'))
+    legacy_params.add_argument(
+        'article',
+        type=inputs.regex(r'^([^|]+(\|[^|]+)*)?$'),
+        dest='seed',
+        required=False)
+    legacy_params.add_argument(
+        'pageviews',
+        type=inputs.boolean,
+        dest='include_pageviews',
+        required=False,
+        default=True)
+    legacy_params.add_argument(
+        'search',
+        type=str,
+        required=False,
+        default='morelike',
+        choices=['morelike', 'wiki'])
+
+    return legacy_params
+
 
 legacy_model = legacy.model(ArticleSpec.__name__, ArticleSpec(
     pageviews=fields.Integer(description='pageviews', required=False),
@@ -78,47 +83,52 @@ legacy_doc = dict(description='Gets recommendations of source articles that are 
 @legacy.deprecated
 @legacy.route('/')
 class LegacyArticle(flask_restplus.Resource):
-    @legacy.expect(legacy_params)
+    @legacy.expect(get_legacy_params())
     @legacy.marshal_with(legacy_model, as_list=True)
     @legacy.doc(**legacy_doc)
     def get(self):
-        args = legacy_params.parse_args()
+        args = get_legacy_params().parse_args()
         return process_request(args)
 
 
 api = helper.build_api('translation', __name__, url_prefix='/types/translation')
 v1 = helper.build_namespace(api, 'v1', description='')
 
-v1_params = reqparse.RequestParser()
 
-v1_params.add_argument(
-    'source',
-    type=str,
-    required=True)
-v1_params.add_argument(
-    'target',
-    type=str,
-    required=True)
-v1_params.add_argument(
-    'count',
-    type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
-    required=False,
-    default=configuration.get_config_int('api', 'count_default'))
-v1_params.add_argument(
-    'seed',
-    type=inputs.regex(r'^([^|]+(\|[^|]+)*)?$'),
-    required=False)
-v1_params.add_argument(
-    'include_pageviews',
-    type=inputs.boolean,
-    required=False,
-    default=True)
-v1_params.add_argument(
-    'search',
-    type=str,
-    required=False,
-    default='morelike',
-    choices=['morelike', 'wiki', 'related_articles'])
+def get_v1_params():
+    v1_params = reqparse.RequestParser()
+
+    v1_params.add_argument(
+        'source',
+        type=str,
+        required=True)
+    v1_params.add_argument(
+        'target',
+        type=str,
+        required=True)
+    v1_params.add_argument(
+        'count',
+        type=inputs.int_range(low=0, high=configuration.get_config_int('api', 'count_max')),
+        required=False,
+        default=configuration.get_config_int('api', 'count_default'))
+    v1_params.add_argument(
+        'seed',
+        type=inputs.regex(r'^([^|]+(\|[^|]+)*)?$'),
+        required=False)
+    v1_params.add_argument(
+        'include_pageviews',
+        type=inputs.boolean,
+        required=False,
+        default=True)
+    v1_params.add_argument(
+        'search',
+        type=str,
+        required=False,
+        default='morelike',
+        choices=['morelike', 'wiki', 'related_articles'])
+
+    return v1_params
+
 
 v1_model = legacy.clone(ArticleSpec.__name__, legacy_model)
 v1_doc = dict(description='Gets recommendations of source articles that are missing in the target',
@@ -134,11 +144,11 @@ v1_doc = dict(description='Gets recommendations of source articles that are miss
 
 @v1.route('/articles')
 class Article(flask_restplus.Resource):
-    @v1.expect(v1_params)
+    @v1.expect(get_v1_params())
     @v1.marshal_with(v1_model, as_list=True)
     @v1.doc(**v1_doc)
     def get(self):
-        args = v1_params.parse_args()
+        args = get_v1_params().parse_args()
         return process_request(args)
 
 

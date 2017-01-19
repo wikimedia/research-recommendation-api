@@ -1,6 +1,7 @@
 import collections
 import logging
 import itertools
+from multiprocessing import dummy as multiprocessing
 
 from recommendation.utils import configuration
 from recommendation.api.external_data import fetcher
@@ -45,13 +46,19 @@ def query(params, expected_sitelinks=1):
 
 def chunk_query_for_parameter(params, parameter, values):
     chunk_size = configuration.get_config_int('external_api_parameters', 'wikidata_chunk_size')
-    items = []
 
+    param_groups = []
     for group in itertools.zip_longest(*[iter(values)] * chunk_size):
-        params[parameter] = '|'.join(item for item in group if item is not None)
-        items += query(params)
+        p = params.copy()
+        p[parameter] = '|'.join(item for item in group if item is not None)
+        param_groups.append(p)
 
-    return items
+    if param_groups:
+        with multiprocessing.Pool(processes=len(param_groups)) as pool:
+            result = pool.map(query, param_groups)
+        return list(itertools.chain(*result))
+    else:
+        return []
 
 
 def get_items_in_source_missing_in_target_by_titles(source, target, titles):

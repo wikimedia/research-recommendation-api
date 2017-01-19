@@ -9,7 +9,7 @@ import recommendation
 
 @pytest.fixture
 def config_locations():
-    locations = configuration._config_locations[:]
+    locations = configuration._config_locations[:1]
     locations.append(resource_filename(recommendation.__name__, 'test/test_recommendation.ini'))
     return locations
 
