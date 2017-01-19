@@ -6,6 +6,7 @@ import flask_restplus
 from flask_restplus import fields
 from flask_restplus import reqparse
 from flask_restplus import inputs
+from flask import abort
 
 from recommendation.api import helper
 from recommendation.api.types.related_articles import candidate_finder
@@ -59,7 +60,10 @@ class Article(flask_restplus.Resource):
     @v1.doc(**v1_articles_doc)
     def get(self):
         args = get_v1_articles_params().parse_args()
-        return process_request(args)
+        recs = process_request(args)
+        if len(recs) == 0:
+            abort_no_candidates()
+        return recs
 
 
 ItemSpec = collections.namedtuple('Item', ['wikidata_id', 'score'])
@@ -94,7 +98,15 @@ class Item(flask_restplus.Resource):
     def get(self):
         args = v1_items_params.parse_args()
         recs = candidate_finder.get_embedding().most_similar(word=args['seed'])
+        if len(recs) == 0:
+            abort_no_candidates()
         return [ItemSpec(wikidata_id=rec[0], score=rec[1])._asdict() for rec in recs][:args['count']]
+
+
+def abort_no_candidates():
+    message = 'Seed item is not in the embedding or no neighbors above threshold.'
+    log.info(message)
+    abort(501, message)
 
 
 def process_request(args):

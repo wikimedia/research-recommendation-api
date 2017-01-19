@@ -30,6 +30,8 @@ def get_candidates(source, seed, count):
         return []
     seed_wikidata_item = seed_wikidata_items[0]
     nearest_neighbors = get_nearest_neighbors(seed_wikidata_item)
+    if len(nearest_neighbors) == 0:
+        return []
 
     ids_to_scores = {n[0]: n[1] for n in nearest_neighbors}
 
@@ -59,8 +61,6 @@ def resolve_seed(source, seed):
 
 def get_nearest_neighbors(wikidata_item):
     nearest_neighbors = get_embedding().most_similar(wikidata_item.id)
-    if len(nearest_neighbors) == 0:
-        log.info('Seed Item is not in the embedding or no neighbors above t.')
     return nearest_neighbors
 
 
