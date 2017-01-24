@@ -3,6 +3,7 @@
 ETC_PATH='/etc/recommendation'
 SRV_PATH='/srv/recommendation'
 TMP_PATH='/tmp/recommendation'
+LIB_PATH='/var/lib/recommendation'
 
 apt-get update
 apt-get install -y git nginx npm python3 python3-pip libpython3.4
@@ -13,6 +14,7 @@ mkdir -p ${TMP_PATH}
 mkdir -p ${SRV_PATH}/resources
 mkdir -p ${SRV_PATH}/sock
 mkdir -p ${ETC_PATH}
+mkdir -p ${LIB_PATH}
 
 git clone https://gerrit.wikimedia.org/r/research/recommendation-api/wheels ${TMP_PATH}/wheels
 git clone https://gerrit.wikimedia.org/r/research/recommendation-api ${TMP_PATH}/recommendation-api

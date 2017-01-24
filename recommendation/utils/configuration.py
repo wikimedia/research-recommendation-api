@@ -26,6 +26,10 @@ def get_config_dict(section):
     return dict(_get_configuration()[section])
 
 
+def get_config_bool(section, key):
+    return _get_configuration().getboolean(section, key)
+
+
 def _get_configuration():
     global _config
     if _config is None:

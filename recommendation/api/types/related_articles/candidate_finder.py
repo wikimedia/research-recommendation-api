@@ -64,28 +64,46 @@ def get_nearest_neighbors(wikidata_item):
     return nearest_neighbors
 
 
+def initialize_embedding(optimize=True):
+    global _embedding
+    embedding_path = configuration.get_config_value('related_articles', 'embedding_path', fallback='')
+    embedding_package = configuration.get_config_value('related_articles', 'embedding_package', fallback='')
+    embedding_name = configuration.get_config_value('related_articles', 'embedding_name', fallback='')
+    optimized_embedding_path = configuration.get_config_value('related_articles', 'optimized_embedding_path')
+    minimum_similarity = configuration.get_config_float('related_articles', 'minimum_similarity')
+    _embedding = WikiEmbedding(minimum_similarity)
+    _embedding.initialize(embedding_path, embedding_package, embedding_name, optimize, optimized_embedding_path)
+
+
 def get_embedding():
     global _embedding
     if _embedding is None:
-        embedding_path = configuration.get_config_value('related_articles', 'embedding_path', fallback='')
-        embedding_package = configuration.get_config_value('related_articles', 'embedding_package', fallback='')
-        embedding_name = configuration.get_config_value('related_articles', 'embedding_name', fallback='')
-        minimum_similarity = configuration.get_config_float('related_articles', 'minimum_similarity')
-        t1 = time.time()
-        _embedding = WikiEmbedding(embedding_path, embedding_package, embedding_name, minimum_similarity)
-        t2 = time.time()
-        log.info('Embedding loaded in %f seconds', t2 - t1)
+        initialize_embedding()
     return _embedding
 
 
 class WikiEmbedding:
-    def __init__(self, path, package, name, minimum_similarity):
+    def __init__(self, minimum_similarity):
         self.minimum_similarity = minimum_similarity
         self.idx2w = []
         self.wikidata_ids = []
+        self.embedding = []
 
+    def initialize(self, path, package, name, optimize, optimized_path):
         log.info('starting to load embedding')
+        t1 = time.time()
 
+        if optimize:
+            if not self.load_optimized_embedding(optimized_path):
+                self.load_raw_embedding(path, package, name)
+                self.save_optimized_embedding(optimized_path)
+        else:
+            self.load_raw_embedding(path, package, name)
+
+        t2 = time.time()
+        log.info('embedding loaded in %f seconds', t2 - t1)
+
+    def load_raw_embedding(self, path, package, name):
         try:
             f = open(path, 'r', encoding='utf-8')
         except IOError:
@@ -107,17 +125,31 @@ class WikiEmbedding:
         log.info('file decoded')
 
         log.info('building array')
-        self.E = np.array(decoded_lines)
+        self.wikidata_ids = np.array(self.wikidata_ids)
+        self.embedding = np.array(decoded_lines)
         del decoded_lines
         log.info('array initialized')
 
         log.info('normalizing')
-        self.E = normalize(self.E)
+        self.embedding = normalize(self.embedding)
         log.info('normalized')
 
-        self.wikidata_ids = np.array(self.wikidata_ids)
+    def load_optimized_embedding(self, path):
+        try:
+            infile = open(path, 'rb')
+        except IOError:
+            return False
 
-        log.info('embedding loaded')
+        embedding = np.load(infile)
+        self.embedding = embedding['embedding']
+        self.wikidata_ids = embedding['wikidata_ids']
+        return True
+
+    def save_optimized_embedding(self, path):
+        log.info('saving optimized embedding')
+        outfile = open(path, 'wb')
+        np.savez(outfile, embedding=self.embedding, wikidata_ids=self.wikidata_ids)
+        log.info('optimized embedding saved at %s', path)
 
     def most_similar(self, word):
         """
@@ -130,8 +162,8 @@ class WikiEmbedding:
             return []
         word_index = word_index_array[0]
 
-        word_vector = self.E[word_index]
-        scores = self.E.dot(word_vector)
+        word_vector = self.embedding[word_index]
+        scores = self.embedding.dot(word_vector)
         # only consider neighbors above threshold
         min_idxs = np.where(scores > self.minimum_similarity)
         ranking = np.argsort(-scores[min_idxs])
