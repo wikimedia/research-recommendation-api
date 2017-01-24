@@ -39,7 +39,11 @@ def get_candidates(source, seed, count):
     candidates = []
     nearest_neighbors_iter = iter(nearest_neighbors)
     while len(candidates) < count and nearest_neighbors_iter:
-        chunk = itertools.islice(nearest_neighbors_iter, 500)
+        try:
+            start_of_chunk = next(nearest_neighbors_iter)
+        except StopIteration:
+            break
+        chunk = itertools.chain((start_of_chunk,), itertools.islice(nearest_neighbors_iter, 499))
         results = wikidata.get_titles_from_wikidata_items(source, (n[0] for n in chunk))
         candidates += [Candidate(title=item.title,
                                  wikidata_id=item.id,
