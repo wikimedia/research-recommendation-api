@@ -14,6 +14,7 @@ EXPECTED = [('Q22686', 1.0), ('Q3752663', 0.8853468379287844), ('Q2462124', 0.86
 
 
 def test_embedding():
+    candidate_finder.initialize_embedding(optimize=False)
     results = candidate_finder.get_embedding().most_similar('Q22686')
     for expected, actual in zip(EXPECTED, results):
         assert expected[0] == actual[0]
