@@ -28,5 +28,7 @@
 	"modal-next": "Наступны артыкул",
 	"modal-translate": "Перакласьці",
 	"modal-create-from-scratch": "Стварыць з нуля",
-	"modal-loading": "Загрузка…"
+	"modal-loading": "Загрузка…",
+	"modal-preview-fail": "Няма інтэрнэту",
+	"create-title": "Новы артыкул"
 }
