@@ -19,7 +19,7 @@ def log_api_request(source, target, seed=None, search=None, **kwargs):
         event['searchAlgorithm'] = search
 
     payload = dict(schema='TranslationRecommendationAPIRequests',
-                   revision=15405506,
+                   revision=16261139,
                    wiki='metawiki',
                    event=event)
 
