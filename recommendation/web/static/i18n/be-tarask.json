@@ -30,5 +30,6 @@
 	"modal-create-from-scratch": "Стварыць з нуля",
 	"modal-loading": "Загрузка…",
 	"modal-preview-fail": "Няма інтэрнэту",
-	"create-title": "Новы артыкул"
+	"create-title": "Новы артыкул",
+	"create-title-input-placeholder": "Загаловак перакладу"
 }
