@@ -1,16 +1,18 @@
 {
 	"@metadata": {
 		"authors": [
-			"Nike"
+			"Nike",
+			"Pyscowicz"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
 	"title-gapfinder": "GapFinder",
-	"title-beta": "beta",
+	"title-beta": "beeta",
 	"menu-how-to": "Opas",
 	"menu-about": "Tietoja",
 	"menu-feedback": "Palaute",
 	"menu-source-code": "Lähdekoodi",
+	"menu-privacy-statement": "Tietosuojalauseke",
 	"selector-source": "Lähde",
 	"selector-target": "Kohde",
 	"search-placeholder": "Etsi luotavia artikkeleita",
@@ -20,7 +22,7 @@
 	"article-pageviews": "$1 {{PLURAL:$1|viimeaikainen katselu|viimeaikaista katselua}}",
 	"article-flag": "Merkitse tämä artikkeli...",
 	"article-flag-not-interesting": "Ei kiinnostava",
-	"article-flag-not-notable": "Ei merkittävä Wikipediassa ($1)",
+	"article-flag-not-notable": "Ei merkittävä $1 Wikipediassa",
 	"modal-close": "Sulje",
 	"modal-new-window": "Avaa tämä artikkeli uudessa ikkunassa",
 	"modal-previous": "Edellinen artikkeli",
