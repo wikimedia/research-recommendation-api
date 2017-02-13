@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"सरोज कुमार ढकाल"
+		]
+	},
+	"title-wikipedia": "विकिपिडिया",
+	"title-beta": "बेटा",
+	"menu-how-to": "कसरी",
+	"menu-about": "बारेमा",
+	"menu-feedback": "प्रतिक्रिया",
+	"menu-source-code": "स्रोत कोड",
+	"menu-privacy-statement": "गोपनीयता नीति",
+	"selector-source": "स्रोत",
+	"selector-target": "लक्ष्य",
+	"search-placeholder": "बनाउनको लागि लेखहरू खोज्नुहोस्",
+	"status-preparing": "लेख सिफारिसहरू तयार पर्दै...",
+	"status-must-be-different": "स्रोत र लक्ष्य भाषाहरू फरक हुनु पर्छ",
+	"status-invalid-language": "अमान्य स्रोत वा लक्ष्य भाषा",
+	"article-pageviews": "$1 हालको {{PLURAL:$1|अवलोकन|अवलोकनहरू}}",
+	"article-flag": "यो लेख फ्ल्याग गर्नुहोस्...",
+	"article-flag-not-interesting": "रूची लागेन",
+	"article-flag-not-notable": " $1 विकिपिडियाको लागि महत्त्वपूर्ण छैन",
+	"modal-close": "बन्द गर्नुहोस्",
+	"modal-new-window": "यो लेख नयाँ सञ्झ्यालमा खोल्नुहोस्",
+	"modal-previous": "पहिल्लो लेख",
+	"modal-next": "पछिल्लो लेख",
+	"modal-translate": "अनुवाद गर्नुहोस्",
+	"modal-create-from-scratch": "सुरु देखि बनाउनुहोस्",
+	"modal-loading": "लोड हुदैछ...",
+	"modal-preview-fail": "इन्टरनेट छैन",
+	"create-title": "नयाँ लेख",
+	"create-title-input-placeholder": "अनुवादित शीर्षक",
+	"create-warning": "चेतावनी!",
+	"create-action": "बनाउनुहोस्",
+	"create-error-empty": "शीर्षक रित्तो हुन सक्दैन",
+	"create-error-invalid-character": "शीर्षकमा अमान्य वर्ण छ ( '|' )",
+	"create-error-exists": "$1 पाना पहिले देखि रहेको छ",
+	"create-error-invalid-page": "$1 मा रहेको पाना अमान्य छ"
+}
