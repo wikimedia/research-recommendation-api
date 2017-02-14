@@ -100,6 +100,30 @@ def wiki_search(source, seed, count, morelike=False):
     return results
 
 
+def get_most_popular_articles(source):
+    days = configuration.get_config_int('popular_pageviews', 'days')
+    date_format = configuration.get_config_value('popular_pageviews', 'date_format')
+    query = configuration.get_config_value('popular_pageviews', 'query')
+    date = (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime(date_format)
+    query = query.format(source=source, date=date)
+    try:
+        data = get(query)
+    except ValueError:
+        log.info('pageview query failed')
+        return []
+
+    if 'items' not in data or len(data['items']) < 1 or 'articles' not in data['items'][0]:
+        log.info('pageview data is not in a known format')
+        return []
+
+    articles = []
+
+    for article in data['items'][0]['articles']:
+        articles.append({'title': article['article'], 'pageviews': article['views']})
+
+    return articles
+
+
 def build_wiki_search(source, seed, count, morelike):
     endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
     params = configuration.get_config_dict('wiki_search_params')

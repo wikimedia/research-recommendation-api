@@ -6,7 +6,7 @@ import responses
 
 from recommendation.api.external_data import fetcher
 from recommendation.api.types.translation import pageviews
-from recommendation.api.types.translation import utils
+from recommendation.api.types.translation import recommendation
 from recommendation.utils import configuration
 
 TITLE = 'Sample_Title'
@@ -36,7 +36,7 @@ def add_response(body='', json=None, status=200):
 
 
 def run_getter():
-    articles = [utils.Article(TITLE)]
+    articles = [recommendation.Recommendation(TITLE)]
     result = pageviews.set_pageview_data(SOURCE, articles)
     assert result == articles
     return result

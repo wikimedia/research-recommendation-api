@@ -4,18 +4,18 @@ import json
 import urllib.parse
 
 from recommendation.api.types.translation import translation
-from recommendation.api.types.translation import utils
 from recommendation.api.types.translation import filters
+from recommendation.api.types.translation import recommendation
 
 GOOD_RESPONSE = [
-    {'title': 'A', 'pageviews': 10, 'wikidata_id': '123'},
-    {'title': 'B', 'pageviews': 11, 'wikidata_id': '122'},
-    {'title': 'C', 'pageviews': 12, 'wikidata_id': '121'},
-    {'title': 'D', 'pageviews': 13, 'wikidata_id': '120'},
-    {'title': 'E', 'pageviews': 14, 'wikidata_id': '119'},
-    {'title': 'F', 'pageviews': 15, 'wikidata_id': '118'},
-    {'title': 'G', 'pageviews': 16, 'wikidata_id': '117'},
-    {'title': 'H', 'pageviews': 17, 'wikidata_id': '116'},
+    {'title': 'A', 'pageviews': 9, 'wikidata_id': '123', 'rank': 9.0},
+    {'title': 'B', 'pageviews': 8, 'wikidata_id': '122', 'rank': 8.0},
+    {'title': 'C', 'pageviews': 7, 'wikidata_id': '121', 'rank': 7.0},
+    {'title': 'D', 'pageviews': 6, 'wikidata_id': '120', 'rank': 6.0},
+    {'title': 'E', 'pageviews': 5, 'wikidata_id': '119', 'rank': 5.0},
+    {'title': 'F', 'pageviews': 4, 'wikidata_id': '118', 'rank': 4.0},
+    {'title': 'G', 'pageviews': 3, 'wikidata_id': '117', 'rank': 3.0},
+    {'title': 'H', 'pageviews': 2, 'wikidata_id': '116', 'rank': 2.0}
 ]
 
 
@@ -120,32 +120,28 @@ def test_default_params(client, get_url, params):
 
 
 def test_recommend_uses_mostpopular_if_no_seed_is_specified(monkeypatch):
-    class MockFinder:
-        @classmethod
-        def get_candidates(cls, s, seed, n):
-            return []
+    def mock_finder(*_):
+        return []
 
-    monkeypatch.setattr(translation, 'finder_map', {'mostpopular': MockFinder})
+    monkeypatch.setattr(translation, 'finder_map', {'mostpopular': mock_finder})
     result = translation.recommend(source='xx', target='yy', search='customsearch', seed=None, count=12,
                                    include_pageviews=True)
     assert [] == result
 
 
 def test_generated_recommend_response_is_marshalled(client, get_url, monkeypatch):
-    class MockFinder:
-        @classmethod
-        def get_candidates(cls, s, seed, n):
-            articles = []
-            for item in GOOD_RESPONSE:
-                article = utils.Article(item['title'])
-                article.pageviews = item['pageviews']
-                article.wikidata_id = item['wikidata_id']
-                article.rank = article.pageviews
-                articles.append(article)
-            return articles
+    def mock_finder(*_):
+        articles = []
+        for item in GOOD_RESPONSE:
+            article = recommendation.Recommendation(item['title'])
+            article.pageviews = item['pageviews']
+            article.wikidata_id = item['wikidata_id']
+            article.rank = item['rank']
+            articles.append(article)
+        return articles
 
-    monkeypatch.setattr(translation, 'finder_map', {'mostpopular': MockFinder})
-    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, recs, count: recs)
+    monkeypatch.setattr(translation, 'finder_map', {'mostpopular': mock_finder})
+    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, recs: recs)
     result = client.get(get_url(dict(s='xx', t='yy', pageviews=False)))
     assert GOOD_RESPONSE == json.loads(result.data.decode('utf-8'))
 

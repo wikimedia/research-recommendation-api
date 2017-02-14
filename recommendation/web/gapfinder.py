@@ -14,6 +14,7 @@ def home():
     t = request.args.get('t')
     seed = request.args.get('seed')
     search = request.args.get('search')
+    rank_method = request.args.get('rank_method')
     pairs = language_pairs.get_language_pairs()
     return render_template(
         'index.html',
@@ -23,6 +24,7 @@ def home():
         t=t,
         seed=seed,
         search=search,
+        rank_method=rank_method,
         event_logger_url=configuration.get_config_value('endpoints', 'event_logger'),
         default_search=configuration.get_config_value('gapfinder', 'default_search')
     )

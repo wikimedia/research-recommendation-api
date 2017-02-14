@@ -3,8 +3,8 @@ import responses
 import re
 
 from recommendation.api.types.translation import filters
+from recommendation.api.types.translation import recommendation
 from recommendation.utils import configuration
-from recommendation.api.types.translation import utils
 
 SOURCE = 'xx'
 
@@ -19,7 +19,7 @@ def the_filter(request):
 
 def query(the_filter):
     if the_filter is filters.filter_by_missing:
-        return the_filter(SOURCE, SOURCE, [utils.Article('something')])
+        return the_filter(SOURCE, SOURCE, [recommendation.Recommendation('something')])
     if the_filter is filters.filter_by_disambiguation:
         return the_filter(SOURCE, '')
 
@@ -64,7 +64,7 @@ def test_bad_json(the_filter):
     'Double Word'
 ])
 def test_filter_by_good_title(title):
-    candidates = [utils.Article(title)]
+    candidates = [recommendation.Recommendation(title)]
     result = filters.filter_by_title(candidates)
     assert candidates == result
 
@@ -75,6 +75,6 @@ def test_filter_by_good_title(title):
     'and cannot appear : anywhere'
 ])
 def test_filter_by_bad_title(title):
-    candidates = [utils.Article(title)]
+    candidates = [recommendation.Recommendation(title)]
     result = filters.filter_by_title(candidates)
     assert [] == result

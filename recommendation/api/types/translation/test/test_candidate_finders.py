@@ -76,17 +76,15 @@ EMPTY_WIKI_RESPONSE = {
 
 
 def get_good_response(finder):
-    finder_type = type(finder)
-    if finder_type is candidate_finders.PageviewCandidateFinder:
+    if finder is candidate_finders.get_top_pageview_candidates:
         return PAGEVIEW_RESPONSE
-    if finder_type is candidate_finders.MorelikeCandidateFinder:
+    if finder is candidate_finders.get_morelike_candidates:
         return MORELIKE_RESPONSE
     return {}
 
 
 def get_bad_response(finder):
-    finder_type = type(finder)
-    if finder_type is candidate_finders.PageviewCandidateFinder:
+    if finder is candidate_finders.get_top_pageview_candidates:
         return BAD_PAGEVIEW_RESPONSE
     return {}
 
@@ -97,11 +95,11 @@ def add_response(body, status):
 
 
 @pytest.fixture(params=[
-    candidate_finders.PageviewCandidateFinder,
-    candidate_finders.MorelikeCandidateFinder
+    candidate_finders.get_top_pageview_candidates,
+    candidate_finders.get_morelike_candidates
 ])
 def finder(request):
-    return request.param()
+    return request.param
 
 
 @pytest.mark.parametrize('count', [
@@ -110,17 +108,13 @@ def finder(request):
 ])
 def test_finder_returns_correct_amount(finder, count):
     add_response(json.dumps(get_good_response(finder)), 200)
-    result = finder.get_candidates('en', None, count)
+    result = finder('en', None, count)
     assert count == len(result)
-
-
-def test_inheritance(finder):
-    assert isinstance(finder, candidate_finders.CandidateFinder)
 
 
 def test_invalid_language_returns_empty_list(finder):
     add_response(body=json.dumps(get_bad_response(finder)), status=404)
-    result = finder.get_candidates('qqq', None, 1)
+    result = finder('qqq', None, 1)
     assert [] == result
 
 
@@ -131,16 +125,16 @@ def test_invalid_language_returns_empty_list(finder):
 ])
 def test_finder_returns_empty_list_when_requests_breaks(finder, body, status):
     add_response(body=body, status=status)
-    assert [] == finder.get_candidates('en', None, 10)
+    assert [] == finder('en', None, 10)
 
 
 def test_finder_calls_go_through_responses(finder):
-    if type(finder) is candidate_finders.MorelikeCandidateFinder:
+    if finder is candidate_finders.get_morelike_candidates:
         # the number of calls is determined by other factors
         # that are tested more thoroughly elsewhere
         return
     add_response(body=json.dumps(get_good_response(finder)), status=200)
-    finder.get_candidates('en', None, 10)
+    finder('en', None, 10)
     assert 1 == len(responses.calls)
     url = responses.calls[0].request.url
     assert 'http://localhost' == url[:16]
@@ -164,7 +158,7 @@ def test_wiki_search_paths(seed, query, expected_calls, seed_response, morelike_
     :param seed_response: the response to the initial seed_list query
     :param morelike_response: the response to the morelike query
     """
-    finder = candidate_finders.MorelikeCandidateFinder()
+    finder = candidate_finders.get_morelike_candidates
     search_pattern = dict(
         seed=(seed, 1, False, seed_response),
         morelike=(query, 10, True, morelike_response),
@@ -174,5 +168,5 @@ def test_wiki_search_paths(seed, query, expected_calls, seed_response, morelike_
         url, params = fetcher.build_wiki_search('en', query, count, morelike)
         url += '?' + urllib.parse.urlencode(params)
         responses.add(responses.GET, url, json=response, status=200, match_querystring=True)
-    finder.get_candidates('en', seed, 10)
+    finder('en', seed, 10)
     assert expected_calls == len(responses.calls)

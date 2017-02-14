@@ -12,14 +12,14 @@ def filter_by_missing(source, target, candidates):
     using Wikidata sitelinks
     """
     titles = [article.title for article in candidates]
-    title_id_dict = wikidata.get_items_in_source_missing_in_target_by_titles(source, target, titles)
+    titles_to_items = wikidata.get_items_in_source_missing_in_target_by_titles(source, target, titles)
 
     filtered_articles = []
 
     for article in candidates:
-        if article.title in title_id_dict:
+        if article.title in titles_to_items:
             # TODO: change this side-effect to be more explicit / non-stateful
-            article.wikidata_id = title_id_dict[article.title]
+            article.incorporate_wikidata_item(titles_to_items[article.title])
             filtered_articles.append(article)
 
     return filtered_articles
@@ -41,7 +41,7 @@ def filter_by_title(candidates):
     return [article for article in candidates if ':' not in article.title and not article.title.startswith('List')]
 
 
-def apply_filters(source, target, candidates, count):
+def apply_filters(source, target, candidates):
     log.debug('Number of candidates: %d', len(candidates))
     candidates = filter_by_title(candidates)
     log.debug('Number of candidates after title: %d', len(candidates))
@@ -50,4 +50,4 @@ def apply_filters(source, target, candidates, count):
     candidates = filter_by_disambiguation(source, candidates)
     log.debug('Number of candidates after disambiguation: %d', len(candidates))
 
-    return candidates[:count]
+    return candidates

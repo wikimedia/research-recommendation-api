@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 legacy = helper.build_api('legacy', __name__, url_prefix='/api')
 
-ArticleSpec = collections.namedtuple('Article', ['pageviews', 'title', 'wikidata_id'])
+ArticleSpec = collections.namedtuple('Article', ['pageviews', 'title', 'wikidata_id', 'rank'])
 
 
 def get_legacy_params():
@@ -66,7 +66,8 @@ def get_legacy_params():
 legacy_model = legacy.model(ArticleSpec.__name__, ArticleSpec(
     pageviews=fields.Integer(description='pageviews', required=False),
     title=fields.String(description='title', required=True),
-    wikidata_id=fields.String(description='wikidata_id', required=True)
+    wikidata_id=fields.String(description='wikidata_id', required=True),
+    rank=fields.Float(description='rank', required=True)
 )._asdict())
 
 legacy_doc = dict(description='Gets recommendations of source articles that are missing in the target',
@@ -126,6 +127,12 @@ def get_v1_params():
         required=False,
         default='morelike',
         choices=['morelike', 'wiki', 'related_articles'])
+    v1_params.add_argument(
+        'rank_method',
+        type=str,
+        required=False,
+        default='default',
+        choices=['default', 'sitelinks'])
 
     return v1_params
 
@@ -155,7 +162,8 @@ class Article(flask_restplus.Resource):
 article_model = v1.model(ArticleSpec.__name__, ArticleSpec(
     pageviews=fields.Integer(description='pageviews', required=False),
     title=fields.String(description='title', required=True),
-    wikidata_id=fields.String(description='wikidata_id', required=True)
+    wikidata_id=fields.String(description='wikidata_id', required=True),
+    rank=fields.Float(description='rank', required=True)
 )._asdict())
 
 
@@ -173,35 +181,41 @@ def process_request(args):
 
 
 finder_map = {
-    'morelike': candidate_finders.MorelikeCandidateFinder(),
-    'wiki': candidate_finders.MorelikeCandidateFinder(),
-    'mostpopular': candidate_finders.PageviewCandidateFinder(),
-    'related_articles': candidate_finders.RelatedArticleFinder()
+    'morelike': candidate_finders.get_morelike_candidates,
+    'wiki': candidate_finders.get_morelike_candidates,
+    'mostpopular': candidate_finders.get_top_pageview_candidates,
+    'related_articles': candidate_finders.get_related_articles
 }
 
 
-def recommend(source, target, search, seed, count, include_pageviews, max_candidates=500):
+def recommend(source, target, search, seed, count, include_pageviews, rank_method='default', max_candidates=500):
     """
     1. Use finder to select a set of candidate articles
     2. Filter out candidates that are not missing, are disambiguation pages, etc
     3. get pageview info for each passing candidate if desired
     """
 
-    recs = []
+    candidates = []
 
     if seed:
         finder = finder_map[search]
         for seed in seed.split('|'):
-            recs.extend(finder.get_candidates(source, seed, max_candidates))
+            candidates.extend(finder(source, seed, max_candidates))
     else:
-        recs.extend(finder_map['mostpopular'].get_candidates(source, seed, max_candidates))
+        candidates.extend(finder_map['mostpopular'](source, seed, max_candidates))
 
-    recs = sorted(recs, key=lambda x: x.rank)
+    recs = filters.apply_filters(source, target, candidates)
 
-    recs = filters.apply_filters(source, target, recs, count)
+    recs = sorted(recs, key=lambda x: x.rank, reverse=True)
+
+    if rank_method == 'sitelinks':
+        for rec in recs:
+            rec.rank = rec.sitelink_count
+        recs = sorted(recs, key=lambda x: x.rank, reverse=True)
+
+    recs = recs[:count]
 
     if recs and include_pageviews:
         recs = pageviews.set_pageview_data(source, recs)
 
-    recs = sorted(recs, key=lambda x: x.rank)
-    return [{'title': r.title, 'pageviews': r.pageviews, 'wikidata_id': r.wikidata_id} for r in recs]
+    return [r.__dict__() for r in recs]

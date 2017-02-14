@@ -69,6 +69,10 @@
             var mappedTarget = self.mapLanguageToDomainCode(self.target);
             var url = translationAppGlobals.translationPath + '?source=' + mappedSource + '&target=' + mappedTarget;
 
+            if (window.translationAppGlobals.rankMethod === 'sitelinks') {
+                url += '&rank_method=sitelinks';
+            }
+
             var seed;
             if (this.seedArticle.value) {
                 url += '&search=' + self.search + '&seed=' + encodeURIComponent(this.seedArticle.value);

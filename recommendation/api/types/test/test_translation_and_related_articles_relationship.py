@@ -113,7 +113,7 @@ def set_related_articles_response():
 
 @pytest.fixture
 def remove_filters(monkeypatch):
-    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, candidates, count: candidates)
+    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, candidates: candidates)
 
 
 @pytest.fixture
@@ -121,13 +121,15 @@ def set_wikidata_results_to_use_fixed_response(monkeypatch):
     def get_titles_from_wikidata_items(source, items):
         return [wikidata.WikidataItem(id=item['wikidata_id'],
                                       url=item['url'],
-                                      title=item['title'])
+                                      title=item['title'],
+                                      sitelink_count=1)
                 for item in RELATED_ARTICLE_RESPONSE if item['wikidata_id'] in items]
 
     def get_wikidata_items_from_titles(source, titles):
         return [wikidata.WikidataItem(id=item['wikidata_id'],
                                       url=item['url'],
-                                      title=item['title'])
+                                      title=item['title'],
+                                      sitelink_count=1)
                 for item in RELATED_ARTICLE_RESPONSE if item['title'] in titles]
 
     monkeypatch.setattr(wikidata, 'get_titles_from_wikidata_items', get_titles_from_wikidata_items)
@@ -139,7 +141,8 @@ def set_wikidata_results_to_use_fixed_response(monkeypatch):
 def expected_recommendations():
     return [{'title': item['title'],
              'pageviews': None,
-             'wikidata_id': item['wikidata_id']} for item in RELATED_ARTICLE_RESPONSE]
+             'wikidata_id': item['wikidata_id'],
+             'rank': item['score']} for item in RELATED_ARTICLE_RESPONSE]
 
 
 @pytest.fixture
