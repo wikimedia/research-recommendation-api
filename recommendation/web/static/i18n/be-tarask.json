@@ -32,5 +32,7 @@
 	"modal-preview-fail": "Няма інтэрнэту",
 	"create-title": "Новы артыкул",
 	"create-title-input-placeholder": "Загаловак перакладу",
-	"create-warning": "Увага!"
+	"create-warning": "Увага!",
+	"create-action": "Стварыць",
+	"create-error-empty": "Загаловак ня мусіць быць пустым"
 }

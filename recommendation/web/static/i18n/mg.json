@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jagwar"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Toromalalana",
+	"menu-about": "Mombamomba",
+	"menu-feedback": "Famoahan-kevitra",
+	"menu-source-code": "Fango",
+	"menu-privacy-statement": "Fanambarana momba ny fiainana manokana",
+	"selector-source": "Fango",
+	"selector-target": "Tanjona",
+	"search-placeholder": "Hitady lahatsoratra hoforonina",
+	"status-preparing": "Manomana tolokevi-dahatsoratra...",
+	"status-must-be-different": "Tsy maintsy samihafa ny fiteny niaviana sy ny fiteny tanjona",
+	"status-invalid-language": "Fiteny niaviana na tanjona tsy azo raisina",
+	"article-pageviews": "{{PLURAL:$1|}}Mpijery vao haingana $1",
+	"article-flag": "Hanamrika ity lahatsoratra ity...",
+	"article-flag-not-interesting": "Tsy mahaliana",
+	"article-flag-not-notable": "Tsy malaza ho an'i Wikipedia $1",
+	"modal-close": "Hidiana",
+	"modal-new-window": "Hanokatra an'ity lahatsoratra ity anaty varavarankely vaovao",
+	"modal-previous": "Lahatsoratra nialoha",
+	"modal-next": "Lahatsoratra manaraka",
+	"modal-translate": "Dikaina",
+	"modal-create-from-scratch": "Hoforonina miainga amin'ny tsy misy",
+	"modal-loading": "Am-pakàna…",
+	"modal-preview-fail": "Tsy misy Aterineto",
+	"create-title": "Lahatsoratra vaovao",
+	"create-title-input-placeholder": "Lohatenin-dahatsoratra",
+	"create-warning": "Tandremo!",
+	"create-action": "Foronina",
+	"create-error-empty": "Tsy mahazo banga ny lohateny",
+	"create-error-invalid-character": "Misy soratra tsy azo raisina ao amin'ny lohateny ('|')",
+	"create-error-exists": "Efa misy ilay pejy ao amin'i $1",
+	"create-error-invalid-page": "Tsy azo raisina ny pejy ao amin'i $1"
+}
