@@ -29,7 +29,7 @@
 	"modal-translate": "Translate",
 	"modal-create-from-scratch": "Create from scratch",
 	"modal-loading": "Loading...",
-	"modal-preview-fail": "No Internet",
+	"modal-preview-fail": "The preview failed to load",
 	"create-title": "New Article",
 	"create-title-input-placeholder": "Translation title",
 	"create-warning": "Warning!",

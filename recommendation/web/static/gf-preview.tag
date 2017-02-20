@@ -73,7 +73,7 @@
             }
         }
 
-        var previewRoot = 'https://' + opts.from + '.wikipedia.org/api/rest_v1/page/html/';
+        var previewRoot = 'https://' + opts.from + '.wikipedia.org/w/api.php?action=parse&format=json&origin=*&disableeditsection=1&prop=text|headhtml&page=';
 
         self.show = function () {
             var showing = self.articles[self.showIndex];
@@ -85,13 +85,24 @@
             self.showPreview('Loading...');
 
             $.get(self.previewUrl).done(function (data) {
-                // Make all links in preview (1) work and (2) open in new window
-                // This depends on the string below appearing in the html returned from the rest endpoint
-                // More complex manipulation may be needed if this breaks
-                data = data.replace('<base href="', '<base target="_blank" rel="noopener" href="https:');
-                // Get rid of some of the undesirable mediawiki styles
-                data = data.replace('</head>', '<style type="text/css">.mw-body {margin: 0; border: none; padding: 0;}</style></head>');
-                self.showPreview(data);
+                if (!data.hasOwnProperty('parse')
+                    || !data['parse'].hasOwnProperty('text')
+                    || !data['parse']['text'].hasOwnProperty('*')
+                    || !data['parse'].hasOwnProperty('headhtml')
+                    || !data['parse']['headhtml'].hasOwnProperty('*')
+                    || !data['parse'].hasOwnProperty('title')){
+                    self.showPreview($.i18n('modal-preview-fail'));
+                    return;
+                }
+                var baseUrl = 'https://' + opts.from + '.wikipedia.org/wiki/' + data['parse']['title'];
+                var parser = new DOMParser();
+                var html = parser.parseFromString(data['parse']['headhtml']['*'], 'text/html');
+                html.getElementsByTagName('head')[0].insertAdjacentHTML('afterbegin', '<base href="' + baseUrl + '">');
+                html.getElementsByTagName('head')[0].insertAdjacentHTML('beforeend', '<style type="text/css">body {background-color: unset;}</style>');
+                html.getElementsByTagName('body')[0].insertAdjacentHTML('afterbegin', data['parse']['text']['*']);
+                var wrap = document.createElement('div');
+                wrap.appendChild(html.documentElement);
+                self.showPreview(wrap.innerHTML);
             }).fail(function (data) {
                 self.showPreview($.i18n('modal-preview-fail'));
             });
@@ -103,7 +114,7 @@
             if (!self.isSrcDocSupported) {
                 // This is needed to get the iframe content to load in IE, since srcdoc isn't supported yet
                 // Found at github.com/jugglinmike/srcdoc-polyfill
-                var jsUrl = "javascript: window.frameElement.getAttribute('srcdoc');"
+                var jsUrl = "javascript: window.frameElement.getAttribute('srcdoc');";
                 $(iframe).attr("src", jsUrl);
                 iframe.contentWindow.location = jsUrl;
             }
