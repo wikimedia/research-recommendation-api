@@ -20,11 +20,11 @@ def home():
         'index.html',
         language_pairs=json.dumps(pairs),
         language_to_domain_mapping=json.dumps(language_pairs.get_language_to_domain_mapping()),
-        s=s,
-        t=t,
-        seed=seed,
-        search=search,
-        rank_method=rank_method,
+        s=json.dumps(s),
+        t=json.dumps(t),
+        seed=json.dumps(seed),
+        search=json.dumps(search),
+        rank_method=json.dumps(rank_method),
         event_logger_url=configuration.get_config_value('endpoints', 'event_logger'),
         default_search=configuration.get_config_value('gapfinder', 'default_search')
     )

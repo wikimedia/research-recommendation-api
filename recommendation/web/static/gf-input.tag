@@ -87,9 +87,16 @@
                 self.fetching = false;
                 self.update();
             }).done(function (data) {
+                if (!data || !data.length) {
+                    self.error = true;
+                    self.error_msg = 'status-no-results';
+                    self.update();
+                    return;
+                }
                 if (data.error) {
                     self.error = true;
                     self.error_msg = data.error;
+                    self.update();
                     return;
                 }
 

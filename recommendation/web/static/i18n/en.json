@@ -17,6 +17,7 @@
 	"status-preparing": "Preparing article recommendations...",
 	"status-must-be-different": "Source and target languages must be different",
 	"status-invalid-language": "Invalid source or target language",
+	"status-no-results": "No recommendations were available for the specified parameters",
 	"article-pageviews": "$1 recent {{PLURAL:$1|view|views}}",
 	"article-flag": "Flag this article...",
 	"article-flag-not-interesting": "Not interesting",
