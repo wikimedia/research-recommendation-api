@@ -11,11 +11,11 @@
             <button class="dropdown-item" type="button"
                     data-toggle="modal" data-target="#aboutModal" data-i18n="menu-about">About</button>
             <a class="dropdown-item" href="https://meta.wikimedia.org/wiki/Research_talk:Increasing_article_coverage/Tool"
-               target="_blank" data-i18n="menu-feedback">Feedback</a>
+               target="_blank" rel="noopener" data-i18n="menu-feedback">Feedback</a>
             <a class="dropdown-item" href="https://github.com/wikimedia-research/translation-recs-app"
-               target="_blank" data-i18n="menu-source-code">Source code</a>
+               target="_blank" rel="noopener" data-i18n="menu-source-code">Source code</a>
             <a class="dropdown-item" href="https://wikimediafoundation.org/wiki/Recommendations_Tool_Privacy_Statement"
-               target="_blank" data-i18n="menu-privacy-statement">Privacy statement</a>
+               target="_blank" rel="noopener" data-i18n="menu-privacy-statement">Privacy statement</a>
         </div>
     </div>
     <div id="howToModal" class="modal fade" tabindex="-1">
@@ -56,15 +56,15 @@
 
                     <p>Encouraged by the result of the experiment, we have developed Wikipedia GapFinder, an app that helps you find missing content in any language for which there is a Wikipedia edition. GapFinder can help you to easily find articles to create in the language of your choice. It also lets you personalize the recommendations by providing a seed article, an article that you would like to receive similar missing article recommendations.
 
-                    <p>GapFinder is a research app at the moment. By using it, you will make more content available in your local language, and help us understand how we can improve the app. Please share your feedback on <a href="https://meta.wikimedia.org/wiki/Research_talk:Increasing_article_coverage/Tool" target="_blank">the tool's talk page</a>.
+                    <p>GapFinder is a research app at the moment. By using it, you will make more content available in your local language, and help us understand how we can improve the app. Please share your feedback on <a href="https://meta.wikimedia.org/wiki/Research_talk:Increasing_article_coverage/Tool" target="_blank" rel="noopener">the tool's talk page</a>.
 
                     <h6>In the media:</h6>
                         <ul>
                             <li>
-                                <a href="http://www.lemonde.fr/sciences/article/2016/01/11/wikipedia-la-connaissance-en-mutation_4845347_1650684.html" target="_blank"> Le Monde: Wikipédia, quinze ans de recherches</a>
+                                <a href="http://www.lemonde.fr/sciences/article/2016/01/11/wikipedia-la-connaissance-en-mutation_4845347_1650684.html" target="_blank" rel="noopener"> Le Monde: Wikipédia, quinze ans de recherches</a>
                             </li>
                             <li>
-                                <a href="https://news.stanford.edu/2016/04/14/stanford-wikimedia-researchers-create-tool-boost-article-creation-local-language-wikipedias/" target="_blank">Stanford and Wikimedia researchers create a tool to boost article creation in local language Wikipedias</a>
+                                <a href="https://news.stanford.edu/2016/04/14/stanford-wikimedia-researchers-create-tool-boost-article-creation-local-language-wikipedias/" target="_blank" rel="noopener">Stanford and Wikimedia researchers create a tool to boost article creation in local language Wikipedias</a>
                             </li>
                         </ul>
                 </div>

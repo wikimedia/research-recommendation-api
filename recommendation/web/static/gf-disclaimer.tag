@@ -6,16 +6,16 @@
                     <span>&times;</span>
                 </button>
                 This experimental tool is hosted on
-                <a href="https://wikitech.wikimedia.org/wiki/Help:FAQ" class="alert-link" target="_blank">
+                <a href="https://wikitech.wikimedia.org/wiki/Help:FAQ" class="alert-link" target="_blank" rel="noopener">
                     Wikimedia Labs</a>.
-                <a href="https://phabricator.wikimedia.org/T124503" class="alert-link" target="_blank">
+                <a href="https://phabricator.wikimedia.org/T124503" class="alert-link" target="_blank" rel="noopener">
                     Information collected</a>
                 when you visit this site, and through your use of the
                 tool, is governed by
-                <a href="https://wikimediafoundation.org/wiki/Recommendations_Tool_Privacy_Statement" class="alert-link" target="_blank">
+                <a href="https://wikimediafoundation.org/wiki/Recommendations_Tool_Privacy_Statement" class="alert-link" target="_blank" rel="noopener">
                     this privacy statement</a>
                 (<strong>not</strong> the
-                <a href="https://wikimediafoundation.org/wiki/Privacy_policy" class="alert-link" target="_blank">
+                <a href="https://wikimediafoundation.org/wiki/Privacy_policy" class="alert-link" target="_blank" rel="noopener">
                     main Wikimedia Privacy Policy</a>).
             </div>
         </div>

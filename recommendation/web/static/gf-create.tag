@@ -14,13 +14,13 @@
                                placeholder="{$.i18n('create-title-input-placeholder')}" oninput={validateTitle}>
                     </div>
                     <div class={alert: true, invisible: errorMessage === '', alert-danger: true} role="alert">
-                        <strong>{$.i18n('create-warning')}</strong> {errorMessage} <a class="alert-link" target="_blank" href={errorLink}>{errorLink}</a>
+                        <strong>{$.i18n('create-warning')}</strong> {errorMessage} <a class="alert-link" target="_blank" rel="noopener" href={errorLink}>{errorLink}</a>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="gf-modal-footer-container">
                         <a role="button" class={btn: true, btn-primary: true, gf-flex-float-right: true, disabled: !isValid}
-                           target="_blank" onclick={logCreateAction} href={isValid ? createRoot + encodeURIComponent(targetTitle) : '#'}>
+                           target="_blank" rel="noopener" onclick={logCreateAction} href={isValid ? createRoot + encodeURIComponent(targetTitle) : '#'}>
                             {$.i18n('create-action')}
                         </a>
                     </div>

@@ -6,7 +6,7 @@
                     <div class="gf-modal-header-container">
                         <span class="gf-modal-title">{title}</span>
                         <a role="button" class="gf-icon gf-icon-new-window gf-clickable"
-                           target="_blank" href={articleLink} title="{$.i18n('modal-new-window')}">
+                           target="_blank" rel="noopener" href={articleLink} title="{$.i18n('modal-new-window')}">
                         </a>
                         <span class="gf-icon gf-icon-close gf-clickable"
                               data-dismiss="modal" title="{$.i18n('modal-close')}"></span>
@@ -40,7 +40,7 @@
                         <div class="gf-modal-footer-right">
                             <button class="btn btn-secondary" data-dismiss="modal"
                                     onclick={showCreate}>{$.i18n('modal-create-from-scratch')}</button>
-                            <a role="button" class="btn btn-primary m-l-1" target="_blank"
+                            <a role="button" class="btn btn-primary m-l-1" target="_blank" rel="noopener"
                                onclick={logCXAction} href={translateLink}>{$.i18n('modal-translate')}</a>
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                 // Make all links in preview (1) work and (2) open in new window
                 // This depends on the string below appearing in the html returned from the rest endpoint
                 // More complex manipulation may be needed if this breaks
-                data = data.replace('<base href="', '<base target="_blank" href="https:');
+                data = data.replace('<base href="', '<base target="_blank" rel="noopener" href="https:');
                 // Get rid of some of the undesirable mediawiki styles
                 data = data.replace('</head>', '<style type="text/css">.mw-body {margin: 0; border: none; padding: 0;}</style></head>');
                 self.showPreview(data);
