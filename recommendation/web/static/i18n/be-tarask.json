@@ -34,5 +34,7 @@
 	"create-title-input-placeholder": "Загаловак перакладу",
 	"create-warning": "Увага!",
 	"create-action": "Стварыць",
-	"create-error-empty": "Загаловак ня мусіць быць пустым"
+	"create-error-empty": "Загаловак ня мусіць быць пустым",
+	"create-error-invalid-character": "Няслушны сымбаль у загалоўку ('|')",
+	"create-error-exists": "Старонка ўжо існуе $1"
 }
