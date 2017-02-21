@@ -58,11 +58,11 @@
             window.translationAppGlobals = {
                 languagePairs: JSON.parse('{{ language_pairs | safe }}'),
                 languageToDomainMapping: JSON.parse('{{ language_to_domain_mapping | safe }}'),
-                s: JSON.parse('{{ s | safe }}'),
-                t: JSON.parse('{{ t | safe }}'),
-                seed: JSON.parse('{{ seed | safe }}'),
-                search: JSON.parse('{{ search | safe }}'),
-                rankMethod: JSON.parse('{{ rank_method | safe }}'),
+                s: decodeURIComponent('{{ s | safe }}'),
+                t: decodeURIComponent('{{ t | safe }}'),
+                seed: decodeURIComponent('{{ seed | safe }}'),
+                search: decodeURIComponent('{{ search | safe }}'),
+                rankMethod: decodeURIComponent('{{ rank_method | safe }}'),
                 defaultSearch: '{{ default_search }}',
 
                 personalBlacklistKey: 'personal.blacklist',

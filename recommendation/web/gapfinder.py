@@ -1,4 +1,5 @@
 import json
+import urllib.parse
 from flask import Blueprint, render_template, request, send_from_directory
 
 from recommendation.utils import configuration
@@ -20,11 +21,11 @@ def home():
         'index.html',
         language_pairs=json.dumps(pairs),
         language_to_domain_mapping=json.dumps(language_pairs.get_language_to_domain_mapping()),
-        s=json.dumps(s),
-        t=json.dumps(t),
-        seed=json.dumps(seed),
-        search=json.dumps(search),
-        rank_method=json.dumps(rank_method),
+        s=urllib.parse.quote(s),
+        t=urllib.parse.quote(t),
+        seed=urllib.parse.quote(seed),
+        search=urllib.parse.quote(search),
+        rank_method=urllib.parse.quote(rank_method),
         event_logger_url=configuration.get_config_value('endpoints', 'event_logger'),
         default_search=configuration.get_config_value('gapfinder', 'default_search')
     )
