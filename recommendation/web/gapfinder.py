@@ -10,11 +10,11 @@ gapfinder = Blueprint('gapfinder', __name__, template_folder='templates', static
 
 @gapfinder.route('/')
 def home():
-    s = request.args.get('s')
-    t = request.args.get('t')
-    seed = request.args.get('seed')
-    search = request.args.get('search')
-    rank_method = request.args.get('rank_method')
+    s = request.args.get('s', '')
+    t = request.args.get('t', '')
+    seed = request.args.get('seed', '')
+    search = request.args.get('search', '')
+    rank_method = request.args.get('rank_method', '')
     pairs = language_pairs.get_language_pairs()
     return render_template(
         'index.html',
