@@ -64,9 +64,10 @@
                     redirects: true,
                     indexpageids: true,
                     format: 'json',
-                    titles: targetTitle
+                    origin: '*',
+                    titles: encodeURIComponent(targetTitle)
                 },
-                dataType: 'jsonp'
+                dataType: 'json'
             }).done(function (response) {
                 var pageid = response.query.pageids[0];
                 var title = response.query.pages[pageid].title;
@@ -75,11 +76,11 @@
                     self.targetTitle = title;
                     self.setValid();
                 } else {
-                    self.setInvalid($.i18n('create-error-exists', '"' + title + '"'), self.existsLinkRoot + title);
+                    self.setInvalid($.i18n('create-error-exists', '"' + title + '"'), self.existsLinkRoot + encodeURIComponent(title));
                 }
 
                 if ( response.query.pages[pageid].invalid !== undefined ) {
-                    self.setInvalid($.i18n('create-error-invalid', '"' + title + '"'), self.existsLinkRoot + title);
+                    self.setInvalid($.i18n('create-error-invalid', '"' + title + '"'), self.existsLinkRoot + encodeURIComponent(title));
                 }
             });
         };

@@ -59,9 +59,9 @@
         self.to = opts.to;
         self.from = opts.from;
         self.translateRoot = '//' + opts.from + '.wikipedia.org/wiki/Special:ContentTranslation?' +
-            'from=' + opts.from +
-            '&to=' + opts.to +
-            '&campaign=' + translationAppGlobals.campaign;
+            'from=' + encodeURIComponent(opts.from) +
+            '&to=' + encodeURIComponent(opts.to) +
+            '&campaign=' + encodeURIComponent(translationAppGlobals.campaign);
         self.articleRoot = '//' + opts.from + '.wikipedia.org/wiki/';
         self.isSrcDocSupported = document.createElement('iframe').srcdoc !== undefined;
 
@@ -78,9 +78,9 @@
         self.show = function () {
             var showing = self.articles[self.showIndex];
             self.title = showing.title;
-            self.translateLink = self.translateRoot + '&page=' + showing.linkTitle;
-            self.articleLink = self.articleRoot + showing.linkTitle;
-            self.previewUrl = previewRoot + showing.linkTitle;
+            self.translateLink = self.translateRoot + '&page=' + encodeURIComponent(showing.linkTitle);
+            self.articleLink = self.articleRoot + encodeURIComponent(showing.linkTitle);
+            self.previewUrl = previewRoot + encodeURIComponent(showing.linkTitle);
 
             self.showPreview('Loading...');
 
@@ -94,7 +94,7 @@
                     self.showPreview($.i18n('modal-preview-fail'));
                     return;
                 }
-                var baseUrl = 'https://' + opts.from + '.wikipedia.org/wiki/' + data['parse']['title'];
+                var baseUrl = 'https://' + opts.from + '.wikipedia.org/wiki/' + encodeURIComponent(data['parse']['title']);
                 var parser = new DOMParser();
                 var html = parser.parseFromString(data['parse']['headhtml']['*'], 'text/html');
                 html.getElementsByTagName('head')[0].insertAdjacentHTML('afterbegin', '<base href="' + baseUrl + '">');

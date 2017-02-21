@@ -33,12 +33,12 @@
         self.source = opts.source || 'no-source-language';
         self.target = opts.target || 'no-target-language';
 
-        var thumbQuery = 'https://{source}.wikipedia.org/w/api.php?action=query&pithumbsize=512&format=json&prop=pageimages&titles=';
+        var thumbQuery = 'https://{source}.wikipedia.org/w/api.php?action=query&pithumbsize=512&format=json&origin=*&prop=pageimages&titles=';
 
         self.detail = function (article) {
             return $.ajax({
-                url: thumbQuery.replace('{source}', self.source) + article.title,
-                dataType: 'jsonp',
+                url: thumbQuery.replace('{source}', self.source) + encodeURIComponent(article.title),
+                dataType: 'json',
                 contentType: 'application/json'
             }).done(function (data) {
                 var id = Object.keys(data.query.pages)[0],
@@ -54,12 +54,12 @@
             });
         };
 
-        var descriptionQuery = 'https://wikidata.org/w/api.php?action=wbgetentities&format=json&props=descriptions&languages={source}&ids='
+        var descriptionQuery = 'https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&origin=*&props=descriptions&languages={source}&ids=';
         self.get_description = function(article) {
-            var url = descriptionQuery.replace('{source}', self.source) + article.wikidata_id
+            var url = descriptionQuery.replace('{source}', encodeURIComponent(self.source)) + encodeURIComponent(article.wikidata_id);
             return $.ajax({
                 url: url,
-                dataType: 'jsonp',
+                dataType: 'json',
                 contentType: 'application/json'
             }).done(function (data) {
                 var id = Object.keys(data.entities)[0];
