@@ -9,7 +9,7 @@ from recommendation.utils import configuration
 log = logging.getLogger(__name__)
 
 
-def log_api_request(source, target, seed=None, search=None, **kwargs):
+def log_api_request(source, target, seed=None, search=None, user_agent=None, **kwargs):
     event = dict(timestamp=int(time.time()),
                  sourceLanguage=source,
                  targetLanguage=target)
@@ -28,7 +28,11 @@ def log_api_request(source, target, seed=None, search=None, **kwargs):
 
     log.info('Logging event: %s', json.dumps(payload))
 
+    headers = {}
+    if user_agent is not None:
+        headers['User-Agent'] = user_agent
+
     try:
-        requests.get(url)
+        requests.get(url, headers=headers)
     except requests.exceptions.RequestException:
         pass
