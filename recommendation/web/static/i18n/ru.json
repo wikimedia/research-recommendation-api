@@ -5,7 +5,8 @@
 			"Mailman",
 			"Irus",
 			"Kareyac",
-			"MaxBioHazard"
+			"MaxBioHazard",
+			"Redredsonia"
 		]
 	},
 	"title-wikipedia": "Википедия",
@@ -22,6 +23,7 @@
 	"status-preparing": "Подготовка статьи рекомендации...",
 	"status-must-be-different": "Исходный и целевой языки должны быть разными",
 	"status-invalid-language": "Недопустимый исходный или целевой язык",
+	"status-no-results": "Нет доступных рекомендаций для заданных параметров",
 	"article-pageviews": "$1 {{PLURAL:$1|просмотр|просмотров|просмотра}}",
 	"article-flag": "Отметить эту статью...",
 	"article-flag-not-interesting": "Не интересует",
@@ -33,7 +35,7 @@
 	"modal-translate": "Перевести",
 	"modal-create-from-scratch": "Создать с скретч",
 	"modal-loading": "Загрузка…",
-	"modal-preview-fail": "Нет интернета",
+	"modal-preview-fail": "Не удалось загрузить предварительный просмотр",
 	"create-title": "Новая статья",
 	"create-title-input-placeholder": "Переведённое название",
 	"create-warning": "Внимание!",

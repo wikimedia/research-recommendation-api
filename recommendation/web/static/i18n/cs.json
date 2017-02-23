@@ -29,7 +29,7 @@
 	"modal-translate": "Přeložit",
 	"modal-create-from-scratch": "Vytvořit prázdný",
 	"modal-loading": "Načítání...",
-	"modal-preview-fail": "Internet nedostupný",
+	"modal-preview-fail": "Selhalo načtení náhledu",
 	"create-title": "Nový článek",
 	"create-title-input-placeholder": "Budoucí název článku",
 	"create-warning": "Varování!",

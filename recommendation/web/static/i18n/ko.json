@@ -29,7 +29,7 @@
 	"modal-translate": "번역하기",
 	"modal-create-from-scratch": "처음부터 만들기",
 	"modal-loading": "불러오는 중...",
-	"modal-preview-fail": "인터넷 없음",
+	"modal-preview-fail": "미리보기를 불러오지 못했습니다",
 	"create-title": "새 문서",
 	"create-title-input-placeholder": "번역 제목",
 	"create-warning": "경고!",
