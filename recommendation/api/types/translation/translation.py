@@ -7,6 +7,7 @@ from flask_restplus import fields
 from flask_restplus import reqparse
 from flask_restplus import abort
 from flask_restplus import inputs
+from flask import request
 
 from recommendation.utils import event_logger
 from recommendation.utils import language_pairs
@@ -173,7 +174,7 @@ def process_request(args):
     if not language_pairs.is_valid_language_pair(args['source'], args['target']):
         abort(400, errors='Invalid or duplicate source and/or target language')
 
-    event_logger.log_api_request(**args)
+    event_logger.log_api_request(user_agent=request.headers.get('User-Agent'), **args)
     recs = recommend(**args)
     t2 = time.time()
     log.info('Request processed in %f seconds', t2 - t1)
