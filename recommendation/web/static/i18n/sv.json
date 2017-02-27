@@ -30,7 +30,7 @@
 	"modal-translate": "Översätt",
 	"modal-create-from-scratch": "Skapa från grunden",
 	"modal-loading": "Läser in...",
-	"modal-preview-fail": "Ingen Internet",
+	"modal-preview-fail": "Förhandsgranskningen gick inte att läsas in",
 	"create-title": "Ny artikel",
 	"create-title-input-placeholder": "Översättningstitel",
 	"create-warning": "Varning!",

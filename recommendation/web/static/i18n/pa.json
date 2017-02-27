@@ -1,21 +1,22 @@
 {
 	"@metadata": {
 		"authors": [
-			"Tow"
+			"Tow",
+			"Sony dandiwal"
 		]
 	},
 	"title-wikipedia": "ਵਿਕੀਪੀਡੀਆ",
-	"title-gapfinder": "ਗੈਪਮਾਈਨਡਰ",
+	"title-gapfinder": "ਗੈਪਫ਼ਾਈਂਡਰ",
 	"title-beta": "ਬੀਟਾ",
-	"menu-how-to": "ਕਿਵੇੰ ਕਰੀਏ",
+	"menu-how-to": "ਕਿਵੇਂ ਕਰੀਏ",
 	"menu-about": "ਬਾਰੇ",
-	"menu-feedback": "ਫ਼ੀਡਬੈਕ",
+	"menu-feedback": "ਸੁਝਾਅ",
 	"menu-source-code": "ਸਰੋਤ ਕੋਡ",
 	"menu-privacy-statement": "ਪਰਦਾ ਜਾਣਕਾਰੀ",
 	"selector-source": "ਸਰੋਤ",
-	"selector-target": "ਲਕਸ਼",
-	"search-placeholder": "ਬਨਾਉਣ ਲਈ ਲੇਖ ਲੱਭੋ",
-	"status-preparing": "ਲੇਖ ਿਸਫ਼ਾਰਿਸ਼ਾੰ ਤਿਆਰ ਕੀਤੀਆੰ ਜਾ ਰੇਹੀਆੰ ਹਨ...",
+	"selector-target": "ਨਿਸ਼ਾਨਾ",
+	"search-placeholder": "ਬਣਾਉਣ ਲਈ ਲੇਖ ਲੱਭੋ",
+	"status-preparing": "ਲੇਖ ਸਿਫ਼ਾਰਸ਼ਾਂ ਤਿਆਰ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...",
 	"status-must-be-different": "ਸਰੋਤ ਅਤੇ ਲਕਸ਼ ਭਾਸ਼ਾਵਾੰ ਵੱਖਰੀਆੰ ਹੋਣੀਆੰ ਚਾਹੀਦੀਆੰ ਹਨ",
 	"status-invalid-language": "ਗਲਤ ਸਰੋਤ ਜਾੰ ਲਕਸ਼ ਭਾਸ਼ਾ",
 	"article-pageviews": "$1 ਹਾਲੇ {{PLURAL:$1|ਦਰਸ਼ਨ|ਦਰਸ਼ਨ}}",
@@ -29,7 +30,7 @@
 	"modal-translate": "ਤਰਜਮਾ ਕਰੋ",
 	"modal-create-from-scratch": "ਸ਼ੁਰੂ ਤੋੰ ਬਣਾਓ",
 	"modal-loading": "ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
-	"modal-preview-fail": "ਕੋਈ ਇੰਟਰਨੈੱਟ ਨਹੀੰ",
+	"modal-preview-fail": "ਕੋਈ ਇੰਟਰਨੈੱਟ ਨਹੀਂ",
 	"create-title": "ਨਵਾੰ ਲੇਖ",
 	"create-title-input-placeholder": "ਅਨੁਵਾਦ ਸਿਰਲੇਖ",
 	"create-warning": "ਖ਼ਬਰਦਾਰ!",

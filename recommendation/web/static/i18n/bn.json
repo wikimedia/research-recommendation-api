@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Aftabuzzaman"
+			"Aftabuzzaman",
+			"Elias Ahmmad"
 		]
 	},
 	"title-wikipedia": "উইকিপিডিয়া",
@@ -18,6 +19,7 @@
 	"status-preparing": "নিবন্ধ সুপারিশ প্রস্তুত করা হচ্ছে...",
 	"status-must-be-different": "উত্স এবং লক্ষ্য ভাষা অবশ্যই আলাদা হতে হবে",
 	"status-invalid-language": "অবৈধ উৎস অথবা লক্ষ্য ভাষা",
+	"status-no-results": "নির্দিষ্টকৃত প্যারামিটারের জন্য কোনো প্রস্তাবনা উপলব্ধ ছিল না",
 	"article-pageviews": "$1টি সাম্প্রতিক {{PLURAL:$1|দর্শন}}",
 	"article-flag": "এই নিবন্ধটি পতাকাঙ্কিত করুন...",
 	"article-flag-not-interesting": "আগ্রহী নই",
@@ -29,7 +31,7 @@
 	"modal-translate": "অনুবাদ করুন",
 	"modal-create-from-scratch": "গোড়া থেকে তৈরি করুন",
 	"modal-loading": "লোড হচ্ছে...",
-	"modal-preview-fail": "কোন ইন্টারনেট নেই",
+	"modal-preview-fail": "পূর্বরূপ লোড করতে ব্যর্থ হয়েছে",
 	"create-title": "নতুন নিবন্ধ",
 	"create-title-input-placeholder": "অনুবাদ শিরোনাম",
 	"create-warning": "সতর্কীকরণ!",
