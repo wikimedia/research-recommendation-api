@@ -65,3 +65,18 @@ def get_related_articles(source, seed, count):
         recommendations.append(rec)
 
     return recommendations[:count]
+
+
+def get_category_candidates(source, seed, count):
+    results = fetcher.get_pages_in_category_tree(source, seed, count)
+    if len(results) == 0:
+        log.info('Failed category search. Source: %s Seed: %s', source, seed)
+        return []
+
+    recommendations = []
+    for title in results:
+        rec = recommendation.Recommendation(title)
+        rec.rank = 0
+        recommendations.append(rec)
+
+    return recommendations

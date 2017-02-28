@@ -127,7 +127,7 @@ def get_v1_params():
         type=str,
         required=False,
         default='morelike',
-        choices=['morelike', 'wiki', 'related_articles'])
+        choices=['morelike', 'wiki', 'related_articles', 'category'])
     v1_params.add_argument(
         'rank_method',
         type=str,
@@ -185,7 +185,8 @@ finder_map = {
     'morelike': candidate_finders.get_morelike_candidates,
     'wiki': candidate_finders.get_morelike_candidates,
     'mostpopular': candidate_finders.get_top_pageview_candidates,
-    'related_articles': candidate_finders.get_related_articles
+    'related_articles': candidate_finders.get_related_articles,
+    'category': candidate_finders.get_category_candidates
 }
 
 

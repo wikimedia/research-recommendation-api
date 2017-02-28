@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='recommendation',
-    version='0.2.8',
+    version='0.3.0',
     url='https://github.com/wikimedia/research-recommendation-api',
     license='Apache Software License',
     maintainer='Wikimedia Research',

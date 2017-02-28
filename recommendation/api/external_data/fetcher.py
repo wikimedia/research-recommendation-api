@@ -1,6 +1,7 @@
 import requests
 import logging
 import datetime
+from multiprocessing import dummy as multiprocessing
 
 from recommendation.utils import configuration
 
@@ -141,3 +142,44 @@ def get_related_articles(source, seed):
     except ValueError:
         return []
     return response
+
+
+def get_pages_in_category_tree(source, category, count):
+    pages = set()
+    seen_categories = set()
+    current_categories = {category}
+    while len(pages) < count:
+        log.debug(len(pages))
+        if not current_categories:
+            break
+        next_categories = set()
+        with multiprocessing.Pool(processes=len(current_categories)) as pool:
+            results = pool.map(lambda category: get_category_members(source, category), current_categories)
+        for result in results:
+            next_categories.update(result['subcats'])
+            pages.update(result['pages'])
+        seen_categories.update(current_categories)
+        current_categories = next_categories - seen_categories
+    log.debug(len(pages))
+    return list(pages)
+
+
+def get_category_members(source, category):
+    log.debug(category)
+    endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
+    params = configuration.get_config_dict('category_search_params')
+    params['cmtitle'] = category
+
+    members = dict(pages=set(), subcats=set())
+
+    try:
+        response = get(endpoint, params=params)
+    except ValueError:
+        return []
+    results = response.get('query', {}).get('categorymembers', [])
+    for member in results:
+        if member.get('type', None) == 'page':
+            members['pages'].add(member.get('title'))
+        if member.get('type', None) == 'subcat':
+            members['subcats'].add(member.get('title'))
+    return members
