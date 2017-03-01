@@ -79,7 +79,7 @@
                 seed = this.seedArticle.value;
             }
 
-            logUIRequest(mappedSource, mappedTarget, seed, self.origin);
+            logUIRequest(mappedSource, mappedTarget, seed, self.origin, undefined, undefined, window.translationAppGlobals.campaign);
 
             $.ajax({
                 url: url

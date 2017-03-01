@@ -68,7 +68,7 @@
                 personalBlacklistKey: 'personal.blacklist',
                 globalBlacklistKey: 'not.notable.blacklist',
 
-                campaign: 'article-recommender-1',
+                campaign: decodeURIComponent('{{ campaign | safe }}'),
                 eventLoggerUrl: '{{ event_logger_url }}',
 
                 i18nGapFinderPath: '{{ url_for('.static', filename='i18n/') }}',

@@ -16,6 +16,7 @@ def home():
     seed = request.args.get('seed', '')
     search = request.args.get('search', '')
     rank_method = request.args.get('rank_method', '')
+    campaign = request.args.get('campaign', 'article-recommender-1')
     pairs = language_pairs.get_language_pairs()
     return render_template(
         'index.html',
@@ -26,6 +27,7 @@ def home():
         seed=urllib.parse.quote(seed),
         search=urllib.parse.quote(search),
         rank_method=urllib.parse.quote(rank_method),
+        campaign=urllib.parse.quote(campaign),
         event_logger_url=configuration.get_config_value('endpoints', 'event_logger'),
         default_search=configuration.get_config_value('gapfinder', 'default_search')
     )
