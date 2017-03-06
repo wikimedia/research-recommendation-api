@@ -30,12 +30,13 @@
 	"modal-translate": "Перакласьці",
 	"modal-create-from-scratch": "Стварыць з нуля",
 	"modal-loading": "Загрузка…",
-	"modal-preview-fail": "Няма інтэрнэту",
+	"modal-preview-fail": "Не атрымалася загрузіць папярэдні прагляд",
 	"create-title": "Новы артыкул",
 	"create-title-input-placeholder": "Загаловак перакладу",
 	"create-warning": "Увага!",
 	"create-action": "Стварыць",
 	"create-error-empty": "Загаловак ня мусіць быць пустым",
 	"create-error-invalid-character": "Няслушны сымбаль у загалоўку ('|')",
-	"create-error-exists": "Старонка ўжо існуе $1"
+	"create-error-exists": "Старонка ўжо існуе $1",
+	"create-error-invalid-page": "Няслушная старонка $1"
 }

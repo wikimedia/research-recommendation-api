@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kumkumuk"
+			"Kumkumuk",
+			"Vito Genovese"
 		]
 	},
 	"title-wikipedia": "Vikipedi",
@@ -18,6 +19,7 @@
 	"status-preparing": "Makale hazırlama önerileri...",
 	"status-must-be-different": "Kaynak Dili ve hedef dili farklı olmalı",
 	"status-invalid-language": "Geçersiz kaynak veya hedef dil",
+	"status-no-results": "Belirtilen parametreler için öneri bulunmuyordu.",
 	"article-pageviews": "$1 son {{PLURAL:$1|görünüm|görünümler}}",
 	"article-flag": "Bu makaleyi işaretle...",
 	"article-flag-not-interesting": "İlginç değil",
@@ -29,7 +31,7 @@
 	"modal-translate": "Çevir",
 	"modal-create-from-scratch": "Sıfırdan yarat",
 	"modal-loading": "Yükleniyor...",
-	"modal-preview-fail": "İnternet yok",
+	"modal-preview-fail": "Önizleme yüklenemedi.",
 	"create-title": "Yeni Makale",
 	"create-title-input-placeholder": "Çeviri başlığı",
 	"create-warning": "Uyarılar!",

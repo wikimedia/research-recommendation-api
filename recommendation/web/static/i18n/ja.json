@@ -20,7 +20,7 @@
 	"modal-previous": "前の記事",
 	"modal-translate": "翻訳",
 	"modal-loading": "読み込み中...",
-	"modal-preview-fail": "インターネット接続がありません",
+	"modal-preview-fail": "プレビューが読み込めません",
 	"create-title-input-placeholder": "翻訳のタイトル",
 	"create-warning": "警告！",
 	"create-action": "作成",
