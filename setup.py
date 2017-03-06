@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='recommendation',
-    version='0.3.1',
+    version='0.3.2',
     url='https://github.com/wikimedia/research-recommendation-api',
     license='Apache Software License',
     maintainer='Wikimedia Research',
@@ -25,4 +25,6 @@ setup(
     zip_safe=False,
     setup_requires=['pytest-runner'],
     tests_require=['pytest',
-                   'responses'])
+                   'responses',
+                   'memory_profiler',
+                   'psutil'])
