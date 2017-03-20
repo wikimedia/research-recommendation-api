@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Pickle12"
+			"Pickle12",
+			"Dbc334"
 		]
 	},
 	"title-wikipedia": "Wikipedija",
@@ -18,6 +19,7 @@
 	"status-preparing": "Iskanje primernih člankov...",
 	"status-must-be-different": "Izvirni in ciljni jezik mora biti drugačna",
 	"status-invalid-language": "Neveljavna izhodiščni ali ciljni jezik",
+	"status-no-results": "Za navedene parametre ni na voljo nobenih priporočil",
 	"article-pageviews": "Članek $1 ima {{PLURAL:$1|ogled|ogledi}} nedavnih ogledov",
 	"article-flag": "Označi ta članek...",
 	"article-flag-not-interesting": "Nezanimivo",
@@ -29,7 +31,7 @@
 	"modal-translate": "Prevedi",
 	"modal-create-from-scratch": "Ustvari nov članek",
 	"modal-loading": "Nalaganje ...",
-	"modal-preview-fail": "Ni povezave",
+	"modal-preview-fail": "Nalaganje predogleda je spodletelo",
 	"create-title": "Nov članek",
 	"create-title-input-placeholder": "Naslov",
 	"create-warning": "Opozorilo!",
