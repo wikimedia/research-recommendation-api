@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Shyamal"
+			"Shyamal",
+			"Sfic"
 		]
 	},
 	"title-gapfinder": "अभाव खोजक",
@@ -13,7 +14,7 @@
 	"menu-privacy-statement": "गोपनीयता वचन",
 	"selector-source": "स्रोत",
 	"selector-target": "लक्ष्य",
-	"search-placeholder": "नई लेख खोजें",
+	"search-placeholder": "लेख बनाने के लिए खोजें",
 	"status-preparing": "लेख सुझाव तैयारी में ...",
 	"status-must-be-different": "स्रोत और लक्ष्य भाषा अलग हनी चाहिए",
 	"status-invalid-language": "स्रोत या लक्ष्य भाषा अमान्य"
