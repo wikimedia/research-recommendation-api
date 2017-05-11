@@ -5,6 +5,7 @@
 			"Sfic"
 		]
 	},
+	"title-wikipedia": "विकिपीडिया",
 	"title-gapfinder": "अभाव खोजक",
 	"title-beta": "बीटा",
 	"menu-how-to": "कैसे",
@@ -17,5 +18,26 @@
 	"search-placeholder": "लेख बनाने के लिए खोजें",
 	"status-preparing": "लेख सुझाव तैयारी में ...",
 	"status-must-be-different": "स्रोत और लक्ष्य भाषा अलग हनी चाहिए",
-	"status-invalid-language": "स्रोत या लक्ष्य भाषा अमान्य"
+	"status-invalid-language": "स्रोत या लक्ष्य भाषा अमान्य",
+	"status-no-results": "दिये जानकारी अनुसार कोई सुझाव उपलब्ध नहीं है।",
+	"article-pageviews": "$1 हाल का {{PLURAL:$1|दृश्य}}",
+	"article-flag": "लेख को ध्वजांकित करें...",
+	"article-flag-not-interesting": "रुचि नहीं",
+	"article-flag-not-notable": "$1 विकिपीडिया के लिए उल्लेखनीय नहीं है",
+	"modal-close": "बंद करें",
+	"modal-new-window": "नए विंडो में लेख को खोलें",
+	"modal-previous": "पिछला लेख",
+	"modal-next": "अगला लेख",
+	"modal-translate": "अनुवाद",
+	"modal-create-from-scratch": "शून्य से आरम्भ करें",
+	"modal-loading": "लोड हो रहा है...",
+	"modal-preview-fail": "झलक दिखाना विफल हुआ",
+	"create-title": "नया लेख",
+	"create-title-input-placeholder": "शीर्षक का अनुवाद",
+	"create-warning": "चेतावनी!",
+	"create-action": "बनाएँ",
+	"create-error-empty": "शीर्षक को खाली नहीं होना चाहिए",
+	"create-error-invalid-character": "शीर्षक में अमान्य अक्षर है ( '|' )",
+	"create-error-exists": "पृष्ठ पहले से ही यहाँ $1 उपस्थित है।",
+	"create-error-invalid-page": "$1 यहाँ पृष्ठ अमान्य है।"
 }
