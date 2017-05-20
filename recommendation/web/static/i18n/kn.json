@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Anoop rao",
+			"Vikashegde"
+		]
+	},
+	"title-wikipedia": "ವಿಕಿಪೀಡಿಯ",
+	"title-gapfinder": "ಅಂತರ ಶೋಧಕ",
+	"title-beta": "ಬೀಟಾ",
+	"menu-how-to": "ಹೇಗೆ",
+	"menu-about": "ಕುರಿತು",
+	"menu-feedback": "ಪ್ರತಿಕ್ರಿಯೆ",
+	"menu-source-code": "ಮೂಲ ಕೋಡ್",
+	"menu-privacy-statement": "ಗೌಪ್ಯತೆ ಹೇಳಿಕೆ",
+	"selector-source": "ಮೂಲ",
+	"selector-target": "ಗುರಿ",
+	"search-placeholder": "ರಚಿಸಲು ಲೇಖನಗಳು ಹುಡುಕಿ",
+	"status-preparing": "ಲೇಖನ ಶಿಫಾರಸುಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ ...",
+	"status-must-be-different": "ಮೂಲ ಮತ್ತು ಗುರಿ ಭಾಷೆಗಳು ಭಿನ್ನವಾಗಿರಬೇಕು",
+	"status-invalid-language": "ಅಮಾನ್ಯ ಮೂಲ ಅಥವಾ ಗುರಿ ಭಾಷೆ",
+	"status-no-results": "ಯಾವುದೇ ಶಿಫಾರಸುಗಳು ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ನಿಯತಾಂಕಗಳನ್ನು ಲಭ್ಯವಿಲ್ಲ",
+	"article-pageviews": "$1 ಇತ್ತೀಚಿನ {{PLURAL:$1|ವೀಕ್ಷಣ|ವೀಕ್ಷಣೆಗಳು}}",
+	"article-flag": "ಈ ಲೇಖನವನ್ನು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿ",
+	"article-flag-not-interesting": "ಆಸಕ್ತಿಕರವಲ್ಲ",
+	"article-flag-not-notable": "$1 ವಿಕಿಪೀಡಿಯಾಗೆ ಗಮನಾರ್ಹವಲ್ಲ",
+	"modal-close": "ಮುಚ್ಚಿ",
+	"modal-new-window": "ಈ ಲೇಖನವನ್ನು ಹೊಸ ಕಿಟಕಿಯಲ್ಲಿ ತೆರೆಯಿರಿ",
+	"modal-previous": "ಹಿಂದಿನ ಲೇಖನ",
+	"modal-next": "ಮುಂದಿನ ಲೇಖನ",
+	"modal-translate": "ಭಾಷಾಂತರಿಸಿ",
+	"modal-create-from-scratch": "ಪ್ರಾರಂಭದಿಂದ ಸೃಷ್ಟಿಸಿ",
+	"modal-loading": "ತುಂಬಿಸಲಾಗುತ್ತಿದೆ....",
+	"modal-preview-fail": "ಪೂರ್ವವೀಕ್ಷಣೆ ಲೋಡ್ ಆಗಲು ವಿಫಲವಾಗಿದೆ",
+	"create-title": "ಹೊಸ ಲೇಖನ",
+	"create-title-input-placeholder": "ಭಾಷಾಂತರ ಸಲಕರಣೆ",
+	"create-warning": "ಎಚ್ಚರಿಕೆ!",
+	"create-action": "ರಚಿಸಿ",
+	"create-error-empty": "ಶೀರ್ಷಿಕೆ ಖಾಲಿ ಇರಬಾರದು",
+	"create-error-invalid-character": "ಶೀರ್ಷಿಕೆಯಲ್ಲಿ ಅಮಾನ್ಯ ಅಕ್ಷರ ('|')",
+	"create-error-exists": "ಪುಟವು ಈಗಾಗಲೇ $1 ರಲ್ಲಿ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ",
+	"create-error-invalid-page": "ಪುಟ $1 ರಲ್ಲಿ ಅಮಾನ್ಯವಾಗಿದೆ"
+}
