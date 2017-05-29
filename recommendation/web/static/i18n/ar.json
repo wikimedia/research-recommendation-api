@@ -3,7 +3,8 @@
 		"authors": [
 			"DRIHEM",
 			"محمد أحمد عبد الفتاح",
-			"Meno25"
+			"Meno25",
+			"Mido"
 		]
 	},
 	"title-wikipedia": "ويكيبيديا",
@@ -30,7 +31,7 @@
 	"modal-next": "المقالة اللاحقة",
 	"modal-translate": "باشر في الترجمة",
 	"modal-create-from-scratch": "أنشئ من الصفر",
-	"modal-loading": "جاري التحميل...",
+	"modal-loading": "جارٍ التحميل...",
 	"modal-preview-fail": "لا يوجد إنترنت",
 	"create-title": "مقالة جديدة",
 	"create-title-input-placeholder": "عنوان الترجمة",
