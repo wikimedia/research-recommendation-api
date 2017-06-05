@@ -1,0 +1,35 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hidayatsrf"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-about": "Tentang",
+	"menu-feedback": "Umpan balik",
+	"menu-source-code": "Kode sumber",
+	"menu-privacy-statement": "Pernyataan privasi",
+	"selector-source": "Sumber",
+	"selector-target": "Target",
+	"search-placeholder": "Cari artikel untuk dibuat",
+	"status-preparing": "Menyiapkan rekomendasi artikel",
+	"article-flag": "Tandai artikel ini...",
+	"article-flag-not-notable": "Tidak notabel untuk $1 Wikipedia",
+	"modal-close": "Tutup",
+	"modal-new-window": "Buka artikel ini dalam jendela baru",
+	"modal-previous": "Artikel sebelumnya",
+	"modal-next": "Artikel selanjutnya",
+	"modal-translate": "Terjemahkan",
+	"modal-loading": "Memuat...",
+	"modal-preview-fail": "Pratayang gagal dimuat",
+	"create-title": "Artikel baru",
+	"create-title-input-placeholder": "Jusul terjemahan",
+	"create-warning": "Peringatan!",
+	"create-action": "Buat",
+	"create-error-empty": "Judul tidak boleh kosong",
+	"create-error-invalid-character": "Karakter tidak sah dalam judul ('|')",
+	"create-error-exists": "Halaman sudah ada di $1",
+	"create-error-invalid-page": "Halaman tidak sah di $1"
+}
