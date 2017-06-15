@@ -7,6 +7,7 @@
 		]
 	},
 	"title-wikipedia": "Уикипедия",
+	"title-gapfinder": "GapFinder",
 	"title-beta": "бета",
 	"menu-how-to": "Инструкции",
 	"menu-about": "Относно",
@@ -38,5 +39,6 @@
 	"create-action": "Създаване",
 	"create-error-empty": "Заглавието не трябва да е празно",
 	"create-error-invalid-character": "Невалиден знак в заглавието ('|')",
-	"create-error-exists": "Страницата вече съществува на $1"
+	"create-error-exists": "Страницата вече съществува на $1",
+	"create-error-invalid-page": "Страницата е невалидна на $1"
 }

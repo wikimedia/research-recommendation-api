@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Csega",
+			"Wolf Rex"
+		]
+	},
+	"title-wikipedia": "Wikipédia",
+	"menu-about": "Névjegy",
+	"menu-feedback": "Visszajelzés",
+	"menu-source-code": "Forráskód",
+	"menu-privacy-statement": "Adatvédelmi irányelv",
+	"selector-source": "Forrás",
+	"selector-target": "Cél",
+	"modal-close": "Bezárás",
+	"modal-previous": "Előző szócikk",
+	"modal-next": "Következő szócikk",
+	"modal-translate": "Fordítás",
+	"modal-create-from-scratch": "Létrehozás az alapoktól",
+	"modal-loading": "Betöltés…",
+	"modal-preview-fail": "Nem sikerült betölteni az előnézetet",
+	"create-title": "Új cikk",
+	"create-title-input-placeholder": "Fordítás címe",
+	"create-warning": "Figyelmeztetés!",
+	"create-action": "Létrehozás",
+	"create-error-empty": "A cím nem lehet üres",
+	"create-error-invalid-character": "Érvénytelen karakter a címben ( „|” )"
+}

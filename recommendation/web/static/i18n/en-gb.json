@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Chase me ladies, I'm the Cavalry"
+			"Chase me ladies, I'm the Cavalry",
+			"Andibing"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -18,6 +19,7 @@
 	"status-preparing": "Preparing article recommendations...",
 	"status-must-be-different": "Source and target languages must be different",
 	"status-invalid-language": "Invalid source or target language",
+	"status-no-results": "No recommendations were available for the specified parameters",
 	"article-pageviews": "$1 recent {{PLURAL:$1|view|views}}",
 	"article-flag": "Flag this article...",
 	"article-flag-not-interesting": "Not interesting",
@@ -29,7 +31,7 @@
 	"modal-translate": "Translate",
 	"modal-create-from-scratch": "Create from scratch",
 	"modal-loading": "Loading...",
-	"modal-preview-fail": "Failed to load",
+	"modal-preview-fail": "The preview failed to load",
 	"create-title": "New Article",
 	"create-title-input-placeholder": "Translation title",
 	"create-warning": "Warning!",
