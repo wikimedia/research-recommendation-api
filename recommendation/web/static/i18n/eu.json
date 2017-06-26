@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Subi"
+			"Subi",
+			"Mikel Ibaiba"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -17,6 +18,8 @@
 	"search-placeholder": "Bilatu sortu beharreko artikuluak",
 	"status-preparing": "Gomendatutako artikuluak prestatzen...",
 	"status-must-be-different": "Jatorriko eta jomugako hizkuntzek ezberdinak izan behar dute",
+	"status-invalid-language": "Balio ez duen iturri edo hizkuntza",
+	"status-no-results": "Ez dago erabili daiteken gomendiorik zehaztutako parametroetarako",
 	"article-pageviews": "Akenaldian {{PLURAL:$1|ikustaldi $1|$1 ikustaldi}}",
 	"article-flag": "Markatu artikulu hau...",
 	"article-flag-not-interesting": "Ez da interesgarria",
@@ -34,5 +37,7 @@
 	"create-warning": "Adi!",
 	"create-action": "Sortu",
 	"create-error-empty": "Izenbura ezin da hutsik egon",
-	"create-error-invalid-character": "Baliogabeko karakterea izenburuan ( '|' )"
+	"create-error-invalid-character": "Baliogabeko karakterea izenburuan ( '|' )",
+	"create-error-exists": "Orria jadanik $1(e)(a)n existitzen da.",
+	"create-error-invalid-page": "Orriak ez du balio $1(a)n"
 }
