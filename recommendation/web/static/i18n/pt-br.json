@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Rodrigo codignoli"
+			"Rodrigo codignoli",
+			"Eduardo Addad de Oliveira"
 		]
 	},
 	"title-wikipedia": "Wikipédia",
@@ -18,6 +19,7 @@
 	"status-preparing": "Preparando recomendações de artigo...",
 	"status-must-be-different": "Idiomas de origem e de criação devem ser diferentes",
 	"status-invalid-language": "Idioma de origem ou destino inválido",
+	"status-no-results": "Nenhuma recomendação estava disponível para os parâmetros especificados",
 	"article-pageviews": "$1 recente {{PLURAL:$1|view|views}}",
 	"article-flag": "Sinalizar este artigo...",
 	"article-flag-not-interesting": "Não é interessante",
@@ -29,7 +31,7 @@
 	"modal-translate": "Traduzir",
 	"modal-create-from-scratch": "Criar do zero",
 	"modal-loading": "Carregando...",
-	"modal-preview-fail": "Sem Internet",
+	"modal-preview-fail": "A pré-visualização não foi carregada",
 	"create-title": "Novo artigo",
 	"create-title-input-placeholder": "Título da tradução",
 	"create-warning": "Aviso!",
