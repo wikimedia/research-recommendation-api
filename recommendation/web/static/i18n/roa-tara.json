@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"title-wikipedia": "Uicchipèdie",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Cumme",
+	"menu-about": "Sus a",
+	"menu-feedback": "Segnalazione",
+	"menu-source-code": "Code sorgende",
+	"menu-privacy-statement": "'Mbormaziune sus 'a privacy",
+	"selector-source": "Sorgende",
+	"selector-target": "Destinazione",
+	"search-placeholder": "Cirche vôsce da ccrejà",
+	"status-preparing": "Stoche a prepare le suggeweminde pe le vôsce ...",
+	"status-must-be-different": "'A lènghe de partenze e quedde d'arrive onna essere diverse"
+}
