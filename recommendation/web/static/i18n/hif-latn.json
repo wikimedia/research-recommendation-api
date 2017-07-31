@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Smcnarayan"
+			"Smcnarayan",
+			"Abdul Kadir"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -18,6 +19,7 @@
 	"status-preparing": "Article recommendations ke taiyaar karaa jaae hai...",
 	"status-must-be-different": "Source aur target bhasa me antar hoe ke chaahi",
 	"status-invalid-language": "Sourceource, nai to, target bhasa, valid nai hai",
+	"status-no-results": "Specified parameters ke khatir koi recommendation nai hai",
 	"article-pageviews": "$1 recent {{PLURAL:$1|view|views}}",
 	"article-flag": "Ii article ke flag karo...",
 	"article-flag-not-interesting": "Interesting nai hai",
@@ -29,7 +31,7 @@
 	"modal-translate": "Translate karo",
 	"modal-create-from-scratch": "Suruu se banao",
 	"modal-loading": "Loading  kara jaae hai...",
-	"modal-preview-fail": "Internet nai hai",
+	"modal-preview-fail": "Preview load nai hoe sakis",
 	"create-title": "Nawaa article",
 	"create-title-input-placeholder": "Translation ke title",
 	"create-warning": "Chetauni:",
