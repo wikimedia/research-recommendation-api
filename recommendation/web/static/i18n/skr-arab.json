@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"title-wikipedia": "وکیپیڈیا",
+	"title-gapfinder": "گیپ فائنڈر",
+	"title-beta": "آزمائشی",
+	"menu-how-to": "کینویں",
+	"menu-about": "تعارف",
+	"menu-feedback": "تہاڈی رائے",
+	"menu-source-code": "سورس کوڈ",
+	"selector-source": "ماخذ",
+	"selector-target": "نشانہ",
+	"modal-close": "بند کرو",
+	"modal-previous": "پچھلا مضمون",
+	"modal-next": "اڳلا مضمون",
+	"modal-translate": "ترجمہ کرو",
+	"modal-loading": "لوڈ تھیندا پئے۔۔۔",
+	"create-title": "نواں مضمون"
+}
