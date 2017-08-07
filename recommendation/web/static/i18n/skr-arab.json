@@ -11,12 +11,20 @@
 	"menu-about": "تعارف",
 	"menu-feedback": "تہاڈی رائے",
 	"menu-source-code": "سورس کوڈ",
+	"menu-privacy-statement": "پرائیویسی بیانات",
 	"selector-source": "ماخذ",
 	"selector-target": "نشانہ",
+	"search-placeholder": "مڈھوں بݨاوݨ کیتے مضمون ڳولو",
 	"modal-close": "بند کرو",
 	"modal-previous": "پچھلا مضمون",
 	"modal-next": "اڳلا مضمون",
 	"modal-translate": "ترجمہ کرو",
 	"modal-loading": "لوڈ تھیندا پئے۔۔۔",
-	"create-title": "نواں مضمون"
+	"create-title": "نواں مضمون",
+	"create-warning": "خبردار!",
+	"create-action": "بݨاؤ",
+	"create-error-empty": "عنواں خالی نی چھوڑ سڳیندا",
+	"create-error-invalid-character": "عنوان وچ غلط حروف ( '|' )",
+	"create-error-exists": "ورقہہ پہلے ہی $1 تے موجود ہے",
+	"create-error-invalid-page": "$1 تے ورقہ غلط ہے"
 }
