@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": [
+			"Belkacem77"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Amek",
+	"menu-about": "Ɣef",
+	"menu-feedback": "Tikti",
+	"menu-source-code": "Tangalt aɣbalu",
+	"selector-source": "Aɣbalu",
+	"selector-target": "Asaḍas",
+	"search-placeholder": "Nadi deg imagraden ara ternud",
+	"modal-close": "Mdel",
+	"modal-new-window": "Ldi amgrad-agi deg usfaylu amaynut",
+	"modal-previous": "Amagrad yezrin",
+	"modal-next": "Amagrad d-iteddun",
+	"modal-translate": "Suqel",
+	"modal-create-from-scratch": "Rnu si ulac",
+	"modal-loading": "Asali...",
+	"modal-preview-fail": "Ur izmir ara ad d-isali taskant",
+	"create-title": "Amagrad amaynut",
+	"create-title-input-placeholder": "Azwel n tsuqilt",
+	"create-warning": "Ɣur-k!",
+	"create-action": "Rnu"
+}

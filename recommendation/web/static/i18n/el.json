@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nikosgranturismogt"
+		]
+	},
+	"title-wikipedia": "Βικιπαίδεια",
+	"title-beta": "Δοκιμαστική έκδοση",
+	"menu-how-to": "Πως να",
+	"menu-about": "Σχετικά",
+	"menu-feedback": "σχόλια",
+	"menu-source-code": "Πηγαίος κώδικας",
+	"menu-privacy-statement": "Δήλωση απορρήτου",
+	"selector-source": "Πηγή",
+	"selector-target": "Στόχος",
+	"search-placeholder": "Αναζήτηση για δημιουργία λημμάτων",
+	"status-preparing": "Προετοιμασία προτάσεων λημμάτων",
+	"status-must-be-different": "Οι γλώσσες-πηγές και στόχοι πρέπει να είναι διαφορετικοί",
+	"status-invalid-language": "Μη έγκυρη πηγή ή γλώσσα στόχος",
+	"status-no-results": "Δεν υπάρχουν διαθέσιμες προτάσεις για αυτές τις παραμέτρους"
+}
