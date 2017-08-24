@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joedalton"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Instruktioner",
+	"menu-about": "Om",
+	"menu-feedback": "Tilbagemelding",
+	"menu-source-code": "Kildekode",
+	"menu-privacy-statement": "Privatlivsoplysninger",
+	"selector-source": "Kilde",
+	"selector-target": "Mål",
+	"search-placeholder": "Søgning efter artikler at oprette",
+	"status-preparing": "Forbereder artikelforslag …",
+	"status-must-be-different": "Kilde- og målsprog skal være forskellige",
+	"status-invalid-language": "Ugyldig kilde- eller målsprog",
+	"status-no-results": "Ingen anbefalinger var tilgængelige for de specificerede parametre",
+	"article-pageviews": "$1 seneste {{PLURAL:$1|visning|visninger}}",
+	"article-flag": "Flag denne artikel …",
+	"article-flag-not-interesting": "Uinteressant",
+	"article-flag-not-notable": "Ikke relevant for Wikipedia på $1",
+	"modal-close": "Luk",
+	"modal-new-window": "Åbn denne artikel i et nyt vindue",
+	"modal-previous": "Forrige artikel",
+	"modal-next": "Næste artikel",
+	"modal-translate": "Oversæt",
+	"modal-create-from-scratch": "Opret fra bunden",
+	"modal-loading": "Indlæser …",
+	"modal-preview-fail": "Forhåndsvisningen kunne ikke indlæses",
+	"create-title": "Ny artikel",
+	"create-title-input-placeholder": "Oversættelsestitel",
+	"create-warning": "Advarsel!",
+	"create-action": "Opret",
+	"create-error-empty": "Titlen skal være tom",
+	"create-error-invalid-character": "Ugyldigt tegn i titlen (»|«)",
+	"create-error-exists": "Siden findes allerede på $1",
+	"create-error-invalid-page": "Siden er ugyldig på $1"
+}
