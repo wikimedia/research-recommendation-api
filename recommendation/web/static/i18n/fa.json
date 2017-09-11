@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Namo"
+			"Namo",
+			"Reza1615"
 		]
 	},
 	"title-wikipedia": "ویکی‌پدیا",
@@ -18,6 +19,7 @@
 	"status-preparing": "در حال آماده‌سازی توصیه‌های مقاله...",
 	"status-must-be-different": "زبان مبدا و مقصد باید متفاوت باشد",
 	"status-invalid-language": "زبان مبدا یا مقصد نامعتبر است",
+	"status-no-results": "برای متغییرهای خاص پیشنهادی یافت نشذ",
 	"article-pageviews": "$1 {{PLURAL:$1|بازدید|بازدید}}",
 	"article-flag": "پرچم‌گذاری این مقاله...",
 	"article-flag-not-interesting": "جالب نیست",
@@ -29,7 +31,7 @@
 	"modal-translate": "ترجمه",
 	"modal-create-from-scratch": "ترجمه از اول",
 	"modal-loading": "در حال بارگیری...",
-	"modal-preview-fail": "عدم اتصال به اینترنت",
+	"modal-preview-fail": "خطا در نمایش پیش‌نمایش",
 	"create-title": "مقاله جدید",
 	"create-title-input-placeholder": "عنوان ترجمه",
 	"create-warning": "هشدار!",
