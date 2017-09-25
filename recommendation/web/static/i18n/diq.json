@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kumkumuk"
+			"Kumkumuk",
+			"Mirzali"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -29,7 +30,7 @@
 	"modal-translate": "Açarne",
 	"modal-create-from-scratch": "Sıfır ra vıraze",
 	"modal-loading": "Bar beno...",
-	"modal-preview-fail": "İnternet çıno",
+	"modal-preview-fail": "Verasayış bar nêbi",
 	"create-title": "Meqaleyo newe",
 	"create-title-input-placeholder": "Sernamey açarnayışi",
 	"create-warning": "Tembe kem!",
