@@ -17,5 +17,22 @@
 	"status-preparing": "Προετοιμασία προτάσεων λημμάτων",
 	"status-must-be-different": "Οι γλώσσες-πηγές και στόχοι πρέπει να είναι διαφορετικοί",
 	"status-invalid-language": "Μη έγκυρη πηγή ή γλώσσα στόχος",
-	"status-no-results": "Δεν υπάρχουν διαθέσιμες προτάσεις για αυτές τις παραμέτρους"
+	"status-no-results": "Δεν υπάρχουν διαθέσιμες προτάσεις για αυτές τις παραμέτρους",
+	"article-flag-not-interesting": "Όχι ενδιαφέρον",
+	"modal-close": "Κλείστε",
+	"modal-new-window": "Ανοίξτε αυτό το λήμμα σε νέο παράθυρο",
+	"modal-previous": "Προηγούμενο λήμμα",
+	"modal-next": "Επόμενο λήμμα",
+	"modal-translate": "Μεταφράστε",
+	"modal-create-from-scratch": "Δημιουργία από το μηδέν",
+	"modal-loading": "Φόρτωση σε εξέλιξη...",
+	"modal-preview-fail": "Η προεπισκόπηση απέτυχε να φορτώσει",
+	"create-title": "Νέο λήμμα",
+	"create-title-input-placeholder": "Τίτλος μετάφρασης",
+	"create-warning": "Προειδοποίηση",
+	"create-action": "Δημιουργία",
+	"create-error-empty": "Ο τίτλος δεν πρέπει να είναι άδειος",
+	"create-error-invalid-character": "Μη έγκυρος χαρακτήρας στον τίτλο ( '|' )",
+	"create-error-exists": "Η σελίδα υπάρχει ήδη στο $1",
+	"create-error-invalid-page": "Η σελίδα είναι μη έγκυρη στο $1"
 }

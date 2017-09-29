@@ -16,5 +16,12 @@
 	"selector-target": "Destinazione",
 	"search-placeholder": "Cirche vôsce da ccrejà",
 	"status-preparing": "Stoche a prepare le suggeweminde pe le vôsce ...",
-	"status-must-be-different": "'A lènghe de partenze e quedde d'arrive onna essere diverse"
+	"status-must-be-different": "'A lènghe de partenze e quedde d'arrive onna essere diverse",
+	"status-invalid-language": "'A lènghe de partenze o de arrive sò invalide",
+	"status-no-results": "Nisciuna raccomandazione ere disponibbile pe le parametre specificate",
+	"article-pageviews": "urteme $1 {{PLURAL:$1|visite}}",
+	"article-flag": "Signe sta vôsce...",
+	"article-flag-not-interesting": "Non g'è inderessande",
+	"article-flag-not-notable": "Non importande pe Uicchipèdie jndr'à $1",
+	"modal-close": "Achiude"
 }
