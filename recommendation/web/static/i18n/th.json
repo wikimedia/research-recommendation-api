@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Bluegram",
-			"Pon44695"
+			"Pon44695",
+			"Woraponboonkerd"
 		]
 	},
 	"title-wikipedia": "วิกิพีเดีย",
@@ -19,6 +20,7 @@
 	"status-preparing": "กำลังจัดเตรียมบทความแนะนำ",
 	"status-must-be-different": "แหล่งข้อมูลและภาษาเป้าหมายจะต้องแตกต่างกัน",
 	"status-invalid-language": "แหล่งข้อมูลหรือภาษาเป้าหมายไม่ถูกต้อง",
+	"status-no-results": "ไม่มีคำแนะนำสำหรับค่ากำหนดดังกล่าว",
 	"article-pageviews": "$1 ในปัจจุบัน {{PLURAL:$1|ผู้ชม|ผู้ชม}}",
 	"article-flag": "ติดธงบทความนี้...",
 	"article-flag-not-interesting": "ไม่สนใจ",
@@ -30,7 +32,7 @@
 	"modal-translate": "แปล",
 	"modal-create-from-scratch": "สร้างตั้งแต่ต้น",
 	"modal-loading": "กำลังโหลด...",
-	"modal-preview-fail": "ไม่มีการเชื่อมต่ออินเตอร์เน็ต",
+	"modal-preview-fail": "ไม่สามารถแสดงตัวอย่างได้",
 	"create-title": "หัวข้อใหม่",
 	"create-title-input-placeholder": "ชื่อเรื่องการแปล",
 	"create-warning": "คำเตือน!",
