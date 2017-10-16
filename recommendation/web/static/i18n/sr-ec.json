@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Milicevic01",
+			"Obsuser"
+		]
+	},
+	"title-wikipedia": "Википедија",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "бета",
+	"menu-how-to": "Упутства",
+	"menu-about": "О",
+	"menu-feedback": "Повратне информације",
+	"menu-source-code": "Изворни код",
+	"menu-privacy-statement": "Изјава о приватности",
+	"selector-source": "Извор",
+	"selector-target": "Циљ",
+	"search-placeholder": "Претрага чланака за прављење",
+	"status-preparing": "Припрема препорука чланака...",
+	"status-must-be-different": "Изворни и циљани језик морају бити различити",
+	"status-invalid-language": "Невалидан изворни или циљани језик",
+	"status-no-results": "Нема доступних препорука за одабране параметре",
+	"article-pageviews": "$1 {{PLURAL:$1|скорашњи преглед|скорашња прегледа|скорашњих прегледа}}",
+	"article-flag": "Означи овај чланак...",
+	"article-flag-not-interesting": "Није интересантан",
+	"article-flag-not-notable": "Није значајан за Википедију ($1)",
+	"modal-close": "Затвори",
+	"modal-new-window": "Отвори овај чланак у новом прозору",
+	"modal-previous": "Претходни чланак",
+	"modal-next": "Наредни чланак",
+	"modal-translate": "Преведи",
+	"modal-create-from-scratch": "Направи од почетка",
+	"modal-loading": "Учитавам…",
+	"modal-preview-fail": "Претпреглед није могао да се учита",
+	"create-title": "Нови чланак",
+	"create-title-input-placeholder": "Наслов превода",
+	"create-warning": "Упозорење!",
+	"create-action": "Направи",
+	"create-error-empty": "Наслов не сме да буде празан",
+	"create-error-invalid-character": "Невалидан карактер у наслову ( '|' )",
+	"create-error-exists": "Страница већ постоји на $1",
+	"create-error-invalid-page": "Страница је невалидна на $1"
+}
