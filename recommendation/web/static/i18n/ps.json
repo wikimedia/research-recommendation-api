@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ahmed-Najib-Biabani-Ibrahimkhel"
+			"Ahmed-Najib-Biabani-Ibrahimkhel",
+			"Baloch Khan"
 		]
 	},
 	"title-wikipedia": "ويکيپېډيا",
@@ -18,6 +19,7 @@
 	"status-preparing": "د ليکنو سپارښتنې چمتو کېږي...",
 	"status-must-be-different": "د سرچينې او د موخې ژبو ترمېنځ بايد توپير وي",
 	"status-invalid-language": "د سرچينې يا موخې ناسمه ژبه",
+	"status-no-results": "د ځانګړو پیرامیټونو لپاره سپارښتنې شتون نلري",
 	"article-pageviews": "$1 تازه {{PLURAL:$1|کتنه|کتنې}}",
 	"article-flag": "دا ليکنه رپی داره کول...",
 	"article-flag-not-interesting": "پزړه پوری نه دی",
