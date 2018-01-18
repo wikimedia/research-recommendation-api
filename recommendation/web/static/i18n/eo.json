@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robin van der Vliet"
+		]
+	},
+	"title-wikipedia": "Vikipedio",
+	"menu-about": "Pri",
+	"menu-source-code": "Fontkodo",
+	"selector-source": "Fonto",
+	"selector-target": "Celo",
+	"search-placeholder": "Serĉi artikolojn por krei",
+	"modal-close": "Fermi",
+	"modal-translate": "Traduki",
+	"create-title": "Nova artikolo",
+	"create-warning": "Averto!",
+	"create-action": "Krei"
+}
