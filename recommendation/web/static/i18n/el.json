@@ -5,6 +5,7 @@
 		]
 	},
 	"title-wikipedia": "Βικιπαίδεια",
+	"title-gapfinder": "GapFinder",
 	"title-beta": "Δοκιμαστική έκδοση",
 	"menu-how-to": "Πως να",
 	"menu-about": "Σχετικά",
@@ -18,7 +19,10 @@
 	"status-must-be-different": "Οι γλώσσες-πηγές και στόχοι πρέπει να είναι διαφορετικοί",
 	"status-invalid-language": "Μη έγκυρη πηγή ή γλώσσα στόχος",
 	"status-no-results": "Δεν υπάρχουν διαθέσιμες προτάσεις για αυτές τις παραμέτρους",
+	"article-pageviews": "$1 πρόσφατα {{PLURAL:$1|προβολή|προβολές}}",
+	"article-flag": "Επισήμανση του άρθρου...",
 	"article-flag-not-interesting": "Όχι ενδιαφέρον",
+	"article-flag-not-notable": "Μη αξιοσημείωτο για την $1 Βικιπαίδεια",
 	"modal-close": "Κλείστε",
 	"modal-new-window": "Ανοίξτε αυτό το λήμμα σε νέο παράθυρο",
 	"modal-previous": "Προηγούμενο λήμμα",
