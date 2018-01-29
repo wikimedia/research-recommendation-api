@@ -38,7 +38,7 @@
 	"create-warning": "Упозорење!",
 	"create-action": "Направи",
 	"create-error-empty": "Наслов не сме да буде празан",
-	"create-error-invalid-character": "Невалидан симбол у наслову ( '|' )",
+	"create-error-invalid-character": "Неисправан симбол у наслову ( '|' )",
 	"create-error-exists": "Страница већ постоји на $1",
-	"create-error-invalid-page": "Страница је невалидна на $1"
+	"create-error-invalid-page": "Страница је неисправна на $1"
 }
