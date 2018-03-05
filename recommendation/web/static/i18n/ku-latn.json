@@ -1,19 +1,43 @@
 {
 	"@metadata": {
 		"authors": [
-			"George Animal"
+			"George Animal",
+			"Bikarhêner"
 		]
 	},
 	"title-wikipedia": "Wîkîpediya",
+	"title-gapfinder": "GapFinder",
 	"title-beta": "beta",
+	"menu-how-to": "Çawan",
+	"menu-about": "Derbar",
+	"menu-feedback": "Paşragihandin",
 	"menu-source-code": "Koda çavkanîye",
+	"menu-privacy-statement": "Daxuyaniya veşarîtiyê",
 	"selector-source": "Çavkanî",
+	"selector-target": "Armanc",
+	"search-placeholder": "Ji bo çêkirinê li gotaran bigere",
+	"status-preparing": "Pêşniyarên amadekirina gotarê...",
+	"status-must-be-different": "Divê zimanê çavkanî û zimanê ku tê armancgirtin ji hev cuda bin",
+	"status-invalid-language": "Zimanê armanc an jî çavkanî ne muteber e",
+	"status-no-results": "Ji bo van parametreyên diyarkirî ti pêşniyarek berdest tinebû",
+	"article-pageviews": "$1 {{PLURAL:$1|dîtinê|dîtinên}} dawî",
+	"article-flag": "Vê gotarê nîşan bike...",
+	"article-flag-not-interesting": "Ne balkêş e",
+	"article-flag-not-notable": "$1 ji bo Wîkîpediyayê ne hêjayî baldanê ye",
 	"modal-close": "Bigre",
+	"modal-new-window": "Vê gotarê di paceyekî nû de vebike",
+	"modal-previous": "Gotara berê",
+	"modal-next": "Gotara piştre",
 	"modal-translate": "Wergerîne",
+	"modal-create-from-scratch": "Ji sifrê dest bi çêkirinê bike",
 	"modal-loading": "Tê barkirin...",
-	"modal-preview-fail": "Înternet tune ye",
+	"modal-preview-fail": "Barkirina pêşdîtinê bi ser neket",
 	"create-title": "Gotara nû",
 	"create-title-input-placeholder": "Sernavê wergerê",
 	"create-warning": "Hişyarî!",
-	"create-action": "Çêke"
+	"create-action": "Çêke",
+	"create-error-empty": "Sernav divê ne vala be",
+	"create-error-invalid-character": "Di sernava ( '|' ) de karakterek ne muteber",
+	"create-error-exists": "Ev rûpel jixwe li $1 heye",
+	"create-error-invalid-page": "Rûpela $1 ne muteber e"
 }
