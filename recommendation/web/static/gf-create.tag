@@ -65,7 +65,7 @@
                     indexpageids: true,
                     format: 'json',
                     origin: '*',
-                    titles: encodeURIComponent(targetTitle)
+                    titles: targetTitle
                 },
                 dataType: 'json'
             }).done(function (response) {
