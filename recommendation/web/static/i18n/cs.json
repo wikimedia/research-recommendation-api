@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Dvorapa"
+			"Dvorapa",
+			"Mormegil"
 		]
 	},
 	"title-wikipedia": "Wikipedie",
@@ -18,6 +19,7 @@
 	"status-preparing": "Doporučené články se připravují...",
 	"status-must-be-different": "Zdrojový a cílový jazyk se musí lišit",
 	"status-invalid-language": "Neplatný zdroj cílového jazyka",
+	"status-no-results": "Pro zadané parametry nebyla nalezena žádná doporučení",
 	"article-pageviews": "{{PLURAL:$1|Nedávno navštíveno}} $1×",
 	"article-flag": "Označte tento článek...",
 	"article-flag-not-interesting": "Nezajímavé",
