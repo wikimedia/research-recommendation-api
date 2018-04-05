@@ -1,7 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"امین اکبر"
+			"امین اکبر",
+			"Abdulq",
+			"BukhariSaeed"
 		]
 	},
 	"title-wikipedia": "ویکیپیڈیا",
@@ -11,6 +13,7 @@
 	"menu-about": "بارے میں",
 	"menu-feedback": "فیڈ بیک",
 	"menu-source-code": "سورس کوڈ",
+	"menu-privacy-statement": "رازداری وضاحت",
 	"selector-source": "ذریعہ",
 	"selector-target": "ہدف",
 	"search-placeholder": "تخلیق کرنے کے لیےمضمون تلاش کریں",
@@ -27,7 +30,7 @@
 	"modal-translate": "ترجمہ کریں",
 	"modal-create-from-scratch": "شروع سے تخلیق کریں",
 	"modal-loading": "لوڈ ہو رہا ہے...",
-	"modal-preview-fail": "انٹرنیٹ نہیں ہے",
+	"modal-preview-fail": "نمائش لوڈ ہونے میں ناکام ہوگئی",
 	"create-title": "نیا مضمون",
 	"create-title-input-placeholder": "ترجمے کا عنوان",
 	"create-warning": "انتباہ!",
