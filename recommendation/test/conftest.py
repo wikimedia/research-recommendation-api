@@ -30,7 +30,7 @@ def change_config_and_setup_responses(request, config_locations):
     responses._default_mock.__enter__()
 
     def fin():
-        responses._default_mock.__exit__()
+        responses._default_mock.__exit__(None, None, None)
         configuration._config_locations = old_config_locations
 
     request.addfinalizer(fin)
