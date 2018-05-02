@@ -78,9 +78,9 @@
         self.show = function () {
             var showing = self.articles[self.showIndex];
             self.title = showing.title;
-            self.translateLink = self.translateRoot + '&page=' + encodeURIComponent(showing.linkTitle);
-            self.articleLink = self.articleRoot + encodeURIComponent(showing.linkTitle);
-            self.previewUrl = previewRoot + encodeURIComponent(showing.linkTitle);
+            self.translateLink = self.translateRoot + '&page=' + showing.linkTitle;
+            self.articleLink = self.articleRoot + showing.linkTitle;
+            self.previewUrl = previewRoot + showing.linkTitle;
 
             self.showPreview('Loading...');
 
