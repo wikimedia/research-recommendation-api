@@ -12,6 +12,7 @@
 	"menu-source-code": "Համակարգիչային օրինագիր",
 	"selector-source": "Աղբիւր",
 	"selector-target": "Նպատակ",
+	"article-flag-not-interesting": "Հետաքրքրական չէ:",
 	"modal-close": "Գոցել",
 	"modal-new-window": "Բանալ այս յօդուածը նոր պատուհանի մէջ",
 	"modal-previous": "Նախորդ յօդուածը",
@@ -22,5 +23,6 @@
 	"create-title-input-placeholder": "Թարգմանութեան վերնագիր",
 	"create-warning": "Նախազգուշութիւն:",
 	"create-action": "Ստեղծել",
-	"create-error-empty": "Վերնագիրը պարապ չի կրնար ըլլալ"
+	"create-error-empty": "Վերնագիրը պարապ չի կրնար ըլլալ",
+	"create-error-exists": "Այս էջը արդէն գոյութիւն ունի $1"
 }

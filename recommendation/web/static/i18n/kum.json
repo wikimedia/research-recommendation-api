@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"ArslanX"
+		]
+	},
+	"title-wikipedia": "Википедия",
+	"title-beta": "бета",
+	"menu-how-to": "Нечик",
+	"menu-about": "Тасвир",
+	"selector-source": "Эни",
+	"selector-target": "Мурат",
+	"article-pageviews": "$1 recent {{PLURAL:$1|къарав}}",
+	"modal-close": "Япмакъ",
+	"modal-new-window": "Бу макъаланы янгы терезеде ачмакъ",
+	"modal-previous": "Алдыгъы макъала",
+	"modal-next": "Гелеген макъала",
+	"modal-translate": "Таржума этмек",
+	"modal-create-from-scratch": "Скретч ясамакъ",
+	"modal-loading": "Юклев...",
+	"modal-preview-fail": "Ингкъаравну юклеме бажарылмады",
+	"create-title": "Янгы макъала",
+	"create-title-input-placeholder": "Таржумалангъан аты",
+	"create-warning": "Буварыв!",
+	"create-action": "Яратмакъ"
+}
