@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"AZISS"
+		]
+	},
+	"title-wikipedia": "Vikipediya",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta-versiya",
+	"menu-how-to": "Necə",
+	"menu-about": "Haqqında",
+	"menu-feedback": "Rəy",
+	"menu-source-code": "Mənbə kodu",
+	"menu-privacy-statement": "Məxfilik bəyanatı",
+	"selector-source": "Mənbə",
+	"selector-target": "Hədəf",
+	"search-placeholder": "Məqalə yaratmaq üçün axtarış",
+	"status-preparing": "Tövsiyyə məqalələrinin hazırlanması...",
+	"status-must-be-different": "İlkin və təyinat dillər müxtəlif olmalıdır",
+	"status-invalid-language": "Yolverilməz ilkin və ya təyinat dili",
+	"status-no-results": "Verilmiş parametrlər üçün mümkün olan tövsiyə yoxdur",
+	"article-pageviews": "$1 {{PLURAL:$1|baxış}}",
+	"article-flag": "Bu məqaləni qeyd et...",
+	"article-flag-not-interesting": "Maraqlı deyil",
+	"article-flag-not-notable": "$1 Vikipediya üçün gözə çarpan deyil",
+	"modal-close": "Bağla",
+	"modal-new-window": "Bu məqaləni yeni pəncərədə aç",
+	"modal-previous": "Əvvəlki məqalə",
+	"modal-next": "Sonrakı məqalə",
+	"modal-translate": "Tərcümə",
+	"modal-create-from-scratch": "Skretçən yarat",
+	"modal-loading": "Yüklənir…",
+	"modal-preview-fail": "Önbaxışın yüklənməsində xəta baş verdi",
+	"create-title": "Yeni məqalə",
+	"create-title-input-placeholder": "Tərcümə başlığı",
+	"create-warning": "Diqqət!",
+	"create-action": "Yarat",
+	"create-error-empty": "Başlıq boş qalmamalıdır",
+	"create-error-invalid-character": "Başlıqda icazə verilməyən simvol ( '|' )",
+	"create-error-exists": "$1 artıq mövcud olan səhifə",
+	"create-error-invalid-page": "$1 səhifə səhfdir"
+}
