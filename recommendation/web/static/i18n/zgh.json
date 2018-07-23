@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"YesIn"
+		]
+	},
+	"title-wikipedia": "ⵡⵉⴽⵉⴱⵉⴷⵢⴰ",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "ⴰⵏⴰⵔⴰⵎ",
+	"menu-how-to": "ⵎⴰⵏⵎⴽ",
+	"menu-about": "ⵅⴼ",
+	"menu-feedback": "ⵜⴰⵙⴰⴷⵎⵔⵜ",
+	"menu-source-code": "ⵜⴰⵏⴳⴰⵍⵜ ⵏ ⵓⵙⴰⴳⵎ",
+	"menu-privacy-statement": "ⵜⴰⵙⴳⵓⵔⵉ ⵏ ⵜⵉⵏⵏⵓⵜⵍⴰ",
+	"selector-source": "ⴰⵙⴰⴳⵎ",
+	"selector-target": "ⴰⵙⵡⵓⵜⵜⵙ",
+	"search-placeholder": "ⵔⵣⵓ ⵅⴼ ⵉⵎⵏⵏⵉⵜⵏ ⵉ ⵓⵙⵏⴼⵍⵓⵍ",
+	"status-preparing": "ⴰⵙⵎⵓⵜⵜⴳ ⵏ ⵉⵙⵖⵍⵉⴼⵏ ⵏ ⵓⵎⵏⵏⵉ...",
+	"status-must-be-different": "ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵎⵣⴰⵔⴰⵢⵏⵜ ⵜⵓⵜⵍⴰⵢⵉⵏ ⵏ ⵓⵙⴰⴳⵎ ⴷ ⵓⵙⵡⵓⵜⵜⵙ",
+	"status-invalid-language": "ⵜⵓⵜⵍⴰⵢⵜ ⵏ ⵓⵙⴰⴳⵎ ⵏⵉⵖ ⵜⵉⵏ ⵓⵙⵡⵓⵜⵜⵙ ⵓⵔ ⵜⵖⵣⵉⵏ",
+	"article-pageviews": "$1 {{PLURAL:$1|ⵏ ⵜⴰⵏⵏⴰⵢⵜ ⵜⴰⵎⴳⴳⴰⵔⵓⵜ|ⵏ ⵜⴰⵏⵏⴰⵢⵉⵏ ⵜⵉⵎⴳⴳⵓⵔⴰ}}",
+	"modal-close": "ⵔⴳⵍ",
+	"modal-previous": "ⴰⵎⵏⵏⵉ ⴰⵎⵣⵡⴰⵔⵓ",
+	"modal-next": "ⴰⵎⵏⵏⵉ ⵓⴹⴼⵉⵕ",
+	"modal-translate": "ⵙⵙⵓⵖⵍ",
+	"modal-create-from-scratch": "ⵙⵏⴼⵍⵓⵍ ⵙⴳ ⵓⵎⵢⴰ",
+	"modal-loading": "ⴰⵣⴷⴰⵎ...",
+	"create-title": "ⴰⵎⵏⵏⵉ ⴰⵎⴰⵢⵏⵓ",
+	"create-title-input-placeholder": "ⴰⵣⵡⵍ ⵏ ⵜⵙⵓⵖⵍⵜ",
+	"create-action": "ⵙⵏⴼⵍⵓⵍ",
+	"create-error-invalid-character": "ⴰⵙⴽⴽⵉⵍ ⵓⵔ ⵉⵖⵣⵉⵏⵏ ⴳ ⵓⵣⵡⵍ ( '|' )",
+	"create-error-exists": "ⵜⴰⵙⵏⴰ ⵉⵍⵍⴰⵏ ⵢⴰⴷ ⴳ $1",
+	"create-error-invalid-page": "ⵓⵔ ⵜⵖⵣⵉⵏ ⵜⴰⵙⵏⴰ ⴳ $1"
+}
