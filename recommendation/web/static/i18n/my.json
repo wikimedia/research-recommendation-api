@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dr Lotus Black"
+		]
+	},
+	"title-wikipedia": "ဝီကီပီးဒီးယား",
+	"title-beta": "အစမ်းမူကွဲ",
+	"menu-about": "အကြောင်း",
+	"menu-feedback": "အကြံပေးရန်",
+	"selector-source": "ရင်းမြစ်",
+	"selector-target": "ဦးတည်ချက်",
+	"modal-close": "ပိတ်ရန်",
+	"modal-translate": "ဘာသာပြန်ပါ",
+	"modal-loading": "ဝန်ဆွဲတင်နေသည်...",
+	"create-title": "ဆောင်းပါးသစ်",
+	"create-title-input-placeholder": "ဘာသာပြန် ခေါင်းစဉ်",
+	"create-warning": "သတိပေးချက်",
+	"create-action": "ဖန်တီးရန်",
+	"create-error-empty": "ခေါင်းစဉ်ကို ကွက်လပ်ချန်၍ မရပါ"
+}

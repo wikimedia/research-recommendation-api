@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"YesIn"
+			"YesIn",
+			"Mdb897"
 		]
 	},
 	"title-wikipedia": "ⵡⵉⴽⵉⴱⵉⴷⵢⴰ",
@@ -20,7 +21,7 @@
 	"status-invalid-language": "ⵜⵓⵜⵍⴰⵢⵜ ⵏ ⵓⵙⴰⴳⵎ ⵏⵉⵖ ⵜⵉⵏ ⵓⵙⵡⵓⵜⵜⵙ ⵓⵔ ⵜⵖⵣⵉⵏ",
 	"article-pageviews": "$1 {{PLURAL:$1|ⵏ ⵜⴰⵏⵏⴰⵢⵜ ⵜⴰⵎⴳⴳⴰⵔⵓⵜ|ⵏ ⵜⴰⵏⵏⴰⵢⵉⵏ ⵜⵉⵎⴳⴳⵓⵔⴰ}}",
 	"modal-close": "ⵔⴳⵍ",
-	"modal-previous": "ⴰⵎⵏⵏⵉ ⴰⵎⵣⵡⴰⵔⵓ",
+	"modal-previous": "ⴰⵎⴳⵔⴰⴷ ⴰⵎⵣⵡⴰⵔⵓ",
 	"modal-next": "ⴰⵎⵏⵏⵉ ⵓⴹⴼⵉⵕ",
 	"modal-translate": "ⵙⵙⵓⵖⵍ",
 	"modal-create-from-scratch": "ⵙⵏⴼⵍⵓⵍ ⵙⴳ ⵓⵎⵢⴰ",
