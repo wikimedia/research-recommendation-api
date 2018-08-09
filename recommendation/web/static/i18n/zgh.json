@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"YesIn",
-			"Mdb897"
+			"Mdb897",
+			"Aslmad mohamed belarhzali"
 		]
 	},
 	"title-wikipedia": "ⵡⵉⴽⵉⴱⵉⴷⵢⴰ",
@@ -20,15 +21,21 @@
 	"status-must-be-different": "ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵎⵣⴰⵔⴰⵢⵏⵜ ⵜⵓⵜⵍⴰⵢⵉⵏ ⵏ ⵓⵙⴰⴳⵎ ⴷ ⵓⵙⵡⵓⵜⵜⵙ",
 	"status-invalid-language": "ⵜⵓⵜⵍⴰⵢⵜ ⵏ ⵓⵙⴰⴳⵎ ⵏⵉⵖ ⵜⵉⵏ ⵓⵙⵡⵓⵜⵜⵙ ⵓⵔ ⵜⵖⵣⵉⵏ",
 	"article-pageviews": "$1 {{PLURAL:$1|ⵏ ⵜⴰⵏⵏⴰⵢⵜ ⵜⴰⵎⴳⴳⴰⵔⵓⵜ|ⵏ ⵜⴰⵏⵏⴰⵢⵉⵏ ⵜⵉⵎⴳⴳⵓⵔⴰ}}",
+	"article-flag": "ⵛⵔⴹ ⴰⵎⴳⵔⴰⴷ ⴰⴷ...",
+	"article-flag-not-interesting": "ⵓⵔ ⵉⵍⵉ ⴰⵣⴰⵍ",
 	"modal-close": "ⵔⴳⵍ",
+	"modal-new-window": "ⵔⵥⵎ ⴰⵎⴳⵔⴰⴷ ⴰⴷ ⴳ ⵢⴰⵏ ⵓⵙⴽⵙⵍ ⴰⵎⴰⵢⵏⵓ",
 	"modal-previous": "ⴰⵎⴳⵔⴰⴷ ⴰⵎⵣⵡⴰⵔⵓ",
 	"modal-next": "ⴰⵎⵏⵏⵉ ⵓⴹⴼⵉⵕ",
 	"modal-translate": "ⵙⵙⵓⵖⵍ",
 	"modal-create-from-scratch": "ⵙⵏⴼⵍⵓⵍ ⵙⴳ ⵓⵎⵢⴰ",
 	"modal-loading": "ⴰⵣⴷⴰⵎ...",
+	"modal-preview-fail": "ⵓⵔ ⵉⵎⵓⵔⵉⵙ ⵓⵙⵙⴽⵜⵔ ⵏ ⵓⵎⵓⵇⵇⵍ",
 	"create-title": "ⴰⵎⵏⵏⵉ ⴰⵎⴰⵢⵏⵓ",
 	"create-title-input-placeholder": "ⴰⵣⵡⵍ ⵏ ⵜⵙⵓⵖⵍⵜ",
+	"create-warning": "ⴰⵡⵢ ⵉⵜⵏⴰⵏ!",
 	"create-action": "ⵙⵏⴼⵍⵓⵍ",
+	"create-error-empty": "ⵓⵔ ⵜⵓⴼⵉⴷ ⴰⴷ ⵜⴰⵊⵊⴷ ⴰⵣⵡⵍ ⵢⵓⵔⴰ",
 	"create-error-invalid-character": "ⴰⵙⴽⴽⵉⵍ ⵓⵔ ⵉⵖⵣⵉⵏⵏ ⴳ ⵓⵣⵡⵍ ( '|' )",
 	"create-error-exists": "ⵜⴰⵙⵏⴰ ⵉⵍⵍⴰⵏ ⵢⴰⴷ ⴳ $1",
 	"create-error-invalid-page": "ⵓⵔ ⵜⵖⵣⵉⵏ ⵜⴰⵙⵏⴰ ⴳ $1"

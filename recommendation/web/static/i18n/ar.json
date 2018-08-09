@@ -4,7 +4,8 @@
 			"DRIHEM",
 			"محمد أحمد عبد الفتاح",
 			"Meno25",
-			"Mido"
+			"Mido",
+			"ديفيد"
 		]
 	},
 	"title-wikipedia": "ويكيبيديا",
@@ -21,6 +22,7 @@
 	"status-preparing": "تحضير توصيات المقال...",
 	"status-must-be-different": "يجب أن تكون لغة المصدر و الهدف مختلفين",
 	"status-invalid-language": "لغة مصدر أو هدف غير صالحة",
+	"status-no-results": "لم تكن هناك توصيات متاحة للوسائط المحددة",
 	"article-pageviews": "{{PLURAL:$1|المشاهدة|المشاهدات}} الحالية $1",
 	"article-flag": "ضع علامة على هذا المقال...",
 	"article-flag-not-interesting": "غير مهم",
@@ -32,7 +34,7 @@
 	"modal-translate": "باشر في الترجمة",
 	"modal-create-from-scratch": "أنشئ من الصفر",
 	"modal-loading": "جارٍ التحميل...",
-	"modal-preview-fail": "لا يوجد إنترنت",
+	"modal-preview-fail": "فشلت المعاينة في التحميل",
 	"create-title": "مقالة جديدة",
 	"create-title-input-placeholder": "عنوان الترجمة",
 	"create-warning": "تحذير!",
