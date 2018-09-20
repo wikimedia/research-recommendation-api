@@ -23,5 +23,20 @@
 	"article-flag": "Signe sta vôsce...",
 	"article-flag-not-interesting": "Non g'è inderessande",
 	"article-flag-not-notable": "Non importande pe Uicchipèdie jndr'à $1",
-	"modal-close": "Achiude"
+	"modal-close": "Achiude",
+	"modal-new-window": "Iapre sta vôsce jndr'à 'na finestra nove",
+	"modal-previous": "Vôsce d'apprime",
+	"modal-next": "Vôsce apprisse",
+	"modal-translate": "Traduce",
+	"modal-create-from-scratch": "Ccrèje da zere",
+	"modal-loading": "Stoche a careche…",
+	"modal-preview-fail": "Non ge se pò carecà l'andeprime",
+	"create-title": "Vôscia nove",
+	"create-title-input-placeholder": "Titole d'a traduzione",
+	"create-warning": "Iapre l'uecchie!",
+	"create-action": "Ccreje",
+	"create-error-empty": "'U titole non ge pò essere vacande",
+	"create-error-invalid-character": "Carattere invalide jndr'à 'u titole ( '|' )",
+	"create-error-exists": "Pagène ca già esiste sus a $1",
+	"create-error-invalid-page": "'A pàgene non g'è valide sus a $1"
 }
