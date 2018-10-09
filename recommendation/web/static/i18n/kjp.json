@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rul1902"
+		]
+	},
+	"title-wikipedia": "ဝီးကေဝ်ပီဍီယာႋ",
+	"title-beta": "ပ္တုံယောဝ်ႋအ်ုထိုဝ်",
+	"menu-how-to": "ပ်ုသှ်ေသိုဝ်",
+	"menu-about": "အ်ုကျံင်",
+	"menu-feedback": "မ်ုဖှ်ေဆ်ုကုံးဆ်ုမံင်း",
+	"menu-source-code": "အ်ုဆုဂ်ၮါင်း",
+	"selector-source": "အ်ုထိုဝ်",
+	"selector-target": "ဖော့တိုင်",
+	"modal-close": "ကာၜါ်",
+	"modal-translate": "မ်ုခၠယ်",
+	"modal-loading": "ဆ်ုယှိင့်မ်ုကြုဒ်လုဂ်...",
+	"create-title": "လိက်သာထိင်ႋသင့်",
+	"create-title-input-placeholder": "ခၠယ်ခေါဟ်တင်",
+	"create-warning": "ဆ်ုတ်ုဒှ်",
+	"create-action": "ပ္တုံထံင်း",
+	"create-error-empty": "ခေါဟ်တင်ၮှ် အှ်ကှ်ေထါင်လ်ုသှ်ေၜး"
+}
