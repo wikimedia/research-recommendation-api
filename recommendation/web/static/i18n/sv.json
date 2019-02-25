@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"WikiPhoenix",
-			"Jopparn"
+			"Jopparn",
+			"Sturban"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -31,7 +32,7 @@
 	"modal-translate": "Översätt",
 	"modal-create-from-scratch": "Skapa från grunden",
 	"modal-loading": "Läser in...",
-	"modal-preview-fail": "Förhandsgranskningen gick inte att läsas in",
+	"modal-preview-fail": "Förhandsgranskningen kunde inte läsas in",
 	"create-title": "Ny artikel",
 	"create-title-input-placeholder": "Översättningstitel",
 	"create-warning": "Varning!",
