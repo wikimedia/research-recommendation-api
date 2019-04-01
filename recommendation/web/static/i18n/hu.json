@@ -2,16 +2,21 @@
 	"@metadata": {
 		"authors": [
 			"Csega",
-			"Wolf Rex"
+			"Wolf Rex",
+			"R-Joe"
 		]
 	},
 	"title-wikipedia": "Wikipédia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "béta",
+	"menu-how-to": "Hogyan kell",
 	"menu-about": "Névjegy",
 	"menu-feedback": "Visszajelzés",
 	"menu-source-code": "Forráskód",
 	"menu-privacy-statement": "Adatvédelmi irányelv",
 	"selector-source": "Forrás",
 	"selector-target": "Cél",
+	"search-placeholder": "Cikkek keresése a létrehozáshoz",
 	"modal-close": "Bezárás",
 	"modal-previous": "Előző szócikk",
 	"modal-next": "Következő szócikk",
