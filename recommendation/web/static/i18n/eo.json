@@ -1,18 +1,37 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robin van der Vliet"
+			"Robin van der Vliet",
+			"Mirin"
 		]
 	},
 	"title-wikipedia": "Vikipedio",
+	"title-gapfinder": "MankoTrovilo",
+	"title-beta": "beta-versio",
+	"menu-how-to": "Instrukcioj",
 	"menu-about": "Pri",
 	"menu-source-code": "Fontkodo",
+	"menu-privacy-statement": "Komunikaĵo pri privateco",
 	"selector-source": "Fonto",
 	"selector-target": "Celo",
 	"search-placeholder": "Serĉi artikolojn por krei",
+	"status-must-be-different": "Fonta kaj cela lingvoj devas esti malsamaj",
+	"status-invalid-language": "Nevalida fonta aŭ cela lingvo",
+	"article-flag": "Marki ĉi-artikolon...",
+	"article-flag-not-interesting": "Ne interesanta",
+	"article-flag-not-notable": "Ne rimarkinda por $1 Vikimedio",
 	"modal-close": "Fermi",
+	"modal-new-window": "Malfermi ĉi-artikolon en novan fenestron",
+	"modal-previous": "Antaŭa artikolo",
+	"modal-next": "Posta artikolo",
 	"modal-translate": "Traduki",
+	"modal-preview-fail": "Antaŭprezento malsukcesis",
 	"create-title": "Nova artikolo",
+	"create-title-input-placeholder": "Traduka titolo",
 	"create-warning": "Averto!",
-	"create-action": "Krei"
+	"create-action": "Krei",
+	"create-error-empty": "Titolo devas esti ne malplena",
+	"create-error-invalid-character": "Ne valida skribsigno en titolo ('|')",
+	"create-error-exists": "Paĝo jam ekzistas ĉe $1",
+	"create-error-invalid-page": "Paĝo ne estas valida ĉe $1"
 }
