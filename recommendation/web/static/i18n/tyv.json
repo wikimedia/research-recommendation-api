@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Agilight"
+		]
+	},
+	"title-wikipedia": "Википедия",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "Бета",
+	"menu-how-to": "Ажыглаары",
+	"menu-about": "Дугайты",
+	"menu-feedback": "Дедир харылзаа",
+	"menu-source-code": "Үндезин код",
+	"menu-privacy-statement": "Хуу медээлел дугайында билдириишкин",
+	"selector-source": "Дөзү",
+	"selector-target": "Сорулга",
+	"modal-close": "Хаар",
+	"modal-translate": "Очулдурар",
+	"modal-create-from-scratch": "Эгезинден чаяар",
+	"modal-loading": "Чүдүртүнүп тур...",
+	"modal-preview-fail": "Чижеглей көөрү чүдүртүнүп чадап каан",
+	"create-title": "Чаа чүүл",
+	"create-title-input-placeholder": "Очулдурган ады",
+	"create-warning": "Кичээңгейлиг!",
+	"create-action": "Чаяар",
+	"create-error-empty": "Ады куруг болбас",
+	"create-error-invalid-character": "Адынга турбас ужурлуг демдек ( '|' )",
+	"create-error-exists": "Ук арын ынчалдыр-ла дараазында черде бар: $1",
+	"create-error-invalid-page": "$1 деп черде ук арын таарышпас"
+}
