@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Brazal.dang"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Pano",
+	"menu-about": "Manonongod",
+	"menu-feedback": "Balik-simbag",
+	"menu-source-code": "Source code",
+	"menu-privacy-statement": "Pahayag kan pribasidad",
+	"selector-source": "Ginikanan",
+	"selector-target": "Target",
+	"search-placeholder": "Maghanap nin mga artikulo na gigibuhon",
+	"status-preparing": "Ipighahanda an mga nirekomendang mga artikulo...",
+	"status-must-be-different": "Ang source asin target na lengguwahe dapat magkaiba",
+	"status-invalid-language": "Inbalidong source o target na lengguwahe",
+	"status-no-results": "Mayong rekomendasyon na nahiling para sa mga itinukdong parametro",
+	"article-pageviews": "$1 bagong {{PLURAL:$1|view|paghiling}}",
+	"article-flag": "Ibandera na artikulong ini...",
+	"article-flag-not-interesting": "Bakong interesante",
+	"article-flag-not-notable": "Dai tanyag para sa $1 Wikipedia",
+	"modal-close": "Isara",
+	"modal-new-window": "Buksan an artikulong ini sa bagong bintana",
+	"modal-previous": "Nakaaging artikulo",
+	"modal-next": "Minasunod na artikulo",
+	"modal-translate": "Idakit-taramon",
+	"modal-create-from-scratch": "Magibo hali sa mayo",
+	"modal-loading": "Pigkakarga…",
+	"modal-preview-fail": "An preview dai nagkakarga",
+	"create-title": "Bagong Artikulo",
+	"create-title-input-placeholder": "Titulo kan dakit-taramon",
+	"create-warning": "Patanid!",
+	"create-action": "Muknaon",
+	"create-error-empty": "An titulo dai dapat blanko",
+	"create-error-invalid-character": "Inbalidong karakter sa titulo ('|')",
+	"create-error-exists": "Igwa nang pahina sa $1",
+	"create-error-invalid-page": "Inbalidong pahina sa $1"
+}
