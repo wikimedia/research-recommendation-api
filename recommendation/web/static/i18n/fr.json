@@ -3,7 +3,8 @@
 		"authors": [
 			"Kumkumuk",
 			"Yasten",
-			"Gomoko"
+			"Gomoko",
+			"Verdy p"
 		]
 	},
 	"title-wikipedia": "Wikipédia",
@@ -11,20 +12,20 @@
 	"title-beta": "bêta",
 	"menu-how-to": "Manuel",
 	"menu-about": "À propos",
-	"menu-feedback": "Commentaires",
+	"menu-feedback": "Avis",
 	"menu-source-code": "Code source",
 	"menu-privacy-statement": "Déclaration de confidentialité",
 	"selector-source": "Source",
 	"selector-target": "Cible",
 	"search-placeholder": "Rechercher des articles à créer",
-	"status-preparing": "Préparation des recommandations d'article...",
+	"status-preparing": "Préparation des recommandations d’article...",
 	"status-must-be-different": "Les langues source et cible doivent être différentes",
-	"status-invalid-language": "Langue source ou cible invalide",
+	"status-invalid-language": "Langue source ou cible non valide",
 	"status-no-results": "Aucune recommandation n’était disponible pour les paramètres spécifiés",
-	"article-pageviews": "$1 {{PLURAL:$1|consultation récente|consultations récentes}}",
-	"article-flag": "Marquer cet article…",
+	"article-pageviews": "$1 consultation{{PLURAL:$1||s}} récente{{PLURAL:$1||s}}",
+	"article-flag": "Marquer cet article...",
 	"article-flag-not-interesting": "Sans intérêt",
-	"article-flag-not-notable": "Non notable pour Wikipédia $1",
+	"article-flag-not-notable": "Non notable pour Wikipédia en $1",
 	"modal-close": "Fermer",
 	"modal-new-window": "Ouvrir cet article dans une nouvelle fenêtre",
 	"modal-previous": "Article précédent",
@@ -38,7 +39,7 @@
 	"create-warning": "Attention !",
 	"create-action": "Créer",
 	"create-error-empty": "Le titre ne doit pas être vide",
-	"create-error-invalid-character": "Caractère non valide dans le titre ('|')",
-	"create-error-exists": "Page déjà existante à $1",
-	"create-error-invalid-page": "Page invalide à $1"
+	"create-error-invalid-character": "Caractère « | » non valide dans le titre",
+	"create-error-exists": "La page existe déjà à $1",
+	"create-error-invalid-page": "La page n’est pas valide à $1"
 }
