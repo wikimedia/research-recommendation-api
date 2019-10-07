@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adithyak1997"
+		]
+	},
+	"title-wikipedia": "വിക്കിപീഡിയ",
+	"title-beta": "ബീറ്റ",
+	"menu-about": "വിവരണം",
+	"menu-feedback": "പ്രതികരണം",
+	"menu-privacy-statement": "സ്വകാര്യതാ പ്രസ്താവന",
+	"selector-source": "സ്രോതസ്സ്",
+	"selector-target": "ലക്ഷ്യം",
+	"search-placeholder": "സൃഷ്ടിക്കാൻ പറ്റുന്ന ലേഖനങ്ങൾ തിരയുക",
+	"article-flag-not-interesting": "താല്പര്യമില്ലാത്ത",
+	"modal-close": "അടയ്ക്കുക",
+	"modal-new-window": "പുതിയ ജാലകത്തിൽ ഈ ലേഖനം തുറക്കുക",
+	"modal-previous": "മുൻപത്തെ ലേഖനം",
+	"modal-next": "അടുത്ത ലേഖനം",
+	"modal-translate": "പരിഭാഷപ്പെടുത്തുക",
+	"modal-loading": "ശേഖരിക്കുന്നു...",
+	"create-title": "പുതിയ ലേഖനം",
+	"create-title-input-placeholder": "പരിഭാഷയുടെ തലക്കെട്ട്",
+	"create-warning": "മുന്നറിയിപ്പ്!",
+	"create-action": "സൃഷ്ടിക്കുക",
+	"create-error-empty": "തലക്കെട്ട് ശൂന്യമാവാൻ പാടില്ല",
+	"create-error-invalid-character": "തലക്കെട്ടിൽ അസാധുവായ ചിഹ്നം ('|')",
+	"create-error-exists": "$1ൽ താൾ ആദ്യമേ നിലനിൽക്കുന്നുണ്ട്",
+	"create-error-invalid-page": "$1ൽ താൾ അസാധുവാണ്"
+}
