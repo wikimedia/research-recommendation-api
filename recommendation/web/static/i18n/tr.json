@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Kumkumuk",
-			"Vito Genovese"
+			"Vito Genovese",
+			"Grkn gll"
 		]
 	},
 	"title-wikipedia": "Vikipedi",
@@ -29,14 +30,14 @@
 	"modal-previous": "Önceki makale",
 	"modal-next": "Sonraki makale",
 	"modal-translate": "Çevir",
-	"modal-create-from-scratch": "Sıfırdan yarat",
+	"modal-create-from-scratch": "Sıfırdan oluştur",
 	"modal-loading": "Yükleniyor...",
 	"modal-preview-fail": "Önizleme yüklenemedi.",
 	"create-title": "Yeni Makale",
 	"create-title-input-placeholder": "Çeviri başlığı",
 	"create-warning": "Uyarılar!",
 	"create-action": "Oluştur",
-	"create-error-empty": "Başlık alanı boş bırakılanaz",
+	"create-error-empty": "Başlık boş bırakılamaz",
 	"create-error-invalid-character": "( '|' ) başlığında geçersiz karakter",
 	"create-error-exists": "$1 isimli bir sayfa zaten var",
 	"create-error-invalid-page": "$1 sayfası geçersiz"
