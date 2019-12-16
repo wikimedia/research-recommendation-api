@@ -4,7 +4,8 @@
 			"Kumkumuk",
 			"Yasten",
 			"Gomoko",
-			"Verdy p"
+			"Verdy p",
+			"Thibaut120094"
 		]
 	},
 	"title-wikipedia": "Wikipédia",
@@ -36,10 +37,10 @@
 	"modal-preview-fail": "Impossible de charger l’aperçu",
 	"create-title": "Nouvel article",
 	"create-title-input-placeholder": "Titre de la traduction",
-	"create-warning": "Attention !",
+	"create-warning": "Attention !",
 	"create-action": "Créer",
 	"create-error-empty": "Le titre ne doit pas être vide",
-	"create-error-invalid-character": "Caractère « | » non valide dans le titre",
+	"create-error-invalid-character": "Caractère « | » non valide dans le titre",
 	"create-error-exists": "La page existe déjà à $1",
 	"create-error-invalid-page": "La page n’est pas valide à $1"
 }
