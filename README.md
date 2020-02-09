@@ -43,6 +43,7 @@
   ```
 
 * **Running the API**
+  Make sure you are using at least Python 3.4.
 
   There is a `wsgi` file provided at `recommendation/data/recommendation.wsgi`. This can be run
   using a tool like `uwsgi` as follows:
@@ -52,6 +53,8 @@
   pip install uwsgi
   uwsgi --http :5000 --wsgi-file recommendation/data/recommendation.wsgi --venv my-venv
   ```
+  If you get an error with Werkzeug, try `pip install Werkzeug==0.16.0`
+  until https://github.com/noirbizarre/flask-restplus/issues/777 is resolved.
 
   Then navigate here to see the UI:
   ```
