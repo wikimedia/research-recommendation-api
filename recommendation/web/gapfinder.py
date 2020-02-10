@@ -16,8 +16,14 @@ def home():
     seed = request.args.get('seed', '')
     search = request.args.get('search', '')
     rank_method = request.args.get('rank_method', '')
-    campaign = request.args.get('campaign', 'article-recommender-1')
+    campaign = request.args.get('campaign', '')
+    campaign_link = ''
     pairs = language_pairs.get_language_pairs()
+    # WikiGapFinder specific settings. TODO: these should be in a config file.
+    if campaign == 'WikiGapFinder':
+        s = 'en'
+        t = 'sv'
+        campaign_link = 'https://meta.wikimedia.org/wiki/WikiGap'
     return render_template(
         'index.html',
         language_pairs=json.dumps(pairs),
@@ -28,6 +34,7 @@ def home():
         search=urllib.parse.quote(search),
         rank_method=urllib.parse.quote(rank_method),
         campaign=urllib.parse.quote(campaign),
+        campaign_link=campaign_link,
         event_logger_url=configuration.get_config_value('endpoints', 'event_logger'),
         default_search=configuration.get_config_value('gapfinder', 'default_search')
     )
