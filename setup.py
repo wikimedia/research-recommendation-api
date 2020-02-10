@@ -15,7 +15,9 @@ setup(
                       'requests',
                       'numpy',
                       'scipy',
-                      'sklearn'],
+                      'sklearn',
+                      # https://github.com/noirbizarre/flask-restplus/issues/777
+                      'Werkzeug==0.16.0'],
     package_data={'recommendation.web': ['static/*.*',
                                          'static/i18n/*',
                                          'static/images/*',
