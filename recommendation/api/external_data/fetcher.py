@@ -108,7 +108,7 @@ def get_most_popular_articles(source, campaign=''):
     # we filter out undesirable items we at least have some good
     # results:
     if campaign == 'WikiGapFinder':
-        days = days * 10
+        days = days * 2
     date_format = configuration.get_config_value('popular_pageviews', 'date_format')
     query = configuration.get_config_value('popular_pageviews', 'query')
     date = (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime(date_format)

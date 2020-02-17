@@ -42,6 +42,7 @@ chown -R www-data:www-data ${LOG_PATH}
 
 cp ${TMP_PATH}/recommendation-api/recommendation/data/* ${ETC_PATH}
 cp ${ETC_PATH}/recommendation.nginx /etc/nginx/sites-available/recommendation
+unlink /etc/nginx/sites-enabled/recommendation
 ln -s /etc/nginx/sites-available/recommendation /etc/nginx/sites-enabled/
 cp ${ETC_PATH}/recommendation.service /etc/systemd/system/
 systemctl enable recommendation.service
