@@ -7,8 +7,8 @@ from recommendation.api.types.translation import recommendation
 log = logging.getLogger(__name__)
 
 
-def get_top_pageview_candidates(source, _, count):
-    articles = fetcher.get_most_popular_articles(source)
+def get_top_pageview_candidates(source, _, count, campaign=''):
+    articles = fetcher.get_most_popular_articles(source, campaign)
 
     # shuffle articles
     articles = sorted(articles, key=lambda x: random.random())

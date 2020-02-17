@@ -41,7 +41,17 @@ def filter_by_title(candidates):
     return [article for article in candidates if ':' not in article.title and not article.title.startswith('List')]
 
 
-def apply_filters(source, target, candidates):
+def filter_by_campaign(source, target, candidates, campaign=''):
+    """TODO: Think about moving the hardcoded items to a configuration file."""
+    if campaign == 'WikiGapFinder':
+        wikidata_ids = [article.wikidata_id for article in candidates]
+        women = wikidata.get_women(source, target, wikidata_ids)
+        ids_of_women = set([x.id for x in women])
+        return [x for x in candidates if x.wikidata_id in ids_of_women]
+    return candidates
+
+
+def apply_filters(source, target, candidates, campaign):
     log.debug('Number of candidates: %d', len(candidates))
     candidates = filter_by_title(candidates)
     log.debug('Number of candidates after title: %d', len(candidates))
@@ -49,5 +59,6 @@ def apply_filters(source, target, candidates):
     log.debug('Number of candidates after missing: %d', len(candidates))
     candidates = filter_by_disambiguation(source, candidates)
     log.debug('Number of candidates after disambiguation: %d', len(candidates))
-
+    candidates = filter_by_campaign(source, target, candidates, campaign)
+    log.debug('Number of candidates after campaign: %d', len(candidates))
     return candidates

@@ -79,6 +79,8 @@
                 seed = this.seedArticle.value;
             }
 
+            url += '&campaign=' + encodeURIComponent(window.translationAppGlobals.campaign);
+
             logUIRequest(mappedSource, mappedTarget, seed, self.origin, undefined, undefined, window.translationAppGlobals.campaign);
 
             $.ajax({

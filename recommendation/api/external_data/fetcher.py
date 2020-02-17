@@ -101,8 +101,14 @@ def wiki_search(source, seed, count, morelike=False):
     return results
 
 
-def get_most_popular_articles(source):
+def get_most_popular_articles(source, campaign=''):
     days = configuration.get_config_int('popular_pageviews', 'days')
+    # For the WikiGapFinder campaign we may not have enough data for the
+    # number of preconfigured days. So increase the number so that when
+    # we filter out undesirable items we at least have some good
+    # results:
+    if campaign == 'WikiGapFinder':
+        days = days * 10
     date_format = configuration.get_config_value('popular_pageviews', 'date_format')
     query = configuration.get_config_value('popular_pageviews', 'query')
     date = (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime(date_format)

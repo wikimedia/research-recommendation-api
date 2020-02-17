@@ -113,7 +113,7 @@ def set_related_articles_response():
 
 @pytest.fixture
 def remove_filters(monkeypatch):
-    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, candidates: candidates)
+    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, candidates, campaign: candidates)
 
 
 @pytest.fixture

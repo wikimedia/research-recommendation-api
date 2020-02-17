@@ -134,6 +134,11 @@ def get_v1_params():
         required=False,
         default='default',
         choices=['default', 'sitelinks'])
+    v1_params.add_argument(
+        'campaign',
+        type=str,
+        required=False,
+        default='')
 
     return v1_params
 
@@ -190,7 +195,7 @@ finder_map = {
 }
 
 
-def recommend(source, target, search, seed, count, include_pageviews, rank_method='default', max_candidates=500):
+def recommend(source, target, search, seed, count, include_pageviews, rank_method='default', campaign='', max_candidates=500):
     """
     1. Use finder to select a set of candidate articles
     2. Filter out candidates that are not missing, are disambiguation pages, etc
@@ -204,9 +209,9 @@ def recommend(source, target, search, seed, count, include_pageviews, rank_metho
         for seed in seed.split('|'):
             candidates.extend(finder(source, seed, max_candidates))
     else:
-        candidates.extend(finder_map['mostpopular'](source, seed, max_candidates))
+        candidates.extend(finder_map['mostpopular'](source, seed, max_candidates, campaign))
 
-    recs = filters.apply_filters(source, target, candidates)
+    recs = filters.apply_filters(source, target, candidates, campaign)
 
     recs = sorted(recs, key=lambda x: x.rank, reverse=True)
 

@@ -8,8 +8,22 @@ from recommendation.api.external_data import fetcher
 
 log = logging.getLogger(__name__)
 
-_RawWikidataItem = collections.namedtuple('RawWikidataItem', ['id', 'sitelinks'])
+_RawWikidataItem = collections.namedtuple('RawWikidataItem', ['id', 'sitelinks', 'claims'])
 WikidataItem = collections.namedtuple('WikidataItem', ['id', 'title', 'url', 'sitelink_count'])
+
+
+def women_filter(item):
+    return (item.claims.get('P31', [{}])[0]
+            .get('mainsnak', {}).get('datavalue', {}).get('value', {})
+            .get('id', '') == 'Q5')\
+        and \
+        (item.claims.get('P21', [{}])[0]
+         .get('mainsnak', {}).get('datavalue', {}).get('value', {})
+         .get('id', '') == 'Q6581072')
+
+
+def get_women(source, target, wikidata_ids):
+    return get_items(source, ids=wikidata_ids, raw_filter=women_filter)
 
 
 def get_items_in_source_missing_in_target_by_titles(source, target, titles):
@@ -107,7 +121,8 @@ def get_raw_items_from_entities(entities):
     items = []
     for id, entity in entities.items():
         sitelinks = entity.get('sitelinks', {})
-        items.append(_RawWikidataItem(id=id, sitelinks=sitelinks))
+        claims = entity.get('claims', {})
+        items.append(_RawWikidataItem(id=id, sitelinks=sitelinks, claims=claims))
     return items
 
 

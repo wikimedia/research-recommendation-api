@@ -141,7 +141,7 @@ def test_generated_recommend_response_is_marshalled(client, get_url, monkeypatch
         return articles
 
     monkeypatch.setattr(translation, 'finder_map', {'mostpopular': mock_finder})
-    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, recs: recs)
+    monkeypatch.setattr(filters, 'apply_filters', lambda source, target, recs, campaign: recs)
     result = client.get(get_url(dict(s='xx', t='yy', pageviews=False)))
     assert GOOD_RESPONSE == json.loads(result.data.decode('utf-8'))
 
