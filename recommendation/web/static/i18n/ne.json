@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"सरोज कुमार ढकाल"
+			"सरोज कुमार ढकाल",
+			"हिमाल सुबेदी"
 		]
 	},
 	"title-wikipedia": "विकिपिडिया",
@@ -29,7 +30,7 @@
 	"modal-next": "पछिल्लो लेख",
 	"modal-translate": "अनुवाद गर्नुहोस्",
 	"modal-create-from-scratch": "सुरु देखि बनाउनुहोस्",
-	"modal-loading": "लोड हुदैछ...",
+	"modal-loading": "खुल्दै छ…",
 	"modal-preview-fail": "पूर्वावलोकन लोड गर्न सकिएन",
 	"create-title": "नयाँ लेख",
 	"create-title-input-placeholder": "अनुवादित शीर्षक",
