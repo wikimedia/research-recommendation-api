@@ -4,6 +4,7 @@ import itertools
 from multiprocessing import dummy as multiprocessing
 
 from recommendation.utils import configuration
+from recommendation.utils import logger
 from recommendation.api.external_data import fetcher
 
 log = logging.getLogger(__name__)
@@ -22,20 +23,24 @@ def women_filter(item):
          .get('id', '') == 'Q6581072')
 
 
+@logger.timeit
 def get_women(source, target, wikidata_ids):
-    return get_items(source, ids=wikidata_ids, raw_filter=women_filter)
+    return get_items(source, ids=wikidata_ids, raw_filter=women_filter, props='claims|sitelinks/urls')
 
 
+@logger.timeit
 def get_items_in_source_missing_in_target_by_titles(source, target, titles):
     target_wiki = '{}wiki'.format(target)
     items = get_items(source, titles=titles, raw_filter=lambda item: target_wiki not in item.sitelinks)
     return {item.title: item for item in items}
 
 
+@logger.timeit
 def get_wikidata_items_from_titles(source, titles):
     return get_items(source, titles=titles)
 
 
+@logger.timeit
 def get_titles_from_wikidata_items(source, items):
     return get_items(source, ids=items)
 
@@ -44,8 +49,10 @@ def default_filter(_):
     return True
 
 
-def get_items(source, titles=None, ids=None, raw_filter=default_filter):
+def get_items(source, titles=None, ids=None, raw_filter=default_filter, props=None):
     params = configuration.get_config_dict('wikidata_query_params')
+    if props:
+        params['props'] = props
     params['sites'] = params['sites'].format(source=source)
     items = []
     if titles is not None:

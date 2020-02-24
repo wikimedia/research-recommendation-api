@@ -12,6 +12,7 @@ from flask import request
 from recommendation.utils import event_logger
 from recommendation.utils import language_pairs
 from recommendation.utils import configuration
+from recommendation.utils import logger
 from recommendation.api import helper
 from recommendation.api.types.translation import filters
 from recommendation.api.types.translation import candidate_finders
@@ -195,6 +196,7 @@ finder_map = {
 }
 
 
+@logger.timeit
 def recommend(source, target, search, seed, count, include_pageviews, rank_method='default', campaign='', max_candidates=500):
     """
     1. Use finder to select a set of candidate articles

@@ -2,10 +2,12 @@ import logging
 
 from recommendation.api.external_data import fetcher
 from recommendation.api.external_data import wikidata
+from recommendation.utils import logger
 
 log = logging.getLogger(__name__)
 
 
+@logger.timeit
 def filter_by_missing(source, target, candidates):
     """
     Filters out which articles from source already exist in target
@@ -25,6 +27,7 @@ def filter_by_missing(source, target, candidates):
     return filtered_articles
 
 
+@logger.timeit
 def filter_by_disambiguation(source, candidates):
     """
     Filters out disambiguation pages
@@ -34,6 +37,7 @@ def filter_by_disambiguation(source, candidates):
     return [article for article in candidates if article.title not in disambiguation_pages]
 
 
+@logger.timeit
 def filter_by_title(candidates):
     """
     Filters articles based on the properties of the title
@@ -41,6 +45,7 @@ def filter_by_title(candidates):
     return [article for article in candidates if ':' not in article.title and not article.title.startswith('List')]
 
 
+@logger.timeit
 def filter_by_campaign(source, target, candidates, campaign=''):
     """TODO: Think about moving the hardcoded items to a configuration file."""
     if campaign == 'WikiGapFinder':
@@ -51,6 +56,7 @@ def filter_by_campaign(source, target, candidates, campaign=''):
     return candidates
 
 
+@logger.timeit
 def apply_filters(source, target, candidates, campaign):
     log.debug('Number of candidates: %d', len(candidates))
     candidates = filter_by_title(candidates)
