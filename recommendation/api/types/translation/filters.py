@@ -50,9 +50,11 @@ def filter_by_campaign(source, target, candidates, campaign=''):
     """TODO: Think about moving the hardcoded items to a configuration file."""
     if campaign == 'WikiGapFinder':
         wikidata_ids = [article.wikidata_id for article in candidates]
-        women = wikidata.get_women(source, target, wikidata_ids)
-        ids_of_women = set([x.id for x in women])
-        return [x for x in candidates if x.wikidata_id in ids_of_women]
+        campaign_candidates = wikidata.get_wikigapfinder_campaign_candidates(
+            source, target, wikidata_ids)
+        ids_of_campaign_candidates = set([x.id for x in campaign_candidates])
+        return [x for x in candidates if x.wikidata_id
+                in ids_of_campaign_candidates]
     return candidates
 
 

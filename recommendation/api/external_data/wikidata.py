@@ -13,19 +13,23 @@ _RawWikidataItem = collections.namedtuple('RawWikidataItem', ['id', 'sitelinks',
 WikidataItem = collections.namedtuple('WikidataItem', ['id', 'title', 'url', 'sitelink_count'])
 
 
-def women_filter(item):
+def wikigapfinder_campaign_filter(item):
+    """People who are women or identify themselves as women"""
     return (item.claims.get('P31', [{}])[0]
             .get('mainsnak', {}).get('datavalue', {}).get('value', {})
             .get('id', '') == 'Q5')\
         and \
         (item.claims.get('P21', [{}])[0]
          .get('mainsnak', {}).get('datavalue', {}).get('value', {})
-         .get('id', '') == 'Q6581072')
+         .get('id', '') in ('Q1052281', 'Q6581072'))
 
 
 @logger.timeit
-def get_women(source, target, wikidata_ids):
-    return get_items(source, ids=wikidata_ids, raw_filter=women_filter, props='claims|sitelinks/urls')
+def get_wikigapfinder_campaign_candidates(source, target, wikidata_ids):
+    """Candidates for the WikiGapFinder campaign"""
+    return get_items(source, ids=wikidata_ids,
+                     raw_filter=wikigapfinder_campaign_filter,
+                     props='claims|sitelinks/urls')
 
 
 @logger.timeit
