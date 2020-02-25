@@ -21,8 +21,8 @@ def home():
     pairs = language_pairs.get_language_pairs()
     # WikiGapFinder specific settings. TODO: these should be in a config file.
     if campaign == 'WikiGapFinder':
-        s = 'en'
-        t = 'sv'
+        s = s or 'en'
+        t = t or 'sv'
         campaign_link = 'https://meta.wikimedia.org/wiki/WikiGap'
     return render_template(
         'index.html',
