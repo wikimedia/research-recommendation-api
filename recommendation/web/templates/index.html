@@ -16,12 +16,16 @@
     <body>
         <gf-disclaimer></gf-disclaimer>
         <gf-welcome></gf-welcome>
+        <gf-campaign-info></gf-campaign-info>
         <gf-title></gf-title>
         <gf-input></gf-input>
         <gf-preview></gf-preview>
 
         <script src="{{ url_for('.static', filename='gf-disclaimer.tag') }}" type="riot/tag"></script>
         <script src="{{ url_for('.static', filename='gf-welcome.tag') }}" type="riot/tag"></script>
+        {% if campaign_info_file %}
+        <script src="{{ url_for('.static', filename=campaign_info_file) }}" type="riot/tag"></script>
+        {% endif %}
         <script src="{{ url_for('.static', filename='gf-title.tag') }}" type="riot/tag"></script>
         <script src="{{ url_for('.static', filename='gf-input.tag') }}" type="riot/tag"></script>
         <script src="{{ url_for('.static', filename='gf-articles.tag') }}" type="riot/tag"></script>
@@ -71,7 +75,6 @@
             globalBlacklistKey: 'not.notable.blacklist',
 
             campaign: decodeURIComponent('{{ campaign | safe }}'),
-            campaignLink: '{{ campaign_link | safe }}',
             eventLoggerUrl: '{{ event_logger_url }}',
 
             i18nGapFinderPath: '{{ url_for('.static', filename='i18n/') }}',
@@ -80,7 +83,7 @@
             translationPath: '{{ url_for('translation.v1_article') }}'
         };
 
-        riot.mount('gf-disclaimer, gf-welcome, gf-title, gf-input');
+        riot.mount('gf-disclaimer, gf-welcome, gf-campaign-info, gf-title, gf-input');
 
         function updateLanguage(language) {
             var i18n = $.i18n();
@@ -93,7 +96,6 @@
                 }
             );
         }
-
         </script>
     </body>
 </html>
