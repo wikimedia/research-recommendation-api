@@ -17,16 +17,17 @@
                                                                       href="https://meta.wikimedia.org/wiki/WikiGap">https://meta.wikimedia.org/wiki/WikiGap</a>
                 </p>
 
-                <p> The WikiGapFinder helps you discover articles about women that
-                    exist in one language but are missing in another. Start by selecting
-                    a source language and a target language. WikiGapFinder will find
-                    trending articles about women in the source that are missing in the
-                    target. If you are interested in a particular topic area, provide a
-                    seed article in the source language, and WikiGapFinder will find
-                    related articles missing in the target. Click on a card to take a
-                    closer look at a missing article to see if you would like to create
-                    it from scratch or translate it. </p>
-
+                <p> The WikiGapFinder helps you discover articles about
+                    women that exist in one language but are missing in
+                    another. Start by selecting a source language and a
+                    target language. WikiGapFinder will find trending
+                    articles about women in the source that are missing
+                    in the target. If you are interested in writing
+                    about women in a particular field, name the field or
+                    a woman in that field in the search bar. Click on a
+                    card to take a closer look at a missing article to
+                    see if you would like to create it from scratch or
+                    translate it. </p>
             </div>
         </div>
     </div>
