@@ -1,9 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"WikiPhoenix",
 			"Jopparn",
-			"Sturban"
+			"Paracel63",
+			"Sturban",
+			"WikiPhoenix"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -21,7 +22,7 @@
 	"status-must-be-different": "Käll- och målspråken måste vara olika",
 	"status-invalid-language": "Ogiltigt käll- eller målspråk",
 	"status-no-results": "Inga rekommendationer fanns för de angivna parametrarna",
-	"article-pageviews": "$1 {{PLURAL:$1|nylig visning|nyliga visningar}}",
+	"article-pageviews": "$1 {{PLURAL:$1|den senaste visningen|de senaste visningarna}}",
 	"article-flag": "Flagga denna artikel...",
 	"article-flag-not-interesting": "Inte intressant",
 	"article-flag-not-notable": "Inte relevant för $1 Wikipedia",

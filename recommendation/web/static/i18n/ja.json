@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Omotecho",
 			"Otokoume",
-			"Omotecho"
+			"Shirayuki"
 		]
 	},
 	"title-wikipedia": "ウィキペディア",
@@ -19,7 +20,7 @@
 	"status-preparing": "記事の推薦を準備する...",
 	"status-must-be-different": "翻訳元と翻訳先の言語を同じにすることはできません",
 	"status-invalid-language": "翻訳元または翻訳先の言語が不正です",
-	"status-no-results": "指定されたパラメータに対してお奨めはありませんでした",
+	"status-no-results": "指定されたパラメーターに対してお奨めはありませんでした",
 	"article-pageviews": "$1回の{{PLURAL:$1|閲覧}}",
 	"article-flag": "この記事にフラグを付ける",
 	"article-flag-not-interesting": "興味がありません",

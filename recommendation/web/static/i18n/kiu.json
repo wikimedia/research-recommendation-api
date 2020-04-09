@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Orbot707"
+		]
+	},
+	"title-wikipedia": "Wîkîpediya",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Ke seni",
+	"menu-about": "Heqa",
+	"menu-feedback": "Peyd erşawıtış",
+	"menu-source-code": "Kodê çımeyi",
+	"menu-privacy-statement": "Şerta dızdêni",
+	"selector-source": "Çıme",
+	"selector-target": "Hedef",
+	"search-placeholder": "Qandê wesiqe vıraştışi cı geyre",
+	"status-preparing": "Wesibyaye Meqaleyê benê hazır...",
+	"status-must-be-different": "Çıme u menzil zıwani zey pê niyê",
+	"status-invalid-language": "Çıme yana menzil zıwan nêvineya",
+	"status-no-results": "Seba parametranê ke asenê teklif çıniyo",
+	"article-pageviews": "$1 peyên {{PLURAL:$1|vinayış|vinayışi}}",
+	"article-flag": "Desmala ena wesiqe...",
+	"article-flag-not-interesting": "Eleqeyın niyo",
+	"article-flag-not-notable": "$1 serva Wikipedia muhim niyo",
+	"modal-close": "Kip ke",
+	"modal-new-window": "Meqaley yu pencera da newiye de ake",
+	"modal-previous": "Meqaleyo verên",
+	"modal-next": "Meqaleyo peyên",
+	"modal-translate": "Açarne",
+	"modal-create-from-scratch": "Sıfır ra vıraze",
+	"modal-loading": "Bar beno...",
+	"modal-preview-fail": "Verqayti bar nêbi",
+	"create-title": "Meqaleyo newe",
+	"create-title-input-placeholder": "Sernamey açarnayışi",
+	"create-warning": "Teme!",
+	"create-action": "Vıraze",
+	"create-error-empty": "Sernameyi veng meverdê",
+	"create-error-invalid-character": "Sername de karaktero xırabe ('|')",
+	"create-error-exists": "Pela $1 xora esta",
+	"create-error-invalid-page": "Pela $1 çına"
+}
