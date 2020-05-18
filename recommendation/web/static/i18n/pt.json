@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Athena in Wonderland",
+			"Hamilton Abreu",
 			"MokaAkashiyaPT",
 			"Vitorvicentevalente"
 		]
@@ -19,7 +20,7 @@
 	"search-placeholder": "Procurar artigos para criar",
 	"status-preparing": "A preparar recomendações de artigo...",
 	"status-must-be-different": "Idiomas de origem e de destino de criação devem ser diferentes",
-	"status-invalid-language": "Idioma de origem ou destino inválido",
+	"status-invalid-language": "Língua de origem ou de destino inválida",
 	"status-no-results": "Não há recomendações disponíveis para os parâmetros especificados",
 	"article-pageviews": "$1 {{PLURAL:$1|visualização recente|visualizações recentes}}",
 	"article-flag": "Sinalizar este artigo...",
