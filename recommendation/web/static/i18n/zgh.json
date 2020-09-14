@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Aslmad mohamed belarhzali",
+			"Hakim1bal",
 			"Mdb897",
 			"YesIn"
 		]
@@ -23,6 +24,7 @@
 	"article-pageviews": "$1 {{PLURAL:$1|ⵏ ⵜⴰⵏⵏⴰⵢⵜ ⵜⴰⵎⴳⴳⴰⵔⵓⵜ|ⵏ ⵜⴰⵏⵏⴰⵢⵉⵏ ⵜⵉⵎⴳⴳⵓⵔⴰ}}",
 	"article-flag": "ⵛⵔⴹ ⴰⵎⴳⵔⴰⴷ ⴰⴷ...",
 	"article-flag-not-interesting": "ⵓⵔ ⵉⵍⵉ ⴰⵣⴰⵍ",
+	"article-flag-not-notable": "ⵓⵔ ⵉⵜⵜⵓⵇⵢⵢⵉⴷ ⴳ ⵡⵉⴽⵉⴱⵉⴷⵢⴰ ⵏ $1",
 	"modal-close": "ⵔⴳⵍ",
 	"modal-new-window": "ⵔⵥⵎ ⴰⵎⴳⵔⴰⴷ ⴰⴷ ⴳ ⵢⴰⵏ ⵓⵙⴽⵙⵍ ⴰⵎⴰⵢⵏⵓ",
 	"modal-previous": "ⴰⵎⴳⵔⴰⴷ ⴰⵎⵣⵡⴰⵔⵓ",
