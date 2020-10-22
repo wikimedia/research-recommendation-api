@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Andriy.v",
 			"Green Zero",
 			"Piramidion"
 		]
@@ -9,7 +10,7 @@
 	"title-gapfinder": "GapFinder",
 	"title-beta": "бета-версія",
 	"menu-how-to": "Інструкція",
-	"menu-about": "Про проект",
+	"menu-about": "Про проєкт",
 	"menu-feedback": "Зворотний зв'язок",
 	"menu-source-code": "Початковий код",
 	"menu-privacy-statement": "Заява про конфіденційність",

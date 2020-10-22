@@ -3,13 +3,14 @@
 		"authors": [
 			"Beta16",
 			"Einreiher",
+			"Luca.favorido",
 			"Nemo bis"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
 	"title-gapfinder": "GapFinder",
 	"title-beta": "beta",
-	"menu-how-to": "Come",
+	"menu-how-to": "Guida",
 	"menu-about": "Informazioni su",
 	"menu-feedback": "Feedback",
 	"menu-source-code": "Codice sorgente",
@@ -30,7 +31,7 @@
 	"modal-previous": "Voce precedente",
 	"modal-next": "Prossima voce",
 	"modal-translate": "Traduci",
-	"modal-create-from-scratch": "Prepara da zero",
+	"modal-create-from-scratch": "Crea da zero",
 	"modal-loading": "Caricamento in corso...",
 	"modal-preview-fail": "Non è stato possibile caricare l'anteprima",
 	"create-title": "Nuova voce",
@@ -39,6 +40,6 @@
 	"create-action": "Crea",
 	"create-error-empty": "Il titolo non può essere vuoto",
 	"create-error-invalid-character": "Carattere non valido nel titolo ( '|' )",
-	"create-error-exists": "Relativamente a $1 esiste già una pagina",
-	"create-error-invalid-page": "La pagina non è valida a $1"
+	"create-error-exists": "Esiste già una pagina dal titolo $1",
+	"create-error-invalid-page": "La pagina $1 non è valida"
 }
