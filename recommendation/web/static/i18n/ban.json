@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joseagush"
+		]
+	},
+	"title-wikipedia": "Wikipédia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "béta",
+	"menu-how-to": "Éngkén carané",
+	"menu-about": "Indik",
+	"menu-feedback": "Umpan balik",
+	"menu-source-code": "Kode wit",
+	"selector-source": "Wit",
+	"selector-target": "Targét",
+	"modal-close": "Sineb",
+	"modal-translate": "Terjemahang",
+	"create-title": "Suratan anyar"
+}
