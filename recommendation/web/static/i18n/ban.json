@@ -1,19 +1,20 @@
 {
 	"@metadata": {
 		"authors": [
+			"Chinamoonroll",
 			"Joseagush"
 		]
 	},
 	"title-wikipedia": "Wikipédia",
 	"title-gapfinder": "GapFinder",
 	"title-beta": "béta",
-	"menu-how-to": "Éngkén carané",
+	"menu-how-to": "Sapunapi carané",
 	"menu-about": "Indik",
-	"menu-feedback": "Umpan balik",
+	"menu-feedback": "Umpan walik",
 	"menu-source-code": "Kode wit",
 	"selector-source": "Wit",
 	"selector-target": "Targét",
 	"modal-close": "Sineb",
-	"modal-translate": "Terjemahang",
+	"modal-translate": "Pesalinin",
 	"create-title": "Suratan anyar"
 }
