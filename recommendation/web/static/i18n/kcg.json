@@ -1,0 +1,37 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kambai Akau"
+		]
+	},
+	"title-wikipedia": "Wikipidya",
+	"title-gapfinder": "KyangcatBwong",
+	"title-beta": "beta",
+	"menu-how-to": "Si̠sak nang á̠",
+	"menu-about": "Tazwa",
+	"menu-feedback": "A̠di̠dam",
+	"menu-source-code": "Zwunzwuo a̠ni̠nan",
+	"menu-privacy-statement": "A̠lyiat a̠vwuoa̠siri",
+	"selector-source": "A̠ni̠nan",
+	"selector-target": "A̠vwuocong",
+	"search-placeholder": "Zop a̠ti̠kut nang a cat lyuut a̠ni",
+	"status-preparing": "Shyia̠ di̠ jhyi gba a̠ti̠kut...",
+	"status-must-be-different": "Ta hwa lilyem a̠vwuoneet ma̠ng a̠vwuoncong ku vwuon",
+	"status-invalid-language": "A̠kace a̠lyem a̠vwuoneet ku a̠vwuoncong",
+	"modal-close": "Nyim",
+	"modal-new-window": "Khwuk a̠ti̠kut wuni mi̠ a̠fai a̠libat",
+	"modal-previous": "A̠ti̠kut a̠zama",
+	"modal-next": "A̠ti̠kut á̠zanson",
+	"modal-translate": "Bwuak",
+	"modal-create-from-scratch": "Nok neet kuntyin",
+	"modal-loading": "Shyia̠ di̠ nyia̠ lodi",
+	"modal-preview-fail": "Nwuan a̠tsan hu fwan di̠ nyia̠ lodi",
+	"create-title": "A̠ti̠kut a̠fai",
+	"create-title-input-placeholder": "Bwuak a̠lyem a̠lyoot",
+	"create-warning": "Ta̠bam!",
+	"create-action": "Mat",
+	"create-error-empty": "Ta hwa a̠lyoot ka̠ yok shyia̠ di̠ mi̠n kyang bah",
+	"create-error-invalid-character": "A̠kace a̠lama mi̠ a̠lyoot ( '|' )",
+	"create-error-exists": "Peji wa ka̠n shyia̠ ma̠ $1",
+	"create-error-invalid-page": "Peji yet a̠kace ma̠ $1"
+}
