@@ -37,7 +37,7 @@
 	"create-warning": "Compte!",
 	"create-action": "Crear",
 	"create-error-empty": "El títol no pot estar buit",
-	"create-error-invalid-character": "Caràcter invàlid al títol ('|')",
+	"create-error-invalid-character": "Caràcter no vàlid al títol ('|')",
 	"create-error-exists": "La pàgina ja existeix a $1",
 	"create-error-invalid-page": "La pàgina no és vàlida en $1"
 }
