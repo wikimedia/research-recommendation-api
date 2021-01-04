@@ -3,6 +3,7 @@
 		"authors": [
 			"Andriy.v",
 			"Green Zero",
+			"Gzhegozh",
 			"Piramidion"
 		]
 	},
@@ -24,7 +25,7 @@
 	"article-pageviews": "$1 {{PLURAL:$1|нещодавній перегляд|нещодавні перегляди|нещодавніх переглядів}}",
 	"article-flag": "Позначити цю статтю...",
 	"article-flag-not-interesting": "Не цікаво",
-	"article-flag-not-notable": "Не значимо для Вікіпедії мовою: $1",
+	"article-flag-not-notable": "Не значущо для Вікіпедії мовою: $1",
 	"modal-close": "Закрити",
 	"modal-new-window": "Відкрити цю статтю у новому вікні",
 	"modal-previous": "Попередня стаття",
