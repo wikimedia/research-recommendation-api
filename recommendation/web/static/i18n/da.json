@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Joedalton"
+			"Joedalton",
+			"Peterleth"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
@@ -14,7 +15,7 @@
 	"menu-privacy-statement": "Privatlivsoplysninger",
 	"selector-source": "Kilde",
 	"selector-target": "Mål",
-	"search-placeholder": "Søgning efter artikler at oprette",
+	"search-placeholder": "Søg efter artikler at oprette",
 	"status-preparing": "Forbereder artikelforslag …",
 	"status-must-be-different": "Kilde- og målsprog skal være forskellige",
 	"status-invalid-language": "Ugyldig kilde- eller målsprog",
@@ -22,7 +23,7 @@
 	"article-pageviews": "$1 seneste {{PLURAL:$1|visning|visninger}}",
 	"article-flag": "Flag denne artikel …",
 	"article-flag-not-interesting": "Uinteressant",
-	"article-flag-not-notable": "Ikke relevant for Wikipedia på $1",
+	"article-flag-not-notable": "Ikke notabelt for Wikipedia på $1",
 	"modal-close": "Luk",
 	"modal-new-window": "Åbn denne artikel i et nyt vindue",
 	"modal-previous": "Forrige artikel",
@@ -35,8 +36,8 @@
 	"create-title-input-placeholder": "Oversættelsestitel",
 	"create-warning": "Advarsel!",
 	"create-action": "Opret",
-	"create-error-empty": "Titlen skal være tom",
-	"create-error-invalid-character": "Ugyldigt tegn i titlen (»|«)",
+	"create-error-empty": "Titlen må ikke være tom",
+	"create-error-invalid-character": "Ugyldigt tegn i titlen ( '|' )",
 	"create-error-exists": "Siden findes allerede på $1",
 	"create-error-invalid-page": "Siden er ugyldig på $1"
 }
