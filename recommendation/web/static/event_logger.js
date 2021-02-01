@@ -89,14 +89,25 @@ var generateToken = function () {
 };
 
 var logEvent = function(schema, revision, event) {
-    var payload = {
+    var eventData = {
         schema: schema,
+        $schema: `/analytics/legacy/${schema.toLowerCase()}/1.0.0`,
         revision: revision,
-        wiki: 'metawiki',
-        event: event
+        event: event,
+        webHost: location.hostname,
+        client_dt: new Date().toISOString(),
+        meta: {
+            stream: 'eventlogging_'+ schema,
+            domain: location.hostname
+        }
     };
 
-    var url = window.translationAppGlobals.eventLoggerUrl + '?' + encodeURIComponent(JSON.stringify(payload));
-
-    $.get(url);
+    try {
+        navigator.sendBeacon(
+            'https://intake-analytics.wikimedia.org/v1/events?hasty=true',
+            JSON.stringify(eventData)
+        );
+    } catch (error) {
+        console.log(error);
+    }
 };
