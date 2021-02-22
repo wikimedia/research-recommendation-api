@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eraldkerciku"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "ZbuluesGabimesh",
+	"title-beta": "beta",
+	"menu-how-to": "Si të",
+	"menu-about": "Rreth",
+	"menu-feedback": "Reagime",
+	"menu-source-code": "Kodi Burim",
+	"menu-privacy-statement": "Deklarata e privatësisë",
+	"selector-source": "Burimi",
+	"selector-target": "Objektivi",
+	"search-placeholder": "Kërkoni për artikuj për të krijuar",
+	"status-preparing": "Duke përgatitur rekomandimet e artikujve ...",
+	"status-must-be-different": "Gjuhët burimore dhe ato të synuara duhet të jenë të ndryshme",
+	"status-invalid-language": "Gjuha e pavlefshme burimore ose e synuar",
+	"status-no-results": "Asnjë rekomandim nuk ishte në dispozicion për parametrat e specifikuar",
+	"article-pageviews": "$1 i fundit {{PLURAL: $1 | shiko | pamje}}",
+	"article-flag": "Vëri flamur këtij artikulli ...",
+	"article-flag-not-interesting": "Jo interesante",
+	"article-flag-not-notable": "Nuk shquhet për $1 Wikipedia",
+	"modal-close": "Mbylle",
+	"modal-new-window": "Hapni këtë artikull në një dritare të re",
+	"modal-previous": "Artikulli i mëparshëm",
+	"modal-next": "Artikulli tjetër",
+	"modal-translate": "Përkthe",
+	"modal-create-from-scratch": "Krijoni nga e para",
+	"modal-loading": "Po ngarkohet ...",
+	"modal-preview-fail": "Pamje paraprake dështoi te ngarkohet",
+	"create-title": "Artikull i Ri",
+	"create-title-input-placeholder": "Titulli i përkthimit",
+	"create-warning": "Paralajmërim!",
+	"create-action": "Krijo",
+	"create-error-empty": "Titulli nuk duhet të jetë bosh",
+	"create-error-invalid-character": "Karakter i pavlefshëm në titull ('|')",
+	"create-error-exists": "Faqja tashmë ekziston në $1",
+	"create-error-invalid-page": "Faqja është e pavlefshme në $1"
+}
