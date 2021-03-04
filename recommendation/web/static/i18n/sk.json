@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jaroslav.micek",
+			"Patrik L."
+		]
+	},
+	"title-wikipedia": "Wikipédia",
+	"title-gapfinder": "Vyhľadávač medzier",
+	"title-beta": "beta",
+	"menu-how-to": "Ako na to",
+	"menu-about": "O aplikácii",
+	"menu-feedback": "Spätná väzba",
+	"menu-source-code": "Zdrojový kód",
+	"menu-privacy-statement": "Prehlásenie o ochrane osobných údajov",
+	"selector-source": "Zdroj",
+	"selector-target": "Cieľ",
+	"search-placeholder": "Hľadať články na vytvorenie",
+	"status-preparing": "Doporučené články sa pripravujú...",
+	"status-must-be-different": "Zdrojový a cieľový jazyk musia byť rozdielne",
+	"status-invalid-language": "Neplatný zdroj cieľového jazyka",
+	"status-no-results": "Pre zadané parametre neboli nájdené žiadne odporúčania",
+	"article-pageviews": "Počet nedávnych {{PLURAL:$1|pozretí}} $1",
+	"article-flag": "Označiť tento článok...",
+	"article-flag-not-interesting": "Nezaujímavé",
+	"article-flag-not-notable": "Nevýznamné pre $1 Wikipédiu",
+	"modal-close": "Zavrieť",
+	"modal-new-window": "Otvoriť tento článok v novom okne",
+	"modal-previous": "Predchádzajúci článok",
+	"modal-next": "Nasledujúci článok",
+	"modal-translate": "Preložiť",
+	"modal-create-from-scratch": "Vytvoriť od začiatku",
+	"modal-loading": "Načítava sa...",
+	"modal-preview-fail": "Ukážka náhľadu zlyhala",
+	"create-title": "Nový článok",
+	"create-title-input-placeholder": "Názov prekladu",
+	"create-warning": "Pozor!",
+	"create-action": "Vytvoriť",
+	"create-error-empty": "Názov nesmie ostať prázdny",
+	"create-error-invalid-character": "Neplatný znak v názve ( '|' )",
+	"create-error-exists": "Stránka už existuje na $1",
+	"create-error-invalid-page": "Stránka je neplatná na $1"
+}
