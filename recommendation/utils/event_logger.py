@@ -1,5 +1,5 @@
+from datetime import datetime
 import requests
-import urllib.parse
 import logging
 import json
 import time
@@ -9,7 +9,8 @@ from recommendation.utils import configuration
 log = logging.getLogger(__name__)
 
 
-def log_api_request(source, target, seed=None, search=None, user_agent=None, **kwargs):
+def log_api_request(source, target, seed=None, search=None, host='',
+                    user_agent=None, **kwargs):
     event = dict(timestamp=int(time.time()),
                  sourceLanguage=source,
                  targetLanguage=target)
@@ -18,21 +19,27 @@ def log_api_request(source, target, seed=None, search=None, user_agent=None, **k
     if search:
         event['searchAlgorithm'] = search
 
-    payload = dict(schema='TranslationRecommendationAPIRequests',
-                   revision=16261139,
-                   wiki='metawiki',
-                   event=event)
+    schema = 'TranslationRecommendationAPIRequests'
+    payload = {
+        'schema': schema,
+        '$schema': f"/analytics/legacy/${schema.lower()}/1.0.0",
+        'revision': 16261139,
+        'event': event,
+        'webHost': host,
+        'client_dt': datetime.now().isoformat(),
+        'meta': {
+            'stream': 'eventlogging_' + schema,
+            'domain': host
+        }
+    }
 
     url = configuration.get_config_value('endpoints', 'event_logger')
-    url += '?' + urllib.parse.quote_plus(json.dumps(payload))
-
     log.info('Logging event: %s', json.dumps(payload))
 
     headers = {}
     if user_agent is not None:
         headers['User-Agent'] = user_agent
-
     try:
-        requests.get(url, headers=headers)
+        requests.post(url, data=payload, headers=headers)
     except requests.exceptions.RequestException:
         pass
