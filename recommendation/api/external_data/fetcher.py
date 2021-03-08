@@ -11,7 +11,10 @@ log = logging.getLogger(__name__)
 def get(url, params=None):
     log.debug('Get: %s', url)
     try:
-        response = requests.get(url, params=params)
+        headers = {
+            'User-Agent': 'WMF Research Gapfinder (https://recommend.wmflabs.org/; leila@wikimedia.org)'
+        }
+        response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()
         return response.json()
     except (requests.RequestException, ValueError) as e:
