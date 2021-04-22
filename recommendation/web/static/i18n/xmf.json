@@ -1,28 +1,43 @@
 {
 	"@metadata": {
 		"authors": [
+			"Narazeni",
 			"Silovan"
 		]
 	},
 	"title-wikipedia": "ვიკიპედია",
+	"title-gapfinder": "GapFinder",
 	"title-beta": "ბეტა",
 	"menu-how-to": "მუჭო",
 	"menu-about": "-შენი",
 	"menu-feedback": "წიმოხრსხუ",
 	"menu-source-code": "წყუშ კოდი",
-	"selector-target": "ოღანკე",
-	"article-flag-not-interesting": "ვა რე საინტერესო",
+	"menu-privacy-statement": "გჷნაცხადი კონფიდენციალურალაშ გეშა",
+	"selector-source": "წყუ",
+	"selector-target": "ღანკი",
+	"search-placeholder": "სტატიეფიშ გორუა გაჭყაფალო",
+	"status-preparing": "რეკომენდირაფილი სტატიეფიშ ერკებულიშ ზადუა...",
+	"status-must-be-different": "წყუშ დო ოღანკეშ ნინეფს გინორთი უღუდან-ოკო",
+	"status-invalid-language": "ჩილათირი წყუშ ვარ-და ოღანკეშ ნინა",
+	"status-no-results": "მოჩამილი პარამეტრეფშო ვა რე ხემიოლი რეკომენდაციეფი",
+	"article-pageviews": "$1 {{PLURAL:$1|ძირაფა|ძირაფა}}",
+	"article-flag": "თე სტატიაშ მიკოწონება...",
+	"article-flag-not-interesting": "ვა მოინტერესჷ",
+	"article-flag-not-notable": "ვა რე შანულამი $1 ვიკიპედიაშო",
 	"modal-close": "კილუა",
 	"modal-new-window": "გონწყი თე სტატია ახალ ოსინთეს",
 	"modal-previous": "კინოხიანი სტატია",
 	"modal-next": "გეჸვენჯი სტატია",
 	"modal-translate": "თანგუა",
-	"modal-loading": "იხარგუაფუ...",
-	"modal-preview-fail": "ვა რე ინტერნეტი",
+	"modal-create-from-scratch": "ნულშე დოჭყაფა",
+	"modal-loading": "იხარგუ...",
+	"modal-preview-fail": "გინოჯინაშ დინოხარგუაქ ვემიხუჯინჷ",
 	"create-title": "ახალი სტატია",
 	"create-title-input-placeholder": "თანგუაშ ჯოხოდვალა",
 	"create-warning": "ხვილაფა!",
 	"create-action": "დორსხუაფა",
 	"create-error-empty": "ჯოხოდვალა ცაიორი ოკო ვარდას",
-	"create-error-invalid-character": "ჩილათირი სიმბოლო ჯოხოდვალას ( '|' )"
+	"create-error-invalid-character": "ჩილათირი სიმბოლო ჯოხოდვალას ( '|' )",
+	"create-error-exists": "ხასჷლა უკვე რე $1-ს",
+	"create-error-invalid-page": "ხასჷლა ჩილათირო რე $1-ს"
 }
