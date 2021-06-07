@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Huji",
 			"Namo",
 			"Reza1615"
 		]
@@ -19,7 +20,7 @@
 	"status-preparing": "در حال آماده‌سازی توصیه‌های مقاله...",
 	"status-must-be-different": "زبان مبدا و مقصد باید متفاوت باشد",
 	"status-invalid-language": "زبان مبدا یا مقصد نامعتبر است",
-	"status-no-results": "برای متغییرهای خاص پیشنهادی یافت نشذ",
+	"status-no-results": "برای متغیرهای خاص پیشنهادی یافت نشد",
 	"article-pageviews": "$1 {{PLURAL:$1|بازدید|بازدید}}",
 	"article-flag": "پرچم‌گذاری این مقاله...",
 	"article-flag-not-interesting": "جالب نیست",
