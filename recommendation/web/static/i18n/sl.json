@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Dbc334",
+			"Eleassar",
 			"Pickle12"
 		]
 	},
@@ -33,7 +34,7 @@
 	"modal-loading": "Nalaganje ...",
 	"modal-preview-fail": "Nalaganje predogleda je spodletelo",
 	"create-title": "Nov članek",
-	"create-title-input-placeholder": "Naslov",
+	"create-title-input-placeholder": "Naslov prevoda",
 	"create-warning": "Opozorilo!",
 	"create-action": "Ustvari",
 	"create-error-empty": "Izberite naslov",
