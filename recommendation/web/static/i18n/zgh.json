@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Aslmad mohamed belarhzali",
+			"Brahim-essaidi",
 			"Hakim1bal",
 			"Mdb897",
 			"YesIn"
@@ -18,10 +19,10 @@
 	"selector-source": "ⴰⵙⴰⴳⵎ",
 	"selector-target": "ⴰⵙⵡⵓⵜⵜⵙ",
 	"search-placeholder": "ⵔⵣⵓ ⵅⴼ ⵉⵎⵏⵏⵉⵜⵏ ⵉ ⵓⵙⵏⴼⵍⵓⵍ",
-	"status-preparing": "ⴰⵙⵎⵓⵜⵜⴳ ⵏ ⵉⵙⵖⵍⵉⴼⵏ ⵏ ⵓⵎⵏⵏⵉ...",
+	"status-preparing": "ⴰⵙⵎⵓⵜⵜⴳ ⵏ ⵉⵙⵖⵍⵉⴼⵏ ⵏ ⵓⵎⴳⵔⴰⴷ...",
 	"status-must-be-different": "ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵎⵣⴰⵔⴰⵢⵏⵜ ⵜⵓⵜⵍⴰⵢⵉⵏ ⵏ ⵓⵙⴰⴳⵎ ⴷ ⵓⵙⵡⵓⵜⵜⵙ",
 	"status-invalid-language": "ⵜⵓⵜⵍⴰⵢⵜ ⵏ ⵓⵙⴰⴳⵎ ⵏⵉⵖ ⵜⵉⵏ ⵓⵙⵡⵓⵜⵜⵙ ⵓⵔ ⵜⵖⵣⵉⵏ",
-	"article-pageviews": "$1 {{PLURAL:$1|ⵏ ⵜⴰⵏⵏⴰⵢⵜ ⵜⴰⵎⴳⴳⴰⵔⵓⵜ|ⵏ ⵜⴰⵏⵏⴰⵢⵉⵏ ⵜⵉⵎⴳⴳⵓⵔⴰ}}",
+	"article-pageviews": "$1 {{PLURAL:$1|ⵜⴰⵏⵏⴰⵢⵜ ⵜⴰⵏⴳⴳⴰⵔⵓⵜ|ⵜⴰⵏⵏⴰⵢⵉⵏ ⵜⵉⵏⴳⴳⵓⵔⴰ}}",
 	"article-flag": "ⵛⵔⴹ ⴰⵎⴳⵔⴰⴷ ⴰⴷ...",
 	"article-flag-not-interesting": "ⵓⵔ ⵉⵍⵉ ⴰⵣⴰⵍ",
 	"article-flag-not-notable": "ⵓⵔ ⵉⵜⵜⵓⵇⵢⵢⵉⴷ ⴳ ⵡⵉⴽⵉⴱⵉⴷⵢⴰ ⵏ $1",
