@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Andriy.v",
+			"DDPAT",
 			"Green Zero",
 			"Gzhegozh",
 			"Piramidion"
@@ -18,12 +19,12 @@
 	"selector-source": "Джерело",
 	"selector-target": "Ціль",
 	"search-placeholder": "Пошук статей для створення",
-	"status-preparing": "Підготовка рекомендацій щодо статей...",
+	"status-preparing": "Підготовка рекомендацій щодо статей…",
 	"status-must-be-different": "Вихідна й цільова мови мають бути різними",
 	"status-invalid-language": "Недійсна вихідна або цільова мова",
 	"status-no-results": "Для вказаних параметрів жодні рекомендації не були доступні",
 	"article-pageviews": "$1 {{PLURAL:$1|нещодавній перегляд|нещодавні перегляди|нещодавніх переглядів}}",
-	"article-flag": "Позначити цю статтю...",
+	"article-flag": "Позначити цю статтю…",
 	"article-flag-not-interesting": "Не цікаво",
 	"article-flag-not-notable": "Не значущо для Вікіпедії мовою: $1",
 	"modal-close": "Закрити",
