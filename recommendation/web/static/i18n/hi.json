@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Abijeet Patro",
 			"Sfic",
 			"Shyamal"
 		]
@@ -36,7 +37,7 @@
 	"create-title-input-placeholder": "शीर्षक का अनुवाद",
 	"create-warning": "चेतावनी!",
 	"create-action": "बनाएँ",
-	"create-error-empty": "शीर्षक को खाली नहीं होना चाहिए",
+	"create-error-empty": "शीर्षक खाली नहीं होना चाहिए",
 	"create-error-invalid-character": "शीर्षक में अमान्य अक्षर है ( '|' )",
 	"create-error-exists": "पृष्ठ पहले से ही यहाँ $1 उपस्थित है।",
 	"create-error-invalid-page": "$1 यहाँ पृष्ठ अमान्य है।"
