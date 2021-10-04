@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Halbast",
 			"Lost Whispers",
 			"Sarchia",
 			"Épine",
@@ -10,7 +11,7 @@
 	"title-wikipedia": "ویکیپیدیا",
 	"title-gapfinder": "گاپفایندەر",
 	"title-beta": "بیتا",
-	"menu-how-to": "چۆنیەتی",
+	"menu-how-to": "چۆنییەتی",
 	"menu-about": "سه‌باره‌ت",
 	"menu-feedback": "فیدباک",
 	"menu-source-code": "کۆدی سەرچاوە",
