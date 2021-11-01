@@ -22,7 +22,7 @@
 	"article-pageviews": "$1 تازا{{PLURAL:$1|ڏيک|ڏيک}}",
 	"article-flag": "ھن مضمون تي جھنڊو لڳايو...",
 	"article-flag-not-interesting": "دلچسپ ناھي",
-	"article-flag-not-notable": "$1 وڪيپيڊيا لاءِ نوٽيبل نه آھي",
+	"article-flag-not-notable": "$1 وڪيپيڊيا لاءِ اھميت ڏيڻ جوڳو ناھي",
 	"modal-close": "بند ڪريو",
 	"modal-new-window": "ھن مضمون کي نئين ونڊو ۾ کوليو",
 	"modal-previous": "پويون مضمون",
@@ -35,8 +35,8 @@
 	"create-title-input-placeholder": "ترجماتي عنوان",
 	"create-warning": "چتاءُ!",
 	"create-action": "سرجيو",
-	"create-error-empty": "عنوان لازماََ خالي نہ ھجڻ گھرجي",
-	"create-error-invalid-character": "عنوان ۾ ناقابل ڪار نشاني ( '|' )",
+	"create-error-empty": "عنوان لازماََ خالي نہ ھجڻ گهرجي",
+	"create-error-invalid-character": "عنوان ۾ ناقابلِڪار نشاني ( '|' )",
 	"create-error-exists": "صفحو $1 تي اڳ ئي وجود رکي ٿو",
 	"create-error-invalid-page": "$1 تي  ناقابلِ ڪار آھي"
 }
