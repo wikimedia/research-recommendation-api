@@ -1,12 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"Akmaie Ajam",
 			"Hidayatsrf"
 		]
 	},
 	"title-wikipedia": "Wikipedia",
 	"title-gapfinder": "GapFinder",
 	"title-beta": "beta",
+	"menu-how-to": "Cara",
 	"menu-about": "Tentang",
 	"menu-feedback": "Umpan balik",
 	"menu-source-code": "Kode sumber",
@@ -15,13 +17,19 @@
 	"selector-target": "Target",
 	"search-placeholder": "Cari artikel untuk dibuat",
 	"status-preparing": "Menyiapkan rekomendasi artikel",
+	"status-must-be-different": "Bahasa sumber dan bahasa target harus berbeda",
+	"status-invalid-language": "Bahasa sumber atau bahasa target tidak sah",
+	"status-no-results": "Tidak ada rekomendasi yang tersedia untuk parameter yang ditentukan",
+	"article-pageviews": "$1 kunjungan terkini",
 	"article-flag": "Tandai artikel ini...",
+	"article-flag-not-interesting": "Tidak menarik",
 	"article-flag-not-notable": "Tidak notabel untuk $1 Wikipedia",
 	"modal-close": "Tutup",
 	"modal-new-window": "Buka artikel ini dalam jendela baru",
 	"modal-previous": "Artikel sebelumnya",
 	"modal-next": "Artikel selanjutnya",
 	"modal-translate": "Terjemahkan",
+	"modal-create-from-scratch": "Buat dari awal",
 	"modal-loading": "Memuat...",
 	"modal-preview-fail": "Pratayang gagal dimuat",
 	"create-title": "Artikel baru",
