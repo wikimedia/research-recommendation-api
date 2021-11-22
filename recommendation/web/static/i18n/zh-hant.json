@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Kly",
-			"Liuxinyu970226"
+			"Liuxinyu970226",
+			"Winston Sung"
 		]
 	},
 	"title-wikipedia": "維基百科",
@@ -29,7 +30,7 @@
 	"modal-previous": "上一條目",
 	"modal-next": "下一條目",
 	"modal-translate": "翻譯",
-	"modal-create-from-scratch": "重新創建",
+	"modal-create-from-scratch": "從零建立",
 	"modal-loading": "載入中…",
 	"modal-preview-fail": "載入預覽失敗",
 	"create-title": "新條目",
