@@ -7,6 +7,7 @@
 			"Mailman",
 			"MaxBioHazard",
 			"Okras",
+			"Pacha Tchernof",
 			"Redredsonia"
 		]
 	},
@@ -36,7 +37,7 @@
 	"modal-translate": "Перевести",
 	"modal-create-from-scratch": "Создать с нуля",
 	"modal-loading": "Загрузка…",
-	"modal-preview-fail": "Не удалось загрузить предварительный просмотр",
+	"modal-preview-fail": "Не удалось загрузить предпросмотр",
 	"create-title": "Новая статья",
 	"create-title-input-placeholder": "Переведённое название",
 	"create-warning": "Внимание!",
