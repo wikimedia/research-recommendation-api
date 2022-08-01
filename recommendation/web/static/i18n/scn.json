@@ -14,5 +14,12 @@
 	"selector-source": "Surgenti",
 	"modal-close": "Chiudi",
 	"modal-translate": "Traduci",
-	"create-warning": "Accura!"
+	"create-title": "Vuci nova",
+	"create-title-input-placeholder": "Tìtulu dâ traduzzioni",
+	"create-warning": "Accura!",
+	"create-action": "Crea",
+	"create-error-empty": "Lu tìtulu nun pò èssiri vacanti",
+	"create-error-invalid-character": "Caràttiri nun vàlidu ntû tìtulu ( '|' )",
+	"create-error-exists": "Già esisti na pàggina dû tìtulu $1",
+	"create-error-invalid-page": "La pàggina $1 nun è vàlida"
 }

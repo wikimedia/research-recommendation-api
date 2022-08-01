@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Liuxinyu970226",
+			"Stang",
 			"Yfdyh000"
 		]
 	},
@@ -30,7 +31,7 @@
 	"modal-next": "下一条目",
 	"modal-translate": "翻译",
 	"modal-create-from-scratch": "从头开始创建",
-	"modal-loading": "正在载入...",
+	"modal-loading": "正在加载...",
 	"modal-preview-fail": "预览加载失败",
 	"create-title": "新条目",
 	"create-title-input-placeholder": "翻译标题",
