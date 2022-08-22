@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"GinawaSaHapon"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "GapFinder",
+	"title-beta": "beta",
+	"menu-how-to": "Paano",
+	"menu-about": "Patungkol",
+	"menu-feedback": "Feedback",
+	"menu-source-code": "Source code",
+	"menu-privacy-statement": "Pagkapribado",
+	"selector-source": "Pinagkunan",
+	"selector-target": "Target",
+	"search-placeholder": "Maghanap ng mga artikulong gagawin",
+	"status-preparing": "Hinahanda ang mga rinerekomendang artikulo...",
+	"status-must-be-different": "Dapat magkaiba ang wika ng pinagkunan at target",
+	"status-invalid-language": "Invalid na wika ng pinagkunan o target",
+	"status-no-results": "Walang available na mga rekomendasyon para sa mga tinukoy na parameter",
+	"article-pageviews": "$1 kamakailang {{{{PLURAL:$1|nakakita|mga nakakita}}",
+	"article-flag": "I-flag ang artikulong ito...",
+	"article-flag-not-interesting": "Hindi interesado",
+	"article-flag-not-notable": "Hindi notable para sa $1 na Wikipedia",
+	"modal-close": "Isara",
+	"modal-new-window": "Buksan ang artikulong ito sa bagong window",
+	"modal-previous": "Nakaraang artikulo",
+	"modal-next": "Susunod na artikulo",
+	"modal-translate": "Isalin",
+	"modal-create-from-scratch": "Gumawa mula simula",
+	"modal-loading": "Nilo-load...",
+	"modal-preview-fail": "Bigong mai-load ang pasilip",
+	"create-title": "Bagong artikulo",
+	"create-title-input-placeholder": "Pamagat ng salin",
+	"create-warning": "Babala!",
+	"create-action": "Gawin",
+	"create-error-empty": "Dapat di bakante ang pamagat",
+	"create-error-invalid-character": "Invalid na karakter sa pamagat ('|')",
+	"create-error-exists": "Meron na'ng pahina sa $1",
+	"create-error-invalid-page": "Invalid ang pahina sa $1"
+}
