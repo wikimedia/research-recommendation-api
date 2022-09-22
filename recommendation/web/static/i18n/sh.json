@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Vlad5250"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "Pronalazač praznina",
+	"title-beta": "beta",
+	"menu-how-to": "Uputstvo",
+	"menu-about": "O alatu",
+	"menu-feedback": "Povratna informacija",
+	"menu-source-code": "Izvorni kôd",
+	"menu-privacy-statement": "Izjava o privatnosti",
+	"selector-source": "Izvor",
+	"selector-target": "Cilj"
+}
