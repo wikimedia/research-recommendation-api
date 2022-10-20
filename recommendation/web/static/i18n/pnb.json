@@ -37,6 +37,6 @@
 	"create-action": "بݨاؤ",
 	"create-error-empty": "سِرلیکھ کھالی نہیں ہوݨا چاہیدا",
 	"create-error-invalid-character": "سِرلیکھ وِچ گلت اکھّر ('|')",
-	"create-error-exists": "سفا $1 'تے پہِلاں مَوجود ہے",
-	"create-error-invalid-page": "سفا $1 'تے گلت ہے"
+	"create-error-exists": "سفحہ $1 تے پہلاں موجود اے",
+	"create-error-invalid-page": "سفحہ $1 تے غلط اے"
 }
