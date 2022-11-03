@@ -18,7 +18,7 @@
 	"selector-target": "Cilj",
 	"search-placeholder": "Iskanje člankov za dodajanje",
 	"status-preparing": "Iskanje primernih člankov...",
-	"status-must-be-different": "Izvirni in ciljni jezik mora biti drugačna",
+	"status-must-be-different": "Izvorni in ciljni jezik se morata razlikovati",
 	"status-invalid-language": "Neveljavna izhodiščni ali ciljni jezik",
 	"status-no-results": "Za navedene parametre ni na voljo nobenih priporočil",
 	"article-pageviews": "Članek $1 ima {{PLURAL:$1|ogled|ogledi}} nedavnih ogledov",
