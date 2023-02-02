@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"title-wikipedia": "Wikipedia",
+	"title-gapfinder": "CercaLacunas",
+	"title-beta": "beta",
+	"menu-how-to": "Manual",
+	"menu-about": "A proposito",
+	"menu-feedback": "Commentario",
+	"menu-source-code": "Codice fonte",
+	"menu-privacy-statement": "Declaration de confidentialitate",
+	"selector-source": "Origine",
+	"selector-target": "Destination",
+	"search-placeholder": "Cercar articulos a crear",
+	"status-preparing": "Preparante recommendationes de articulos…",
+	"status-must-be-different": "Le linguas de origine e destination debe esser differente",
+	"status-invalid-language": "Lingua de origine o destination non valide",
+	"status-no-results": "Necun recommendation es disponibile pro le parametros specificate",
+	"article-pageviews": "$1 visita{{PLURAL:$1||s}} recente",
+	"article-flag": "Marcar iste articulo…",
+	"article-flag-not-interesting": "Non interessante",
+	"article-flag-not-notable": "Non notabile pro Wikipedia in $1",
+	"modal-close": "Clauder",
+	"modal-new-window": "Aperir iste articulo in un nove fenestra",
+	"modal-previous": "Articulo precedente",
+	"modal-next": "Articulo sequente",
+	"modal-translate": "Traducer",
+	"modal-create-from-scratch": "Crear ab zero",
+	"modal-loading": "Cargamento…",
+	"modal-preview-fail": "Le previsualisation ha fallite de cargar",
+	"create-title": "Nove articulo",
+	"create-title-input-placeholder": "Titulo del traduction",
+	"create-warning": "Attention!",
+	"create-action": "Crear",
+	"create-error-empty": "Le titulo non debe esser vacue",
+	"create-error-invalid-character": "Character non valide in titulo ('|')",
+	"create-error-exists": "Pagina ja existe sur $1",
+	"create-error-invalid-page": "Pagina non es valide sur $1"
+}
