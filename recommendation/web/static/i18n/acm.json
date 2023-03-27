@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"MRidhaAJ"
+		]
+	},
+	"title-wikipedia": "ويكيبيديا",
+	"title-gapfinder": "كاب فايندر",
+	"title-beta": "تجريبي",
+	"menu-how-to": "شلون",
+	"menu-about": "على",
+	"menu-feedback": "ردود الفعل",
+	"menu-source-code": "كود المصدر",
+	"menu-privacy-statement": "بيان الخصوصية",
+	"selector-source": "مصدر",
+	"selector-target": "الهدف",
+	"search-placeholder": "دور مقالات تسويها",
+	"status-preparing": "تحضير توصيات المقال...",
+	"status-must-be-different": "لازم تكون المصدر واللغة الهدف مختلفة",
+	"status-invalid-language": "مصدر لو لغة هدف غلط",
+	"status-no-results": "ماكو توصيات للوسائط اللي إختاريتها",
+	"article-pageviews": "{{PLURAL:$1|المشاهدة|المشاهدات}} الحالية $1",
+	"article-flag": "حط علم على المقالة...",
+	"article-flag-not-interesting": "مو مهم",
+	"article-flag-not-notable": "مو بارز لـ $1 ويكيبيديا",
+	"modal-close": "سد",
+	"modal-new-window": "إفتح هاي المقالة بنافذة جديدة",
+	"modal-previous": "المقالة السابقة",
+	"modal-next": "المقالة اللاحقة",
+	"modal-translate": "ترجم",
+	"modal-create-from-scratch": "سوي من الصفر",
+	"modal-loading": "جاي يحمل...",
+	"modal-preview-fail": "فشلت المعاينة في التحميل",
+	"create-title": "مقالة جديدة",
+	"create-title-input-placeholder": "عنوان الترجمة",
+	"create-warning": "دير بالك!",
+	"create-action": "سوي",
+	"create-error-empty": "العنوان لازم مو فارغ",
+	"create-error-invalid-character": "حرف غلط بالعنوان ('|')",
+	"create-error-exists": "هاي الصفحة موجودة أصلاً بـ$1",
+	"create-error-invalid-page": "الصفحة غلط بـ$1"
+}
