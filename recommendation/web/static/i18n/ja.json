@@ -19,7 +19,7 @@
 	"search-placeholder": "作成する記事を検索",
 	"status-preparing": "記事の推薦を準備する...",
 	"status-must-be-different": "翻訳元と翻訳先の言語を同じにすることはできません",
-	"status-invalid-language": "翻訳元または翻訳先の言語が不正です",
+	"status-invalid-language": "翻訳元または翻訳先の言語が無効です",
 	"status-no-results": "指定されたパラメーターに対してお奨めはありませんでした",
 	"article-pageviews": "$1回の{{PLURAL:$1|閲覧}}",
 	"article-flag": "この記事にフラグを付ける",
@@ -38,7 +38,7 @@
 	"create-warning": "警告！",
 	"create-action": "作成",
 	"create-error-empty": "タイトルを空白にすることはできません",
-	"create-error-invalid-character": "タイトルに不正な文字があります (「 | 」)",
+	"create-error-invalid-character": "タイトルに無効な文字があります (「 | 」)",
 	"create-error-exists": "ページは既に $1 として存在しています",
 	"create-error-invalid-page": "$1でページが無効です"
 }
