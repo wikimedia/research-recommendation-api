@@ -1,0 +1,64 @@
+# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.15.0
+version: v4
+base: docker-registry.wikimedia.org/python3-bullseye:0.0.2-20230625
+runs:
+  insecurely: true
+lives:
+  in: /home/recommendation-api
+
+variants:
+  build:
+    apt:
+      packages:
+        - build-essential
+        - gcc
+        - libpython3.9
+        - python3-dev
+        - wget
+        - unzip
+    builders:
+      - python:
+          version: python3.9
+          requirements:
+            - from: local
+              source: requirements.txt
+              destination: .
+      - custom:
+          command: ["./get-embeddings.sh"]
+          requirements:
+            - from: local
+              source: .
+              destination: .
+  production:
+    apt:
+      packages:
+        - libpython3.9
+    copies:
+      - from: build
+        source: /home/recommendation-api
+        destination: /home/recommendation-api
+      - from: local
+        source: recommendation/data/recommendation_liftwing.ini
+        destination: recommendation/data/recommendation.ini
+      - from: local
+        source: recommendation/data/uwsgi_liftwing.ini
+        destination: recommendation/data/uwsgi.ini
+      - from: build
+        source: /opt/lib/python/site-packages
+        destination: /opt/lib/python/site-packages
+    python:
+      version: python3.9
+    entrypoint: [ "uwsgi", "--http", ":5000", "--wsgi-file", "recommendation/data/recommendation.wsgi" ]
+  test:
+    includes: [production]
+    copies:
+      - from: build
+        source: /home/recommendation-api
+        destination: /home/recommendation-api
+    python:
+      version: python3.9
+      requirements:
+        - from: local
+          source: requirements-test.txt
+          destination: .
+    entrypoint: ["./run-test.sh"]

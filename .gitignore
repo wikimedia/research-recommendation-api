@@ -36,7 +36,6 @@ node_modules
 !**/static/bower.json
 *.tsv
 *.csv
-*.txt
 *.mtx
  
 # Logs and databases #
