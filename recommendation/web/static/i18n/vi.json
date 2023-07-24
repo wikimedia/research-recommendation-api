@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Caden99",
 			"Minh Nguyen"
 		]
 	},
@@ -18,6 +19,7 @@
 	"status-preparing": "Đang chuẩn bị gợi ý bài viết…",
 	"status-must-be-different": "Các ngôn ngữ gốc và mục tiêu phải khác nhau",
 	"status-invalid-language": "Ngôn ngữ gốc hoặc mục tiêu không hợp lệ",
+	"status-no-results": "Không có đề xuất nào cho các tham số đã chỉ định",
 	"article-pageviews": "$1 lượt xem gần đây",
 	"article-flag": "Đáng cờ bài này…",
 	"article-flag-not-interesting": "Chán",
