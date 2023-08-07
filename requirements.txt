@@ -3,6 +3,7 @@ flask-restplus==0.13.0
 requests==2.31.0
 markupsafe==2.0.1
 numpy==1.25.0
+python-swiftclient==3.6.0
 scipy==1.11.0
 scikit-learn==1.2.2
 uWSGI==2.0.21

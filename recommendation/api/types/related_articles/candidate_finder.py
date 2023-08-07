@@ -2,9 +2,12 @@ import logging
 from pkg_resources import resource_filename
 import collections
 import time
+import io
 import itertools
+import os
 
 import numpy as np
+import swiftclient
 from sklearn.preprocessing import normalize
 
 from recommendation.utils import configuration
@@ -70,13 +73,14 @@ def get_nearest_neighbors(wikidata_item):
 
 def initialize_embedding(optimize=True):
     global _embedding
+    embedding_client = configuration.get_config_value('related_articles', 'embedding_client', fallback='local_file_system')
     embedding_path = configuration.get_config_value('related_articles', 'embedding_path', fallback='')
     embedding_package = configuration.get_config_value('related_articles', 'embedding_package', fallback='')
     embedding_name = configuration.get_config_value('related_articles', 'embedding_name', fallback='')
     optimized_embedding_path = configuration.get_config_value('related_articles', 'optimized_embedding_path')
     minimum_similarity = configuration.get_config_float('related_articles', 'minimum_similarity')
     _embedding = WikiEmbedding(minimum_similarity)
-    _embedding.initialize(embedding_path, embedding_package, embedding_name, optimize, optimized_embedding_path)
+    _embedding.initialize(embedding_client, embedding_path, embedding_package, embedding_name, optimize, optimized_embedding_path)
 
 
 def get_embedding():
@@ -87,32 +91,81 @@ def get_embedding():
 
 
 class WikiEmbedding:
+    """
+    This class fetches a raw embedding then optimizes
+    and saves it within the given path.
+    """
+
     def __init__(self, minimum_similarity):
         self.minimum_similarity = minimum_similarity
         self.idx2w = []
         self.wikidata_ids = []
         self.embedding = []
 
-    def initialize(self, path, package, name, optimize, optimized_path):
+    def initialize(self, client, path, package, name, optimize, optimized_path):
         log.info('starting to load embedding')
         t1 = time.time()
 
         if optimize:
             if not self.load_optimized_embedding(optimized_path):
-                self.load_raw_embedding(path, package, name)
+                self.load_raw_embedding(client, path, package, name)
                 self.save_optimized_embedding(optimized_path)
         else:
-            self.load_raw_embedding(path, package, name)
+            self.load_raw_embedding(client, path, package, name)
 
         t2 = time.time()
         log.info('embedding loaded in %f seconds', t2 - t1)
 
-    def load_raw_embedding(self, path, package, name):
-        try:
-            f = open(path, 'r', encoding='utf-8')
-        except IOError:
-            f = open(resource_filename(package, name), 'r', encoding='utf-8')
+    def fetch_embedding(self, client, path, package, name):
+        """
+        Fetch embedding from either the local application directory
+        used on wmflabs or Swift used on LiftWing/k8s.
 
+        We opted not to download the embedding into the docker image
+        on LiftWing/k8s due to T342084 and T288198#9037109. We fetch
+        the embedding from Swift using this client and return
+        a file-like object since the method that loads the raw embedding
+        expects to read and process lines from a file.
+        """
+
+        if client != 'swift':
+            # fetch embedding from local application directory used on wmflabs
+            try:
+                embedding_object = open(path, 'r', encoding='utf-8')
+            except IOError:
+                embedding_object = open(resource_filename(package, name), 'r', encoding='utf-8')
+        else:
+            # fetch embedding from Swift used on LiftWing/k8s
+
+            # Get swift environment variables set by helm
+            swift_authurl = os.environ.get('SWIFT_AUTHURL')
+            swift_user = os.environ.get('SWIFT_USER')
+            swift_key = os.environ.get('SWIFT_SECRET_KEY')
+            swift_container = os.environ.get('SWIFT_CONTAINER')
+            swift_object_path = os.environ.get('SWIFT_OBJECT_PATH')
+
+            if None in (swift_authurl, swift_user, swift_key, swift_container, swift_object_path):
+                raise RuntimeError('Missing Swift environment variable')
+
+            try:
+                # Create a connection to Swift
+                conn = swiftclient.Connection(authurl=swift_authurl,
+                                            user=swift_user, key=swift_key)
+                # Get the swift object
+                swift_object = conn.get_object(swift_container, swift_object_path)
+            except swiftclient.exceptions.ClientException as e:
+                log.exception('Failed to get object from Swift')
+                raise RuntimeError(f'Failed to get object from Swift: {e}')
+
+            # Get the file content
+            file_content = swift_object[1].decode('utf-8')
+            # Load the content into a file-like object
+            embedding_object = io.StringIO(file_content)
+
+        return embedding_object
+
+    def load_raw_embedding(self, client, path, package, name):
+        f = self.fetch_embedding(client, path, package, name)
         line = f.readline()
         rows, columns = map(int, line.strip().split(' '))
 

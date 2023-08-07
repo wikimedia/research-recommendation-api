@@ -16,18 +16,16 @@ variants:
         - python3-dev
         - wget
         - unzip
+    copies:
+      - from: local
+        source: .
+        destination: .
     builders:
       - python:
           version: python3.9
           requirements:
             - from: local
               source: requirements.txt
-              destination: .
-      - custom:
-          command: ["./get-embeddings.sh"]
-          requirements:
-            - from: local
-              source: .
               destination: .
   production:
     apt:
