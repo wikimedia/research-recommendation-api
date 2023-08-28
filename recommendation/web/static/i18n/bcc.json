@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Moshtank"
+		]
+	},
+	"title-wikipedia": "ویکی پدیا",
+	"title-gapfinder": "گپءِ شۏھاز",
+	"title-beta": "پَددَرجاہ/آزمایشی",
+	"menu-how-to": "چہ پئیما",
+	"menu-about": "بارہ‌ئا",
+	"menu-feedback": "پدا وارت/پیدبَک",
+	"menu-source-code": "سرچممگءِ کد",
+	"menu-privacy-statement": "اندݔمݔن ھککءِ اݔلام",
+	"selector-source": "سرچممگ",
+	"selector-target": "مکسد",
+	"search-placeholder": "شۏھاز مہ نبشتانکے بنݔنَگا",
+	"status-preparing": "نبشتانکءِ سرۏشتادی آمادہ بییگا اَنت...",
+	"status-must-be-different": "بُندری ءُ مکسد زبان باید اِنت دگہ پئیمݔن بہ بئ اَنت",
+	"status-invalid-language": "بُندر یا مکسدءِ زبان ناپججار اَنت",
+	"status-no-results": "پہ ھاسݔن ٹگلواران ھچ پݔشنھادے گندگ نہ بیت",
+	"article-pageviews": "$1 ءِ گُڈی {{PLURAL:$1|سۏج|سۏجان}}",
+	"article-flag": "اے نبشتانکءِ سرا پرچم بہ ھِلل",
+	"article-flag-not-interesting": "شؤک نئن",
+	"article-flag-not-notable": "پہ $1ءِ ویکی پدیائا شؤک نئن",
+	"modal-close": "بندگ",
+	"modal-new-window": "اے نبشتانکا دگہ دریگے/تاکے تۏکا پچ کن",
+	"modal-previous": "پݔشی نبشتانک",
+	"modal-next": "رندی نبشتانک",
+	"modal-translate": "رجَگ",
+	"modal-create-from-scratch": "رجَگ چہ اولا",
+	"modal-loading": "بییگئن...",
+	"modal-preview-fail": "مِشتِک مہ پݔشسۏجءِ سۏج دیگا",
+	"create-title": "نۏکݔن نبشتانک",
+	"create-title-input-placeholder": "رجانکءِ سرگال",
+	"create-warning": "ھُژار!",
+	"create-action": "بنݔنگ",
+	"create-error-empty": "سرگال نباید اِنت کہ ھالیک بہ بیت",
+	"create-error-invalid-character": "ناسابݔن(نھِلل بیتگݔن) سیاھگ مہ سرگالا ( '|' )",
+	"create-error-exists": "تاک ھمے ھنی مہ $1 ئا ھست اِنت",
+	"create-error-invalid-page": "تاک مہ $1 ئا نݔست اِنت"
+}
