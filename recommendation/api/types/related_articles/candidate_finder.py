@@ -108,64 +108,85 @@ class WikiEmbedding:
 
         if optimize:
             if not self.load_optimized_embedding(optimized_path):
-                self.load_raw_embedding(client, path, package, name)
+                self.load_embedding(client, path, package, name)
                 self.save_optimized_embedding(optimized_path)
         else:
-            self.load_raw_embedding(client, path, package, name)
+            self.load_embedding(client, path, package, name)
 
         t2 = time.time()
         log.info('embedding loaded in %f seconds', t2 - t1)
 
-    def fetch_embedding(self, client, path, package, name):
+    def load_preprocessed_embedding(self):
         """
-        Fetch embedding from either the local application directory
-        used on wmflabs or Swift used on LiftWing/k8s.
+        For the instance hosted on LiftWing/k8s, the app fetches and uses
+        float32 preprocessed numpy arrays from Swift for optimal memory usage
+        (see T339890#9162780).
 
-        We opted not to download the embedding into the docker image
-        on LiftWing/k8s due to T342084 and T288198#9037109. We fetch
-        the embedding from Swift using this client and return
-        a file-like object since the method that loads the raw embedding
-        expects to read and process lines from a file.
+        Because of T342084 and T288198#9037109 we opted not to store
+        the heavy preprocessed files within the docker image.
         """
 
-        if client != 'swift':
-            # fetch embedding from local application directory used on wmflabs
+        # Get swift environment variables set by helm
+        swift_authurl = os.environ.get('SWIFT_AUTHURL')
+        swift_user = os.environ.get('SWIFT_USER')
+        swift_key = os.environ.get('SWIFT_SECRET_KEY')
+        swift_container = os.environ.get('SWIFT_CONTAINER')
+        swift_wikidata_ids_path = os.environ.get('SWIFT_WIKIDATA_IDS_PATH')
+        swift_decoded_lines_float32_path = os.environ.get('SWIFT_DECODED_LINES_FLOAT32_PATH')
+
+        if None in (swift_authurl, swift_user, swift_key, swift_container,
+                    swift_wikidata_ids_path, swift_decoded_lines_float32_path):
+            required_swift_env_vars = ['SWIFT_AUTHURL', 'SWIFT_USER', 'SWIFT_SECRET_KEY',
+                                      'SWIFT_CONTAINER', 'SWIFT_WIKIDATA_IDS_PATH',
+                                      'SWIFT_DECODED_LINES_FLOAT32_PATH']
+            error_msg = 'One or more Swift environment variables is missing,\
+            \nplease check whether all variables below are set in helm:\
+            \n' + ', '.join(required_swift_env_vars)
+            raise RuntimeError(error_msg)
+
+        try:
+            # Create a connection to Swift
+            conn = swiftclient.Connection(authurl=swift_authurl,
+                                          user=swift_user, key=swift_key)
+            # Get the wikidata_ids swift object
+            wikidata_ids_swift_object = conn.get_object(swift_container,
+                                                        swift_wikidata_ids_path)
+            # Get the decoded_lines_float32 swift object
+            decoded_lines_float32_swift_object = conn.get_object(swift_container,
+                                                                 swift_decoded_lines_float32_path)
+        except swiftclient.exceptions.ClientException as e:
+            log.exception('Failed to get objects from Swift')
+            raise RuntimeError(f'Failed to get objects from Swift: {e}')
+
+        log.info('initialize wikidata_ids array')
+        wikidata_ids_numpy_binary = wikidata_ids_swift_object[1]
+        wikidata_ids_numpy_array = np.load(wikidata_ids_numpy_binary)
+        self.wikidata_ids = wikidata_ids_numpy_array
+        log.info('wikidata_ids array initialized')
+
+        log.info('initialize decoded_lines array')
+        decoded_lines_float32_numpy_binary = decoded_lines_float32_swift_object[1]
+        decoded_lines_float32_numpy_array = np.load(decoded_lines_float32_numpy_binary)
+        embedding = decoded_lines_float32_numpy_array
+        log.info('decoded_lines array initialized')
+
+        return embedding
+
+    def process_raw_embedding(self, path, package, name):
+        """
+        For the instance hosted on wmflabs, the app fetches the embedding
+        from the local application directory and processes it in-memory.
+        """
+
+        try:
+            f = open(path, 'r', encoding='utf-8')
+        except FileNotFoundError:
             try:
-                embedding_object = open(path, 'r', encoding='utf-8')
-            except IOError:
-                embedding_object = open(resource_filename(package, name), 'r', encoding='utf-8')
-        else:
-            # fetch embedding from Swift used on LiftWing/k8s
+                f = open(resource_filename(package, name), 'r', encoding='utf-8')
+            except FileNotFoundError as e:
+                log.exception('Embedding file not found')
+                raise FileNotFoundError(f'Embedding file not found: {path}, {resource_filename(package, name)}') from e
 
-            # Get swift environment variables set by helm
-            swift_authurl = os.environ.get('SWIFT_AUTHURL')
-            swift_user = os.environ.get('SWIFT_USER')
-            swift_key = os.environ.get('SWIFT_SECRET_KEY')
-            swift_container = os.environ.get('SWIFT_CONTAINER')
-            swift_object_path = os.environ.get('SWIFT_OBJECT_PATH')
-
-            if None in (swift_authurl, swift_user, swift_key, swift_container, swift_object_path):
-                raise RuntimeError('Missing Swift environment variable')
-
-            try:
-                # Create a connection to Swift
-                conn = swiftclient.Connection(authurl=swift_authurl,
-                                            user=swift_user, key=swift_key)
-                # Get the swift object
-                swift_object = conn.get_object(swift_container, swift_object_path)
-            except swiftclient.exceptions.ClientException as e:
-                log.exception('Failed to get object from Swift')
-                raise RuntimeError(f'Failed to get object from Swift: {e}')
-
-            # Get the file content
-            file_content = swift_object[1].decode('utf-8')
-            # Load the content into a file-like object
-            embedding_object = io.StringIO(file_content)
-
-        return embedding_object
-
-    def load_raw_embedding(self, client, path, package, name):
-        f = self.fetch_embedding(client, path, package, name)
         line = f.readline()
         rows, columns = map(int, line.strip().split(' '))
 
@@ -183,13 +204,23 @@ class WikiEmbedding:
 
         log.info('building array')
         self.wikidata_ids = np.array(self.wikidata_ids)
-        self.embedding = np.array(decoded_lines)
+        embedding = np.array(decoded_lines)
         del decoded_lines
         log.info('array initialized')
 
-        log.info('normalizing')
+        return embedding
+
+    def load_embedding(self, client, path, package, name):
+        if client != 'swift':
+            # process embedding fetched from local application directory used on wmflabs
+            self.embedding = self.process_raw_embedding(path, package, name)
+        else:
+            # load preprocessed embedding files from Swift used on LiftWing/k8s
+            self.embedding = self.load_preprocessed_embedding()
+
+        log.info('normalizing embedding')
         self.embedding = normalize(self.embedding)
-        log.info('normalized')
+        log.info('embedding normalized')
 
     def load_optimized_embedding(self, path):
         try:

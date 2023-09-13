@@ -181,7 +181,7 @@ def test_related_articles_result(client):
     for expected, actual in zip(RELATED_ARTICLE_RESPONSE, result):
         for key in expected.keys():
             if key == 'score':
-                assert isclose(expected[key], actual[key])
+                assert pytest.approx(expected[key]) == actual[key]
             else:
                 assert expected[key] == actual[key]
 
