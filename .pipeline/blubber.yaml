@@ -47,7 +47,7 @@ variants:
         destination: /opt/lib/python/site-packages
     python:
       version: python3.9
-    entrypoint: [ "uwsgi", "--http", ":5000", "--wsgi-file", "recommendation/data/recommendation.wsgi" ]
+    entrypoint: [ "uwsgi", "--http", ":8080", "--wsgi-file", "recommendation/data/recommendation.wsgi" ]
   test:
     includes: [production]
     copies:
