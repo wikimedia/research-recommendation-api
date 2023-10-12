@@ -165,7 +165,7 @@ def test_wiki_search_paths(seed, query, expected_calls, seed_response, morelike_
         fallback=(query, 10, False, MORELIKE_RESPONSE)
     )
     for query, count, morelike, response in search_pattern.values():
-        url, params = fetcher.build_wiki_search('en', query, count, morelike)
+        url, params, headers = fetcher.build_wiki_search('en', query, count, morelike)
         url += '?' + urllib.parse.urlencode(params)
         responses.add(responses.GET, url, json=response, status=200, match_querystring=True)
     finder('en', seed, 10)

@@ -5,6 +5,7 @@ import json
 import time
 
 from recommendation.utils import configuration
+from recommendation.api.external_data import fetcher
 
 log = logging.getLogger(__name__)
 
@@ -34,9 +35,9 @@ def log_api_request(source, target, seed=None, search=None, host='',
     }
 
     url = configuration.get_config_value('endpoints', 'event_logger')
+    headers = fetcher.set_headers_with_host_header(configuration, 'event_logger')
     log.info('Logging event: %s', json.dumps(payload))
 
-    headers = {}
     if user_agent is not None:
         headers['User-Agent'] = user_agent
     try:

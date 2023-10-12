@@ -117,8 +117,10 @@ def query(params):
 
 def get_entities(params):
     endpoint = configuration.get_config_value('endpoints', 'wikidata')
+    headers = fetcher.set_headers_with_host_header(configuration, 'wikidata')
+
     try:
-        data = fetcher.post(endpoint, data=params)
+        data = fetcher.post(endpoint, data=params, headers=headers)
         if 'warnings' in data:
             raise ValueError()
     except ValueError:
