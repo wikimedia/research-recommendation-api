@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Magiczocker",
 			"Metalhead64"
 		]
 	},
@@ -15,12 +16,12 @@
 	"selector-source": "Quelle",
 	"selector-target": "Ziel",
 	"search-placeholder": "Nach Artikeln zur Erstellung suchen",
-	"status-preparing": "Bereite Artikelempfehlungen vor …",
+	"status-preparing": "Bereite Artikelempfehlungen vor...",
 	"status-must-be-different": "Die Quell- und Zielsprachen müssen unterschiedlich sein",
 	"status-invalid-language": "Ungültige Quell- oder Zielsprache",
 	"status-no-results": "Für die angegebenen Parameter sind keine Empfehlungen verfügbar.",
-	"article-pageviews": "{{PLURAL:$1|Ein Aufruf|$1 Aufrufe}} in letzter Zeit",
-	"article-flag": "Diesen Artikel markieren …",
+	"article-pageviews": "{{PLURAL:$1|1 Aufruf|$1 Aufrufe}} in letzter Zeit",
+	"article-flag": "Diesen Artikel markieren...",
 	"article-flag-not-interesting": "Nicht interessant",
 	"article-flag-not-notable": "Nicht relevant für die $1 Wikipedia",
 	"modal-close": "Schließen",
@@ -36,7 +37,7 @@
 	"create-warning": "Warnung!",
 	"create-action": "Erstellen",
 	"create-error-empty": "Der Titel darf nicht leer sein",
-	"create-error-invalid-character": "Ungültiges Zeichen im Titel („|“)",
+	"create-error-invalid-character": "Ungültiges Zeichen im Titel ( '|' )",
 	"create-error-exists": "Seite ist bei $1 bereits vorhanden",
 	"create-error-invalid-page": "Die Seite mit der URL $1 ist ungültig"
 }
