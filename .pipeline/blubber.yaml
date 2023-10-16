@@ -1,6 +1,6 @@
-# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.15.0
+# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.21.0
 version: v4
-base: docker-registry.wikimedia.org/python3-bullseye:0.0.2-20230625
+base: docker-registry.wikimedia.org/python3-bullseye:0.0.2-20231015
 runs:
   insecurely: true
 lives:
@@ -48,16 +48,20 @@ variants:
     python:
       version: python3.9
     entrypoint: [ "uwsgi", "--http", ":8080", "--wsgi-file", "recommendation/data/recommendation.wsgi" ]
+  # We don't include "production" since we let tox to manage all
+  # the dependencies. Having the Debian-provided pip and tox's pip co-existing
+  # on the same system may lead to weird errors, so we keep the two separated.
   test:
-    includes: [production]
+    apt:
+      packages:
+        - git
+        - tox
+        - build-essential
+        - python3-dev
     copies:
       - from: build
         source: /home/recommendation-api
         destination: /home/recommendation-api
     python:
       version: python3.9
-      requirements:
-        - from: local
-          source: requirements-test.txt
-          destination: .
     entrypoint: ["./run-test.sh"]

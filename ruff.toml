@@ -1,0 +1,12 @@
+exclude = [
+  ".txt",
+  ".tox",
+  ".svg",
+  ".gitignore",
+  "LICENSE",
+  "AUTHORS",
+  "travis.yml",
+  ".yaml",
+  ".md"
+]
+line-length = 120

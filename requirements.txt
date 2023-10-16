@@ -7,6 +7,5 @@ python-swiftclient==3.6.0
 scipy==1.11.0
 scikit-learn==1.2.2
 uWSGI==2.0.21
-virtualenv==20.23.1
 Werkzeug==0.16.0
 wheel==0.34.2
