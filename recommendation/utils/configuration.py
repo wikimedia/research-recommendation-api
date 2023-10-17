@@ -30,6 +30,11 @@ def get_config_bool(section, key):
     return _get_configuration().getboolean(section, key)
 
 
+def section_exists(section):
+    # Checks whether the given section exists in the configuration.
+    return _get_configuration().has_section(section)
+
+
 def _get_configuration():
     global _config
     if _config is None:

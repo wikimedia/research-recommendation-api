@@ -8,12 +8,17 @@ from recommendation.utils import configuration
 log = logging.getLogger(__name__)
 
 
-def get(url, params=None):
+def get(url, params=None, headers=None):
     log.debug('Get: %s', url)
-    try:
+    user_agent = 'WMF Research Gapfinder (https://recommend.wmflabs.org/; leila@wikimedia.org)'
+    if headers is None:
         headers = {
-            'User-Agent': 'WMF Research Gapfinder (https://recommend.wmflabs.org/; leila@wikimedia.org)'
+            'User-Agent': user_agent
         }
+    else:
+       headers['User-Agent'] = user_agent
+
+    try:
         response = requests.get(url, params=params, headers=headers)
         response.raise_for_status()
         return response.json()
@@ -22,10 +27,10 @@ def get(url, params=None):
         raise ValueError(e)
 
 
-def post(url, data=None):
+def post(url, data=None, headers=None):
     log.debug('Post: %s', url)
     try:
-        response = requests.post(url, data=data)
+        response = requests.post(url, data=data, headers=headers)
         response.raise_for_status()
         return response.json()
     except (requests.RequestException, ValueError) as e:
@@ -37,12 +42,13 @@ def get_disambiguation_pages(source, titles):
     """
     Returns the subset of titles that are disambiguation pages
     """
-    endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
+    endpoint = get_formatted_endpoint(configuration, 'wikipedia', source)
+    headers = set_headers_with_host_header(configuration, 'wikipedia', source)
     params = configuration.get_config_dict('disambiguation_params')
     params['titles'] = '|'.join(titles)
 
     try:
-        data = post(endpoint, data=params)
+        data = post(endpoint, data=params, headers=headers)
     except ValueError:
         log.info('Bad Disambiguation API response')
         return []
@@ -56,9 +62,10 @@ def get_pageviews(source, title):
     Get pageview counts for a single article from pageview api
     """
     query = get_pageview_query_url(source, title)
+    headers = set_headers_with_host_header(configuration, 'pageviews')
 
     try:
-        response = get(query)
+        response = get(query, headers=headers)
     except ValueError:
         response = {}
 
@@ -84,9 +91,9 @@ def wiki_search(source, seed, count, morelike=False):
     """
     A client to the Mediawiki search API
     """
-    endpoint, params = build_wiki_search(source, seed, count, morelike)
+    endpoint, params, headers = build_wiki_search(source, seed, count, morelike)
     try:
-        response = get(endpoint, params=params)
+        response = get(endpoint, params=params, headers=headers)
     except ValueError:
         log.info('Could not search for articles related to seed in %s. Choose another language.', source)
         return []
@@ -110,8 +117,10 @@ def get_most_popular_articles(source, campaign=''):
     query = configuration.get_config_value('popular_pageviews', 'query')
     date = (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime(date_format)
     query = query.format(source=source, date=date)
+    headers = set_headers_with_host_header(configuration, 'pageviews')
+
     try:
-        data = get(query)
+        data = get(query, headers=headers)
     except ValueError:
         log.info('pageview query failed')
         return []
@@ -129,19 +138,21 @@ def get_most_popular_articles(source, campaign=''):
 
 
 def build_wiki_search(source, seed, count, morelike):
-    endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
+    endpoint = get_formatted_endpoint(configuration, 'wikipedia', source)
+    headers = set_headers_with_host_header(configuration, 'wikipedia', source)
     params = configuration.get_config_dict('wiki_search_params')
     params['srlimit'] = count
     if morelike:
         seed = 'morelike:' + seed
     params['srsearch'] = seed
-    return endpoint, params
+    return endpoint, params, headers
 
 
 def get_related_articles(source, seed):
     endpoint = configuration.get_config_value('endpoints', 'related_articles')
+    headers = set_headers_with_host_header(configuration, 'related_articles')
     try:
-        response = get(endpoint, dict(source=source, seed=seed, count=500))
+        response = get(endpoint, dict(source=source, seed=seed, count=500), headers=headers)
     except ValueError:
         return []
     return response
@@ -169,14 +180,15 @@ def get_pages_in_category_tree(source, category, count):
 
 def get_category_members(source, category):
     log.debug(category)
-    endpoint = configuration.get_config_value('endpoints', 'wikipedia').format(source=source)
+    endpoint = get_formatted_endpoint(configuration, 'wikipedia', source)
+    headers = set_headers_with_host_header(configuration, 'wikipedia', source)
     params = configuration.get_config_dict('category_search_params')
     params['cmtitle'] = category
 
     members = dict(pages=set(), subcats=set())
 
     try:
-        response = get(endpoint, params=params)
+        response = get(endpoint, params=params, headers=headers)
     except ValueError:
         return []
     results = response.get('query', {}).get('categorymembers', [])
@@ -186,3 +198,41 @@ def get_category_members(source, category):
         if member.get('type', None) == 'subcat':
             members['subcats'].add(member.get('title'))
     return members
+
+
+def set_headers_with_host_header(configuration, endpoint_name, source=''):
+    """
+    Sets headers with host header if .ini configuration has the 'endpoint_host_headers' section that runs on LiftWing. (see T348607)
+
+    Args:
+        configuration (Configuration): The configuration object.
+        endpoint_name (str): The name of the endpoint, e.g. "wikipedia" or "pageviews".
+        source (str): The source of the data, e.g. "en" or "fr". This parameter defaults to '' so that this function
+        can be used for host headers that don't require it.
+
+    Returns:
+        dict: The updated headers dictionary.
+    """
+    headers = {}
+    if configuration.section_exists('endpoint_host_headers'):
+        host_header = configuration.get_config_value('endpoint_host_headers', endpoint_name).format(source=source)
+        headers['Host'] = host_header
+    return headers
+
+
+def get_formatted_endpoint(configuration, endpoint_name, source=''):
+    """
+    Get formatted endpoint with the appropriate source based on whether it runs on LiftWing or wmflabs. (see T348607)
+
+    Args:
+        configuration (Configuration): The configuration object.
+        endpoint_name (str): The name of the endpoint.
+        source (str): The source of the data, e.g. "en". This parameter defaults to '' so that this function can
+        be used for endpoints that don't require it e.g the source is not set for LiftWing wikipedia endpoints but
+        it's set for wmflabs.
+
+    Returns:
+        str: The endpoint.
+    """
+    endpoint = configuration.get_config_value('endpoints', endpoint_name).format(source=source)
+    return endpoint

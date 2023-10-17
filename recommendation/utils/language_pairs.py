@@ -2,6 +2,7 @@ import requests
 import logging
 
 from recommendation.utils import configuration
+from recommendation.api.external_data import fetcher
 
 log = logging.getLogger(__name__)
 
@@ -46,8 +47,10 @@ def initialize_language_pairs():
     global _language_pairs
     if _language_pairs is None:
         language_pairs_endpoint = configuration.get_config_value('endpoints', 'language_pairs')
+        headers = fetcher.set_headers_with_host_header(configuration, 'language_pairs')
+
         try:
-            result = requests.get(language_pairs_endpoint)
+            result = requests.get(language_pairs_endpoint, headers=headers)
             result.raise_for_status()
             pairs = result.json()
             if {'source', 'target'} ^ set(pairs.keys()):
