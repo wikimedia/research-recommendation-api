@@ -20,7 +20,7 @@ _language_to_domain_mapping = {
     "rup": "roa-rup",
     "sgs": "bat-smg",
     "vro": "fiu-vro",
-    "yue": "zh-yue"
+    "yue": "zh-yue",
 }
 
 
@@ -35,8 +35,12 @@ def is_valid_language_pair(source, target):
         #  that failure, but is not essential
         return True
 
-    source_valid = source in pairs['source'] or source in get_language_to_domain_mapping().values()
-    target_valid = target in pairs['target'] or target in get_language_to_domain_mapping().values()
+    source_valid = (
+        source in pairs["source"] or source in get_language_to_domain_mapping().values()
+    )
+    target_valid = (
+        target in pairs["target"] or target in get_language_to_domain_mapping().values()
+    )
 
     if not source_valid or not target_valid:
         return False
@@ -46,22 +50,24 @@ def is_valid_language_pair(source, target):
 def initialize_language_pairs():
     global _language_pairs
     if _language_pairs is None:
-        language_pairs_endpoint = configuration.get_config_value('endpoints', 'language_pairs')
-        headers = fetcher.set_headers_with_host_header(configuration, 'language_pairs')
+        language_pairs_endpoint = configuration.get_config_value(
+            "endpoints", "language_pairs"
+        )
+        headers = fetcher.set_headers_with_host_header(configuration, "language_pairs")
 
         try:
             result = requests.get(language_pairs_endpoint, headers=headers)
             result.raise_for_status()
             pairs = result.json()
-            if {'source', 'target'} ^ set(pairs.keys()):
+            if {"source", "target"} ^ set(pairs.keys()):
                 raise ValueError()
             if not all(isinstance(v, list) for v in pairs.values()):
                 raise ValueError()
             _language_pairs = pairs
         except requests.exceptions.RequestException as e:
-            log.warning('Unable to load data from {}. {}'.format(language_pairs_endpoint, e))
+            log.warning(f"Unable to load data from {language_pairs_endpoint}. {e}")
         except (AttributeError, ValueError):
-            log.warning('language pairs were invalid')
+            log.warning("language pairs were invalid")
 
 
 def get_language_pairs():

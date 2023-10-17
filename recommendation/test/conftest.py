@@ -10,11 +10,13 @@ import recommendation
 @pytest.fixture
 def config_locations():
     locations = configuration._config_locations[:1]
-    locations.append(resource_filename(recommendation.__name__, 'test/test_recommendation.ini'))
+    locations.append(
+        resource_filename(recommendation.__name__, "test/test_recommendation.ini")
+    )
     return locations
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def change_config_and_setup_responses(request, config_locations):
     """
     This changes the config file that is loaded to test_recommendation.ini

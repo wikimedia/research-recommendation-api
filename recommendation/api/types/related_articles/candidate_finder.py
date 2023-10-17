@@ -2,7 +2,6 @@ import logging
 from pkg_resources import resource_filename
 import collections
 import time
-import io
 import itertools
 import os
 
@@ -18,7 +17,9 @@ log = logging.getLogger(__name__)
 
 _embedding = None
 
-Candidate = collections.namedtuple('Candidate', ['title', 'wikidata_id', 'url', 'score'])
+Candidate = collections.namedtuple(
+    "Candidate", ["title", "wikidata_id", "url", "score"]
+)
 
 
 def get_candidates(source, seed, count):
@@ -46,12 +47,19 @@ def get_candidates(source, seed, count):
             start_of_chunk = next(nearest_neighbors_iter)
         except StopIteration:
             break
-        chunk = itertools.chain((start_of_chunk,), itertools.islice(nearest_neighbors_iter, 499))
+        chunk = itertools.chain(
+            (start_of_chunk,), itertools.islice(nearest_neighbors_iter, 499)
+        )
         results = wikidata.get_titles_from_wikidata_items(source, (n[0] for n in chunk))
-        candidates += [Candidate(title=item.title,
-                                 wikidata_id=item.id,
-                                 url=item.url,
-                                 score=ids_to_scores[item.id]) for item in results]
+        candidates += [
+            Candidate(
+                title=item.title,
+                wikidata_id=item.id,
+                url=item.url,
+                score=ids_to_scores[item.id],
+            )
+            for item in results
+        ]
 
     candidates = sorted(candidates, key=lambda c: c.score, reverse=True)
 
@@ -61,7 +69,7 @@ def get_candidates(source, seed, count):
 def resolve_seed(source, seed):
     seed_list = fetcher.wiki_search(source, seed, 1)
     if len(seed_list) == 0:
-        log.info('Seed does not map to an article')
+        log.info("Seed does not map to an article")
         return None
     return seed_list[0]
 
@@ -73,14 +81,33 @@ def get_nearest_neighbors(wikidata_item):
 
 def initialize_embedding(optimize=True):
     global _embedding
-    embedding_client = configuration.get_config_value('related_articles', 'embedding_client', fallback='local_file_system')
-    embedding_path = configuration.get_config_value('related_articles', 'embedding_path', fallback='')
-    embedding_package = configuration.get_config_value('related_articles', 'embedding_package', fallback='')
-    embedding_name = configuration.get_config_value('related_articles', 'embedding_name', fallback='')
-    optimized_embedding_path = configuration.get_config_value('related_articles', 'optimized_embedding_path')
-    minimum_similarity = configuration.get_config_float('related_articles', 'minimum_similarity')
+    embedding_client = configuration.get_config_value(
+        "related_articles", "embedding_client", fallback="local_file_system"
+    )
+    embedding_path = configuration.get_config_value(
+        "related_articles", "embedding_path", fallback=""
+    )
+    embedding_package = configuration.get_config_value(
+        "related_articles", "embedding_package", fallback=""
+    )
+    embedding_name = configuration.get_config_value(
+        "related_articles", "embedding_name", fallback=""
+    )
+    optimized_embedding_path = configuration.get_config_value(
+        "related_articles", "optimized_embedding_path"
+    )
+    minimum_similarity = configuration.get_config_float(
+        "related_articles", "minimum_similarity"
+    )
     _embedding = WikiEmbedding(minimum_similarity)
-    _embedding.initialize(embedding_client, embedding_path, embedding_package, embedding_name, optimize, optimized_embedding_path)
+    _embedding.initialize(
+        embedding_client,
+        embedding_path,
+        embedding_package,
+        embedding_name,
+        optimize,
+        optimized_embedding_path,
+    )
 
 
 def get_embedding():
@@ -103,7 +130,7 @@ class WikiEmbedding:
         self.embedding = []
 
     def initialize(self, client, path, package, name, optimize, optimized_path):
-        log.info('starting to load embedding')
+        log.info("starting to load embedding")
         t1 = time.time()
 
         if optimize:
@@ -114,7 +141,7 @@ class WikiEmbedding:
             self.load_embedding(client, path, package, name)
 
         t2 = time.time()
-        log.info('embedding loaded in %f seconds', t2 - t1)
+        log.info("embedding loaded in %f seconds", t2 - t1)
 
     def load_preprocessed_embedding(self):
         """
@@ -127,48 +154,67 @@ class WikiEmbedding:
         """
 
         # Get swift environment variables set by helm
-        swift_authurl = os.environ.get('SWIFT_AUTHURL')
-        swift_user = os.environ.get('SWIFT_USER')
-        swift_key = os.environ.get('SWIFT_SECRET_KEY')
-        swift_container = os.environ.get('SWIFT_CONTAINER')
-        swift_wikidata_ids_path = os.environ.get('SWIFT_WIKIDATA_IDS_PATH')
-        swift_decoded_lines_float32_path = os.environ.get('SWIFT_DECODED_LINES_FLOAT32_PATH')
+        swift_authurl = os.environ.get("SWIFT_AUTHURL")
+        swift_user = os.environ.get("SWIFT_USER")
+        swift_key = os.environ.get("SWIFT_SECRET_KEY")
+        swift_container = os.environ.get("SWIFT_CONTAINER")
+        swift_wikidata_ids_path = os.environ.get("SWIFT_WIKIDATA_IDS_PATH")
+        swift_decoded_lines_float32_path = os.environ.get(
+            "SWIFT_DECODED_LINES_FLOAT32_PATH"
+        )
 
-        if None in (swift_authurl, swift_user, swift_key, swift_container,
-                    swift_wikidata_ids_path, swift_decoded_lines_float32_path):
-            required_swift_env_vars = ['SWIFT_AUTHURL', 'SWIFT_USER', 'SWIFT_SECRET_KEY',
-                                      'SWIFT_CONTAINER', 'SWIFT_WIKIDATA_IDS_PATH',
-                                      'SWIFT_DECODED_LINES_FLOAT32_PATH']
-            error_msg = 'One or more Swift environment variables is missing,\
+        if None in (
+            swift_authurl,
+            swift_user,
+            swift_key,
+            swift_container,
+            swift_wikidata_ids_path,
+            swift_decoded_lines_float32_path,
+        ):
+            required_swift_env_vars = [
+                "SWIFT_AUTHURL",
+                "SWIFT_USER",
+                "SWIFT_SECRET_KEY",
+                "SWIFT_CONTAINER",
+                "SWIFT_WIKIDATA_IDS_PATH",
+                "SWIFT_DECODED_LINES_FLOAT32_PATH",
+            ]
+            error_msg = (
+                "One or more Swift environment variables is missing,\
             \nplease check whether all variables below are set in helm:\
-            \n' + ', '.join(required_swift_env_vars)
+            \n"
+                + ", ".join(required_swift_env_vars)
+            )
             raise RuntimeError(error_msg)
 
         try:
             # Create a connection to Swift
-            conn = swiftclient.Connection(authurl=swift_authurl,
-                                          user=swift_user, key=swift_key)
+            conn = swiftclient.Connection(
+                authurl=swift_authurl, user=swift_user, key=swift_key
+            )
             # Get the wikidata_ids swift object
-            wikidata_ids_swift_object = conn.get_object(swift_container,
-                                                        swift_wikidata_ids_path)
+            wikidata_ids_swift_object = conn.get_object(
+                swift_container, swift_wikidata_ids_path
+            )
             # Get the decoded_lines_float32 swift object
-            decoded_lines_float32_swift_object = conn.get_object(swift_container,
-                                                                 swift_decoded_lines_float32_path)
+            decoded_lines_float32_swift_object = conn.get_object(
+                swift_container, swift_decoded_lines_float32_path
+            )
         except swiftclient.exceptions.ClientException as e:
-            log.exception('Failed to get objects from Swift')
-            raise RuntimeError(f'Failed to get objects from Swift: {e}')
+            log.exception("Failed to get objects from Swift")
+            raise RuntimeError(f"Failed to get objects from Swift: {e}")
 
-        log.info('initialize wikidata_ids array')
+        log.info("initialize wikidata_ids array")
         wikidata_ids_numpy_binary = wikidata_ids_swift_object[1]
         wikidata_ids_numpy_array = np.load(wikidata_ids_numpy_binary)
         self.wikidata_ids = wikidata_ids_numpy_array
-        log.info('wikidata_ids array initialized')
+        log.info("wikidata_ids array initialized")
 
-        log.info('initialize decoded_lines array')
+        log.info("initialize decoded_lines array")
         decoded_lines_float32_numpy_binary = decoded_lines_float32_swift_object[1]
         decoded_lines_float32_numpy_array = np.load(decoded_lines_float32_numpy_binary)
         embedding = decoded_lines_float32_numpy_array
-        log.info('decoded_lines array initialized')
+        log.info("decoded_lines array initialized")
 
         return embedding
 
@@ -179,65 +225,69 @@ class WikiEmbedding:
         """
 
         try:
-            f = open(path, 'r', encoding='utf-8')
+            f = open(path, encoding="utf-8")
         except FileNotFoundError:
             try:
-                f = open(resource_filename(package, name), 'r', encoding='utf-8')
+                f = open(resource_filename(package, name), encoding="utf-8")
             except FileNotFoundError as e:
-                log.exception('Embedding file not found')
-                raise FileNotFoundError(f'Embedding file not found: {path}, {resource_filename(package, name)}') from e
+                log.exception("Embedding file not found")
+                raise FileNotFoundError(
+                    f"Embedding file not found: {path}, {resource_filename(package, name)}"
+                ) from e
 
         line = f.readline()
-        rows, columns = map(int, line.strip().split(' '))
+        rows, columns = map(int, line.strip().split(" "))
 
-        log.info('decoding file')
+        log.info("decoding file")
         decoded_lines = []
         i = 0
         for line in f:
             if i % int(rows / 20.0) == 0:
-                log.info('{:.0%} decoded'.format(i / rows))
+                log.info(f"{i / rows:.0%} decoded")
             i += 1
-            wikidata_id, _, values = line.partition(' ')
+            wikidata_id, _, values = line.partition(" ")
             self.wikidata_ids.append(wikidata_id)
-            decoded_lines.append(np.fromstring(values, dtype=float, sep=' ', count=columns))
-        log.info('file decoded')
+            decoded_lines.append(
+                np.fromstring(values, dtype=float, sep=" ", count=columns)
+            )
+        log.info("file decoded")
 
-        log.info('building array')
+        log.info("building array")
         self.wikidata_ids = np.array(self.wikidata_ids)
         embedding = np.array(decoded_lines)
         del decoded_lines
-        log.info('array initialized')
+        log.info("array initialized")
 
         return embedding
 
     def load_embedding(self, client, path, package, name):
-        if client != 'swift':
+        if client != "swift":
             # process embedding fetched from local application directory used on wmflabs
             self.embedding = self.process_raw_embedding(path, package, name)
         else:
             # load preprocessed embedding files from Swift used on LiftWing/k8s
             self.embedding = self.load_preprocessed_embedding()
 
-        log.info('normalizing embedding')
+        log.info("normalizing embedding")
         self.embedding = normalize(self.embedding)
-        log.info('embedding normalized')
+        log.info("embedding normalized")
 
     def load_optimized_embedding(self, path):
         try:
-            infile = open(path, 'rb')
-        except IOError:
+            infile = open(path, "rb")
+        except OSError:
             return False
 
         embedding = np.load(infile)
-        self.embedding = embedding['embedding']
-        self.wikidata_ids = embedding['wikidata_ids']
+        self.embedding = embedding["embedding"]
+        self.wikidata_ids = embedding["wikidata_ids"]
         return True
 
     def save_optimized_embedding(self, path):
-        log.info('saving optimized embedding')
-        outfile = open(path, 'wb')
+        log.info("saving optimized embedding")
+        outfile = open(path, "wb")
         np.savez(outfile, embedding=self.embedding, wikidata_ids=self.wikidata_ids)
-        log.info('optimized embedding saved at %s', path)
+        log.info("optimized embedding saved at %s", path)
 
     def most_similar(self, word):
         """

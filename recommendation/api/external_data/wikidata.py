@@ -9,33 +9,50 @@ from recommendation.api.external_data import fetcher
 
 log = logging.getLogger(__name__)
 
-_RawWikidataItem = collections.namedtuple('RawWikidataItem', ['id', 'sitelinks', 'claims'])
-WikidataItem = collections.namedtuple('WikidataItem', ['id', 'title', 'url', 'sitelink_count'])
+_RawWikidataItem = collections.namedtuple(
+    "RawWikidataItem", ["id", "sitelinks", "claims"]
+)
+WikidataItem = collections.namedtuple(
+    "WikidataItem", ["id", "title", "url", "sitelink_count"]
+)
 
 
 def wikigapfinder_campaign_filter(item):
     """People who are women or identify themselves as women"""
-    return (item.claims.get('P31', [{}])[0]
-            .get('mainsnak', {}).get('datavalue', {}).get('value', {})
-            .get('id', '') == 'Q5')\
-        and \
-        (item.claims.get('P21', [{}])[0]
-         .get('mainsnak', {}).get('datavalue', {}).get('value', {})
-         .get('id', '') in ('Q1052281', 'Q6581072'))
+    return (
+        item.claims.get("P31", [{}])[0]
+        .get("mainsnak", {})
+        .get("datavalue", {})
+        .get("value", {})
+        .get("id", "")
+        == "Q5"
+    ) and (
+        item.claims.get("P21", [{}])[0]
+        .get("mainsnak", {})
+        .get("datavalue", {})
+        .get("value", {})
+        .get("id", "")
+        in ("Q1052281", "Q6581072")
+    )
 
 
 @logger.timeit
 def get_wikigapfinder_campaign_candidates(source, target, wikidata_ids):
     """Candidates for the WikiGapFinder campaign"""
-    return get_items(source, ids=wikidata_ids,
-                     raw_filter=wikigapfinder_campaign_filter,
-                     props='claims|sitelinks/urls')
+    return get_items(
+        source,
+        ids=wikidata_ids,
+        raw_filter=wikigapfinder_campaign_filter,
+        props="claims|sitelinks/urls",
+    )
 
 
 @logger.timeit
 def get_items_in_source_missing_in_target_by_titles(source, target, titles):
-    target_wiki = '{}wiki'.format(target)
-    items = get_items(source, titles=titles, raw_filter=lambda item: target_wiki not in item.sitelinks)
+    target_wiki = f"{target}wiki"
+    items = get_items(
+        source, titles=titles, raw_filter=lambda item: target_wiki not in item.sitelinks
+    )
     return {item.title: item for item in items}
 
 
@@ -54,16 +71,18 @@ def default_filter(_):
 
 
 def get_items(source, titles=None, ids=None, raw_filter=default_filter, props=None):
-    params = configuration.get_config_dict('wikidata_query_params')
+    params = configuration.get_config_dict("wikidata_query_params")
     if props:
-        params['props'] = props
-    params['sites'] = params['sites'].format(source=source)
+        params["props"] = props
+    params["sites"] = params["sites"].format(source=source)
     items = []
     if titles is not None:
-        items = chunk_query_for_parameter(params, 'titles', titles)
+        items = chunk_query_for_parameter(params, "titles", titles)
     if ids is not None:
-        items = chunk_query_for_parameter(params, 'ids', ids)
-    items = [extract_from_raw(item, params['sites']) for item in items if raw_filter(item)]
+        items = chunk_query_for_parameter(params, "ids", ids)
+    items = [
+        extract_from_raw(item, params["sites"]) for item in items if raw_filter(item)
+    ]
     items = [item for item in items if item is not None]
     return items
 
@@ -93,12 +112,14 @@ def chunk_query_for_parameter(params, parameter, values):
 
         the results are appended in the appropriate order and returned
     """
-    chunk_size = configuration.get_config_int('external_api_parameters', 'wikidata_chunk_size')
+    chunk_size = configuration.get_config_int(
+        "external_api_parameters", "wikidata_chunk_size"
+    )
 
     param_groups = []
     for group in itertools.zip_longest(*[iter(values)] * chunk_size):
         p = params.copy()
-        p[parameter] = '|'.join(item for item in group if item is not None)
+        p[parameter] = "|".join(item for item in group if item is not None)
         param_groups.append(p)
 
     if param_groups:
@@ -116,25 +137,25 @@ def query(params):
 
 
 def get_entities(params):
-    endpoint = configuration.get_config_value('endpoints', 'wikidata')
-    headers = fetcher.set_headers_with_host_header(configuration, 'wikidata')
+    endpoint = configuration.get_config_value("endpoints", "wikidata")
+    headers = fetcher.set_headers_with_host_header(configuration, "wikidata")
 
     try:
         data = fetcher.post(endpoint, data=params, headers=headers)
-        if 'warnings' in data:
+        if "warnings" in data:
             raise ValueError()
     except ValueError:
-        log.info('Bad Wikidata API response')
+        log.info("Bad Wikidata API response")
         return {}
 
-    return data.get('entities', {})
+    return data.get("entities", {})
 
 
 def get_raw_items_from_entities(entities):
     items = []
     for id, entity in entities.items():
-        sitelinks = entity.get('sitelinks', {})
-        claims = entity.get('claims', {})
+        sitelinks = entity.get("sitelinks", {})
+        claims = entity.get("claims", {})
         items.append(_RawWikidataItem(id=id, sitelinks=sitelinks, claims=claims))
     return items
 
@@ -144,7 +165,9 @@ def extract_from_raw(raw_item, site):
         sitelink = raw_item.sitelinks[site]
     except KeyError:
         return None
-    return WikidataItem(id=raw_item.id,
-                        title=sitelink['title'].replace(' ', '_'),
-                        url=sitelink['url'],
-                        sitelink_count=len(raw_item.sitelinks))
+    return WikidataItem(
+        id=raw_item.id,
+        title=sitelink["title"].replace(" ", "_"),
+        url=sitelink["url"],
+        sitelink_count=len(raw_item.sitelinks),
+    )

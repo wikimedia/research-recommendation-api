@@ -5,8 +5,8 @@ import recommendation
 
 _config = None
 _config_locations = [
-    resource_filename(recommendation.__name__, 'data/recommendation.ini'),
-    '/etc/recommendation/recommendation.ini'
+    resource_filename(recommendation.__name__, "data/recommendation.ini"),
+    "/etc/recommendation/recommendation.ini",
 ]
 
 
@@ -43,7 +43,9 @@ def _get_configuration():
 
 
 def initialize_config():
-    config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    config = configparser.ConfigParser(
+        interpolation=configparser.ExtendedInterpolation()
+    )
     config.read(_config_locations)
     global _config
     _config = config

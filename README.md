@@ -5,14 +5,14 @@
   Given a source and target wiki, the API provides source articles missing in the target.
 
 * **URL**
-  * http://recommend.wmflabs.org/api  
+  * http://recommend.wmflabs.org/api
 * **URL Params**
-  * **Required:** 
+  * **Required:**
     * `s=[string]` source wiki project language code (e.g. `en`)
     * `t=[string]` target wiki project language code (e.g. `fr`)
   * **Optional:**
     * `n=[int]` number of recommendations to fetch (default `10`)
-    * `article=[string]` seed article for personalized recommendations. Can be a list of 
+    * `article=[string]` seed article for personalized recommendations. Can be a list of
       seeds separated by `|`
     * `pageviews=[true|false]` whether to include pageview counts in the response (default `true`)
     * `search=[wiki|google|morelike]` which search algorithm to use (default `morelike`)

@@ -6,33 +6,32 @@ from recommendation.api.types.translation import filters
 from recommendation.api.types.translation import recommendation
 from recommendation.utils import configuration
 
-SOURCE = 'xx'
+SOURCE = "xx"
 
 
-@pytest.fixture(params=[
-    filters.filter_by_missing,
-    filters.filter_by_disambiguation
-])
+@pytest.fixture(params=[filters.filter_by_missing, filters.filter_by_disambiguation])
 def the_filter(request):
     return request.param
 
 
 def query(the_filter):
     if the_filter is filters.filter_by_missing:
-        return the_filter(SOURCE, SOURCE, [recommendation.Recommendation('something')])
+        return the_filter(SOURCE, SOURCE, [recommendation.Recommendation("something")])
     if the_filter is filters.filter_by_disambiguation:
-        return the_filter(SOURCE, '')
+        return the_filter(SOURCE, "")
 
 
 def get_expected_endpoint(the_filter):
     if the_filter is filters.filter_by_missing:
-        return configuration.get_config_value('endpoints', 'wikidata')
+        return configuration.get_config_value("endpoints", "wikidata")
     if the_filter is filters.filter_by_disambiguation:
-        return configuration.get_config_value('endpoints', 'wikipedia').format(source=SOURCE)
+        return configuration.get_config_value("endpoints", "wikipedia").format(
+            source=SOURCE
+        )
 
 
-def add_response(body='', json=None, status=200):
-    responses.add(responses.POST, re.compile('.'), body=body, json=json, status=status)
+def add_response(body="", json=None, status=200):
+    responses.add(responses.POST, re.compile("."), body=body, json=json, status=status)
 
 
 def test_queries_correct_endpoint(the_filter):
@@ -48,32 +47,27 @@ def test_bad_url(the_filter):
 
 
 def test_404(the_filter):
-    add_response(json={'valid': 'json'}, status=404)
+    add_response(json={"valid": "json"}, status=404)
     result = query(the_filter)
     assert [] == result
 
 
 def test_bad_json(the_filter):
-    add_response(body='This is not valid json.')
+    add_response(body="This is not valid json.")
     result = query(the_filter)
     assert [] == result
 
 
-@pytest.mark.parametrize('title', [
-    'Single',
-    'Double Word'
-])
+@pytest.mark.parametrize("title", ["Single", "Double Word"])
 def test_filter_by_good_title(title):
     candidates = [recommendation.Recommendation(title)]
     result = filters.filter_by_title(candidates)
     assert candidates == result
 
 
-@pytest.mark.parametrize('title', [
-    'List something blah',
-    ': is bad',
-    'and cannot appear : anywhere'
-])
+@pytest.mark.parametrize(
+    "title", ["List something blah", ": is bad", "and cannot appear : anywhere"]
+)
 def test_filter_by_bad_title(title):
     candidates = [recommendation.Recommendation(title)]
     result = filters.filter_by_title(candidates)

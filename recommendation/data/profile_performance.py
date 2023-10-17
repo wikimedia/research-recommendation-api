@@ -13,36 +13,42 @@ from recommendation.api.types.related_articles import related_articles, candidat
 from recommendation.utils import logger
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def initialize():
     logger.initialize_logging()
     candidate_finder.initialize_embedding()
 
 
-@pytest.fixture(params=[
-    'Apple', 'Banana'
-])
+@pytest.fixture(params=["Apple", "Banana"])
 def seed(request):
     return request.param
 
 
-@pytest.fixture(params=[
-    'Q89', 'Q90'
-])
+@pytest.fixture(params=["Q89", "Q90"])
 def item(request):
     return request.param
 
 
 def test_translation_without_seed():
-    run_call(translation.recommend, 'en', 'de', None, None, 400, include_pageviews=False)
+    run_call(
+        translation.recommend, "en", "de", None, None, 400, include_pageviews=False
+    )
 
 
 def test_translation_with_seed(seed):
-    run_call(translation.recommend, 'en', 'de', 'morelike', seed, 400, include_pageviews=False)
+    run_call(
+        translation.recommend,
+        "en",
+        "de",
+        "morelike",
+        seed,
+        400,
+        include_pageviews=False,
+    )
 
 
 def test_related_articles(seed):
-    run_call(related_articles.recommend, 'en', seed, 400)
+    run_call(related_articles.recommend, "en", seed, 400)
 
 
 def test_related_articles_by_items(item):
@@ -67,7 +73,7 @@ def profile_memory(*args, **kwargs):
 
 
 def print_stats(stats):
-    for basis in ('tottime', 'cumtime'):
+    for basis in ("tottime", "cumtime"):
         stats.sort_stats(basis)
         stats.print_stats(10)
-        stats.print_stats('recommendation-api', 10)
+        stats.print_stats("recommendation-api", 10)

@@ -72,7 +72,7 @@ this commit will ..."
 * Line length can be up to 120 characters
 * Prefer single quotes `''` to double `""`
 
-For everything else, refer to [PEP 8](https://www.python.org/dev/peps/pep-0008/) 
+For everything else, refer to [PEP 8](https://www.python.org/dev/peps/pep-0008/)
 
 ## Additional Notes
 

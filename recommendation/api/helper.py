@@ -12,12 +12,14 @@ def build_api(name, import_name, url_prefix=None):
 
     @blueprint.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET')
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add(
+            "Access-Control-Allow-Headers", "Content-Type,Authorization"
+        )
+        response.headers.add("Access-Control-Allow-Methods", "GET")
         return response
 
-    api.add_resource(Spec, '/spec')
+    api.add_resource(Spec, "/spec")
     return api
 
 

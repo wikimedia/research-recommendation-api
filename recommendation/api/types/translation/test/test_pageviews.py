@@ -9,30 +9,34 @@ from recommendation.api.types.translation import pageviews
 from recommendation.api.types.translation import recommendation
 from recommendation.utils import configuration
 
-TITLE = 'Sample_Title'
-SOURCE = 'xx'
+TITLE = "Sample_Title"
+SOURCE = "xx"
 GOOD_RESPONSE = {
-    'items': [
-        {'project': '{source}.wikipedia'.format(source=SOURCE),
-         'article': TITLE,
-         'granularity': 'daily',
-         'timestamp': '2016010100',
-         'access': 'all-access',
-         'agent': 'user',
-         'views': 1234},
-        {'project': '{source}.wikipedia'.format(source=SOURCE),
-         'article': TITLE,
-         'granularity': 'daily',
-         'timestamp': '2016010200',
-         'access': 'all-access',
-         'agent': 'user',
-         'views': 5678}
+    "items": [
+        {
+            "project": f"{SOURCE}.wikipedia",
+            "article": TITLE,
+            "granularity": "daily",
+            "timestamp": "2016010100",
+            "access": "all-access",
+            "agent": "user",
+            "views": 1234,
+        },
+        {
+            "project": f"{SOURCE}.wikipedia",
+            "article": TITLE,
+            "granularity": "daily",
+            "timestamp": "2016010200",
+            "access": "all-access",
+            "agent": "user",
+            "views": 5678,
+        },
     ]
 }
 
 
-def add_response(body='', json=None, status=200):
-    responses.add(responses.GET, re.compile('.'), body=body, json=json, status=status)
+def add_response(body="", json=None, status=200):
+    responses.add(responses.GET, re.compile("."), body=body, json=json, status=status)
 
 
 def run_getter():
@@ -45,14 +49,19 @@ def run_getter():
 def test_pageviews():
     add_response(json=GOOD_RESPONSE)
     articles = run_getter()
-    assert sum([item['views'] for item in GOOD_RESPONSE['items']]) == articles[0].pageviews
+    assert (
+        sum([item["views"] for item in GOOD_RESPONSE["items"]]) == articles[0].pageviews
+    )
 
 
-@pytest.mark.parametrize('add,body,json,status', [
-    (False, '', None, 200),
-    (True, '', {'valid': 'json'}, 404),
-    (True, 'This is not valid json.', None, 200)
-])
+@pytest.mark.parametrize(
+    "add,body,json,status",
+    [
+        (False, "", None, 200),
+        (True, "", {"valid": "json"}, 404),
+        (True, "This is not valid json.", None, 200),
+    ],
+)
 def test_getter_failures(add, body, json, status):
     if add:
         add_response(body=body, json=json, status=status)
@@ -64,8 +73,13 @@ def test_getter_queries_correct_url():
     add_response()
     run_getter()
     assert 1 == len(responses.calls)
-    assert configuration.get_config_value('endpoints', 'pageviews') in responses.calls[0].request.url
-    assert fetcher.get_pageview_query_url(SOURCE, TITLE) == responses.calls[0].request.url
+    assert (
+        configuration.get_config_value("endpoints", "pageviews")
+        in responses.calls[0].request.url
+    )
+    assert (
+        fetcher.get_pageview_query_url(SOURCE, TITLE) == responses.calls[0].request.url
+    )
 
 
 def test_date_range(monkeypatch):
@@ -75,7 +89,8 @@ def test_date_range(monkeypatch):
         @classmethod
         def utcnow(cls):
             return static_date
-    monkeypatch.setattr(datetime, 'datetime', mockdatetime)
+
+    monkeypatch.setattr(datetime, "datetime", mockdatetime)
     add_response()
     run_getter()
-    assert '2010010500/2010011900' in responses.calls[0].request.url
+    assert "2010010500/2010011900" in responses.calls[0].request.url
