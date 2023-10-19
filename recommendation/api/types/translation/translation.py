@@ -1,5 +1,6 @@
 import collections
 import logging
+import os
 import time
 
 import flask_restplus
@@ -199,12 +200,15 @@ finder_map = {
 
 
 @logger.timeit
-def recommend(source, target, search, seed, count, include_pageviews, rank_method='default', campaign='', max_candidates=500):
+def recommend(source, target, search, seed, count, include_pageviews, rank_method='default', campaign='', max_candidates=None):
     """
     1. Use finder to select a set of candidate articles
     2. Filter out candidates that are not missing, are disambiguation pages, etc
     3. get pageview info for each passing candidate if desired
     """
+
+    if max_candidates is None:
+        max_candidates = int(os.environ.get("MAX_CANDIDATES", 250))
 
     candidates = []
 
