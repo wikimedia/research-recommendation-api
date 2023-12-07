@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Fahimrazick",
 			"Rakeshonwiki",
 			"Siddhan",
 			"தமிழ்க்குரிசில்"
@@ -16,7 +17,7 @@
 	"menu-privacy-statement": "தனியுரிமைக் கொள்கை",
 	"selector-source": "மூலம்",
 	"selector-target": "இலக்கு",
-	"search-placeholder": "உருவாக்க வேண்டிய கட்டுரைகளை தேடுக",
+	"search-placeholder": "ஆக்க வேண்டிய கட்டுரைகளை தேடு",
 	"status-preparing": "கட்டுரை பரிந்துரைகளைத் தயாரிக்கிறது...",
 	"status-must-be-different": "மூல மற்றும் இலக்கு மொழிகள் வேறுபட்டதாக இருக்க வேண்டும்",
 	"status-invalid-language": "தவறான மூல அல்லது இலக்கு மொழி",
