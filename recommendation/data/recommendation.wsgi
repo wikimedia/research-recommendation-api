@@ -10,6 +10,7 @@ from recommendation.utils import configuration
 logger.initialize_logging()
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 app.register_blueprint(api.api.blueprint)
 
 section = "enabled_services"
