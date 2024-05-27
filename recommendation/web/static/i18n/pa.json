@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cabal",
 			"Sony dandiwal",
 			"Tow"
 		]
@@ -33,7 +34,7 @@
 	"modal-loading": "ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
 	"modal-preview-fail": "ਕੋਈ ਇੰਟਰਨੈੱਟ ਨਹੀਂ",
 	"create-title": "ਨਵਾਂ ਲੇਖ",
-	"create-title-input-placeholder": "ਅਨੁਵਾਦ ਸਿਰਲੇਖ",
+	"create-title-input-placeholder": "ਤਰਜਮੇ ਦਾ ਸਿਰਲੇਖ",
 	"create-warning": "ਖ਼ਬਰਦਾਰ!",
 	"create-action": "ਬਣਾਓ",
 	"create-error-empty": "ਸਿਰਲੇਖ ਖਾਲੀ ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ",
