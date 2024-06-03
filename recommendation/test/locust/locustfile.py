@@ -1,7 +1,11 @@
 import os
+import re
 import pandas as pd
 from datetime import datetime
 from locust import between, events, FastHttpUser, task
+from locust_plugins.csvreader import CSVReader
+
+payload_inputs = CSVReader("inputs.csv")
 
 
 @events.test_stop.add_listener
@@ -107,16 +111,37 @@ class RecommendationAPILiftWing(FastHttpUser):
 
     This class simulates a user making requests to the recommendation API
     with specific query parameters, mimicking the following curl request:
-    curl -s "https://api.wikimedia.org/service/lw/recommendation/v1/api?s=en&t=fr&n=3&article=Apple"
+    curl -s "https://recommendation-api-ng.k8s-ml-staging.discovery.wmnet:31443/api/?s=en&t=fr&n=3&article=Apple"
     """
 
     wait_time = between(1, 2)  # Adjust wait time as needed
-    host = "https://api.wikimedia.org"
+    host = "https://recommendation-api-ng.k8s-ml-staging.discovery.wmnet:31443"
+
+    def get_params(self, payload_input):
+        """
+        Process the payload input to extract query parameters.
+        """
+        params = {"s": None, "t": None, "n": None, "article": None}
+        pattern = r"(\w+)\s(\w+)\s(\d+)\s(\w+)$"
+        match = re.search(pattern, payload_input)
+        if match:
+            params = {
+                "s": match.group(1),
+                "t": match.group(2),
+                "n": match.group(3),
+                "article": match.group(4),
+            }
+        return params
 
     @task
     def predict(self):
         """
         Task to send a GET request to the recommendation API.
+
+        This method retrieves the next payload input from the CSV file,
+        processes it to extract query parameters, and sends a GET request
+        to the recommendation API endpoint with the extracted parameters.
         """
-        params = {"s": "en", "t": "fr", "n": "3", "article": "Apple"}
-        self.client.get("/service/lw/recommendation/v1/api", params=params)
+        payload_input = next(payload_inputs)
+        params = self.get_params(payload_input[0])
+        self.client.get("/api/", params=params)

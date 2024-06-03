@@ -19,7 +19,7 @@ locust
 This command will run the locust load test using `locust.conf` and `locustfile.py`, store and compare the results of the previous load test, then print the results in the console.
 
 ## 3. Next Steps:
-Locust creates multiple CSV files to store load test results. These files are not required for subsequent tests except for `liftwing_load_tests_history.csv`. You can delete the unnecessary files using the command below before adding changes to the repository:
+Locust uses multiple CSV files to run and store load test results. These files are not required for subsequent tests except for `inputs.csv` and `liftwing_load_tests_history.csv`. You can delete the unnecessary files using the command below before adding changes to the repository:
 ```
-rm !(liftwing_load_tests_history).csv
+rm !(inputs|liftwing_load_tests_history).csv
 ```
