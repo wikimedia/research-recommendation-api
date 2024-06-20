@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Darafsh",
 			"Huji",
 			"Namo",
 			"Reza1615"
@@ -26,7 +27,7 @@
 	"article-flag-not-interesting": "جالب نیست",
 	"article-flag-not-notable": "برای ویکی‌پدیای $1 جالب توجه نیست",
 	"modal-close": "بستن",
-	"modal-new-window": "این مقاله را در پنجره جدید باز کن",
+	"modal-new-window": "این مقاله را در پنجرهٔ جدید باز کن",
 	"modal-previous": "مقاله قبلی",
 	"modal-next": "مقاله بعدی",
 	"modal-translate": "ترجمه",
