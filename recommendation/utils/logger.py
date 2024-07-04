@@ -1,21 +1,23 @@
 import logging
+import logging.config
 import time
+from functools import lru_cache
 
-from recommendation.utils import configuration
+import yaml
+
 import recommendation
+from recommendation.utils.configuration import configuration
 
-log = logging.getLogger(__name__)
 
-
+@lru_cache(maxsize=None)
 def initialize_logging():
-    logging.basicConfig(
-        format=configuration.get_config_value("logging", "format"),
-        level=logging.WARNING,
-    )
-    log = logging.getLogger(recommendation.__name__)
-    log.setLevel(
-        logging.getLevelName(configuration.get_config_value("logging", "level"))
-    )
+    with open("logging.yaml", "rt") as f:
+        config = yaml.safe_load(f.read())
+    # Configure the logging module with the config file
+    logging.config.dictConfig(config)
+    logger = logging.getLogger(recommendation.__name__)
+    logger.setLevel(logging.getLevelName(configuration.LOG_LEVEL))
+    return logger
 
 
 def timeit(method):
@@ -29,3 +31,6 @@ def timeit(method):
         return result
 
     return timed
+
+
+log = initialize_logging()

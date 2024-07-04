@@ -3,78 +3,103 @@
 > The GapFinder tool will be deprecated between July 1 and 15 2024. For detailed background information, please refer to the [Phabricator task T367549](https://phabricator.wikimedia.org/T367549).
 > #### API Migration
 > For tools utilizing the API, please migrate to the LiftWing endpoint. Documentation for the LiftWing API can be found [here](https://api.wikimedia.org/wiki/Lift_Wing_API/Reference/Get_content_translation_recommendation).
-> An example of such a migration can be seen in this [diff on the Spanish Wikipedia](https://es.wikipedia.org/w/index.php?title=MediaWiki:Gadget-WikiProject.js&diff=prev&oldid=160820835).
 > #### UI Alternative
 > For the user interface, please use the [Content Translation tool](https://www.mediawiki.org/wiki/Content_translation#Try_the_tool).
-
 
 # Content Translation Recommendation API
 
 Given a source and target wiki, the API provides source articles missing in the target.
 
-## API Parameters
-* **URL**
-  * https://api.wikimedia.org/service/lw/recommendation/v1/api
-* **URL Params**
-  * **Required:**
-    * `source or s=[string]` source wiki project language code (e.g. `en`)
-    * `target or t=[string]` target wiki project language code (e.g. `fr`)
-  * **Optional:**
-    * `n=[int]` number of recommendations to fetch (default `12`)
-    * `article=[string]` seed article for personalized recommendations. Can be a list of
-      seeds separated by `|`
-    * `pageviews=[true|false]` whether to include pageview counts in the response (default `true`)
-    * `search=[wiki|morelike]` which search algorithm to use (default `morelike`)
+## Sample Call
 
-## Sample Call:
+https://api.wikimedia.org/service/lw/recommendation/v1/api?source=en&target=fr&count=3&seed=Apple
 
-https://api.wikimedia.org/service/lw/recommendation/v1/api?s=en&t=fr&n=3&article=Apple
-
-```
+```json
 [
   {
-    "pageviews": 58,
-    "title": "Pomological_Watercolor_Collection",
-    "wikidata_id": "Q23134015",
-    "rank": 497
+    "title": "Plum pox",
+    "pageviews": 0,
+    "wikidata_id": "Q1788571",
+    "rank": 10,
+    "langlinks_count": 5
   },
   {
-    "pageviews": 50,
-    "title": "Nurse_grafting",
-    "wikidata_id": "Q24897497",
-    "rank": 495
+    "title": "Applecrab",
+    "pageviews": 0,
+    "wikidata_id": "Q19595924",
+    "rank": 12,
+    "langlinks_count": 0
   },
   {
-    "pageviews": 74,
-    "title": "Cadra_calidella",
-    "wikidata_id": "Q5016600",
-    "rank": 493
+    "title": "Flamenco (apple)",
+    "pageviews": 0,
+    "wikidata_id": "Q19597233",
+    "rank": 17,
+    "langlinks_count": 1
   }
 ]
 ```
 
 ## Running the API
-Make sure you are using at least Python 3.4.
 
-There is a `wsgi` file provided at `recommendation/data/recommendation.wsgi`. This can be run
-using a tool like `uwsgi` as follows:
-```
-# Inside a virtualenv and in the root directory of the repo
+Make sure you are using at least Python 3.10
+
+Inside a virtualenv and in the root directory of the repo
+
+```bash
 pip install -e .
-pip install uwsgi
-uwsgi --http :5000 --wsgi-file recommendation/data/recommendation.wsgi --venv my-venv
+gunicorn
 ```
-If you get an error with Werkzeug, try `pip install Werkzeug==0.16.0`
-until https://github.com/noirbizarre/flask-restplus/issues/777 is resolved.
 
-Then navigate here to see the UI:
-```
-http://localhost:5000/
-```
+Then navigate here to see openapi spec: http://localhost:8080/docs
 
 To check out the API, go to:
-```
-http://localhost:5000/api?s=en&t=fr&n=3&article=Apple
-```
+http://localhost:8080/api/v1/translation?source=en&target=fr&count=3&seed=Apple
 
 You should get a similar response to the **Sample Call** above
+
+## Running using Docker
+
+Build the image first.
+
+```bash
+ docker build --target production --tag recommendation-api:latest -f .pipeline/blubber.yaml .
+```
+
+Then run:
+
+```bash
+docker run recommendation-api:latest
+```
+
+## Testing using Docker
+
+Build the image first.
+
+```bash
+ docker build --target test --tag recommendation-api-test:latest -f .pipeline/blubber.yaml .
+```
+
+Then run:
+
+```bash
+docker run recommendation-api-test:latest
+```
+
+## Load Testing using Locust
+
+To run load testing using Locust, run
+
+```bash
+locust -f recommendation/test/locustfile.py
+```
+
+Then navigate to <http://localhost:8089/> to run the tests. Provide number of users and API host to test.
+
+## Environment Variables
+
+All configuration variables defined on configuration.py can be overridden by setting the corresponding environment variable.
+
+You may use a .env file or by setting the environment variables directly in shell.
+
+Refer <https://docs.pydantic.dev/latest/concepts/pydantic_settings/> for more options

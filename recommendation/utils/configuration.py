@@ -1,51 +1,25 @@
-import configparser
-from pkg_resources import resource_filename
-
-import recommendation
-
-_config = None
-_config_locations = [
-    resource_filename(recommendation.__name__, "data/recommendation.ini"),
-    "/etc/recommendation/recommendation.ini",
-]
+from pydantic import AnyUrl
+from pydantic_settings import BaseSettings
 
 
-def get_config_value(section, key, **kwargs):
-    return _get_configuration().get(section, key, **kwargs)
+class Settings(BaseSettings):
+    """
+    Configuration settings for the Recommendation service.
+    Refer https://docs.pydantic.dev/latest/concepts/pydantic_settings/ for more details.
+    """
+
+    LOG_LEVEL: str = "DEBUG"
+    PROJECT_NAME: str = "Recommendation service"
+    PROJECT_VERSION: str = "1.0.0"
+    API_PREFIX: str = "/api"
+    API_VERSION: str = "v1"
+    LANGUAGE_PAIRS_API: AnyUrl = "https://cxserver.wikimedia.org/v1/languagepairs"
+    LANGUAGE_PAIRS_API_HEADER: str | None = None
+    WIKIPEDIA_API: AnyUrl = "https://{source}.wikipedia.org/w/api.php"
+    WIKIPEDIA_API_HEADER: str | None = None
+    EVENT_LOGGER_API: AnyUrl = "https://intake-analytics.wikimedia.org/v1/events?hasty=true"
+    EVENT_LOGGER_API_HEADER: str | None = None
+    USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmflabs.org/; leila@wikimedia.org)"
 
 
-def get_config_int(section, key):
-    return _get_configuration().getint(section, key)
-
-
-def get_config_float(section, key):
-    return _get_configuration().getfloat(section, key)
-
-
-def get_config_dict(section):
-    return dict(_get_configuration()[section])
-
-
-def get_config_bool(section, key):
-    return _get_configuration().getboolean(section, key)
-
-
-def section_exists(section):
-    # Checks whether the given section exists in the configuration.
-    return _get_configuration().has_section(section)
-
-
-def _get_configuration():
-    global _config
-    if _config is None:
-        initialize_config()
-    return _config
-
-
-def initialize_config():
-    config = configparser.ConfigParser(
-        interpolation=configparser.ExtendedInterpolation()
-    )
-    config.read(_config_locations)
-    global _config
-    _config = config
+configuration = Settings()

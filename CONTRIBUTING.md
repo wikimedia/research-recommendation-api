@@ -67,13 +67,6 @@ this commit will ..."
 * Limit the first line to 72 characters or less
 * Reference issues and pull requests liberally
 
-### Python Styleguide
-
-* Line length can be up to 120 characters
-* Prefer single quotes `''` to double `""`
-
-For everything else, refer to [PEP 8](https://www.python.org/dev/peps/pep-0008/)
-
 ## Additional Notes
 
 TODO

@@ -60,6 +60,8 @@ Thumbs.db
 __pycache__/
 *.py[cod]
 *$py.class
+.ruff_cache
+.pytest_cache
 
 # C extensions
 *.so

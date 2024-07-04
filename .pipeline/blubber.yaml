@@ -1,67 +1,25 @@
-# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.21.0
+# syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v0.24.0
 version: v4
-base: docker-registry.wikimedia.org/python3-bullseye:0.0.2-20231015
-runs:
-  insecurely: true
+base: docker-registry.wikimedia.org/python3-build-bookworm
+# Should allow internet access and write access on file system
+runs: {insecurely: true}
 lives:
-  in: /home/recommendation-api
+  in: /app
 
 variants:
   build:
-    apt:
-      packages:
-        - build-essential
-        - gcc
-        - libpython3.9
-        - python3-dev
-        - wget
-        - unzip
-    copies:
-      - from: local
-        source: .
-        destination: .
+    apt: {packages: [git, build-essential, gcc, wget, unzip, wmf-certificates, python3-venv]}
     builders:
       - python:
-          version: python3.9
-          requirements:
-            - from: local
-              source: requirements.txt
-              destination: .
+          version: python3
+          poetry:
+            version: ==1.8.2
+          requirements: [pyproject.toml, poetry.lock]
+    copies: [local]
+
   production:
-    apt:
-      packages:
-        - libpython3.9
-        - wmf-certificates
-    copies:
-      - from: build
-        source: /home/recommendation-api
-        destination: /home/recommendation-api
-      - from: local
-        source: recommendation/data/recommendation_liftwing.ini
-        destination: recommendation/data/recommendation.ini
-      - from: local
-        source: recommendation/data/uwsgi_liftwing.ini
-        destination: recommendation/data/uwsgi.ini
-      - from: build
-        source: /opt/lib/python/site-packages
-        destination: /opt/lib/python/site-packages
-    python:
-      version: python3.9
-    entrypoint: [ "uwsgi", "--http", ":8080", "--wsgi-file", "recommendation/data/recommendation.wsgi" ]
-  # We don't include "production" since we let tox to manage all
-  # the dependencies. Having the Debian-provided pip and tox's pip co-existing
-  # on the same system may lead to weird errors, so we keep the two separated.
+    includes: [build]
+    entrypoint: [ poetry, run, gunicorn]
   test:
-    apt:
-      packages:
-        - git
-        - tox
-        - build-essential
-        - python3-dev
-    copies:
-      - from: build
-        source: /home/recommendation-api
-        destination: /home/recommendation-api
-    python:
-      version: python3.9
-    entrypoint: ["./run-test.sh"]
+    includes: [build]
+    entrypoint: [poetry, run, tox]
