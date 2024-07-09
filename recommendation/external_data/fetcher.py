@@ -1,3 +1,4 @@
+import urllib.parse
 from typing import Dict
 
 import httpx
@@ -17,10 +18,14 @@ async def get(url: str, params: dict = None, headers: dict = None):
     else:
         headers = default_headers
 
+    encoded_params = urllib.parse.urlencode(params, safe=":+|")
+    url = f"{url}?{encoded_params}"
+    # We are encoding the params outside httpx since the httpx encoding
+    # is very strict and does not allow some characters in the params
     try:
         response = await httpx_client.get(
             url,
-            params=params,
+            # params=params,
             headers=headers,
             follow_redirects=True,
         )
@@ -77,7 +82,8 @@ async def wiki_search(source, seeds, morelike=False, filter_disambiguation=False
     """
     A client to the Mediawiki search API
     """
-    endpoint, params, headers = build_wiki_search(source, seeds, morelike, filter_disambiguation, filter_language)
+    endpoint, params, headers = build_wiki_search(source, seeds, morelike, None, filter_disambiguation, filter_language)
+
     try:
         response = await get(endpoint, params=params, headers=headers)
     except ValueError:
@@ -98,6 +104,41 @@ async def wiki_search(source, seeds, morelike=False, filter_disambiguation=False
 
     if len(pages) == 0:
         log.info("No articles similar to %s in %s. Try another seed.", seeds, source)
+        return []
+
+    return pages
+
+
+async def wiki_topic_search(source, topics, filter_disambiguation=False, filter_language=None):
+    """
+    A client to the Mediawiki search API
+    """
+    endpoint, params, headers = build_wiki_search(
+        source=source,
+        seeds=None,
+        topics=topics,
+        morelike=False,
+        filter_disambiguation=filter_disambiguation,
+        filter_language=filter_language,
+    )
+    try:
+        response = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        log.error(
+            f"Could not search for articles related to topic {topics} in {source}. Choose another language.",
+        )
+        return []
+
+    if "query" not in response or "pages" not in response["query"]:
+        log.info(
+            f"Could not search for articles related to topic {topics} in {source}. Choose another language.",
+        )
+        return []
+
+    pages = response["query"]["pages"]
+
+    if len(pages) == 0:
+        log.info("No articles similar to %s in %s. Try another seed.", topics, source)
         return []
 
     return pages
@@ -133,7 +174,7 @@ async def get_most_popular_articles(source, filter_language):
     return pages
 
 
-def build_wiki_search(source, seeds, morelike, filter_disambiguation, filter_language):
+def build_wiki_search(source, seeds, morelike, topics, filter_disambiguation, filter_language):
     """
     Builds the parameters and headers required for making a Wikipedia search API request.
 
@@ -141,6 +182,7 @@ def build_wiki_search(source, seeds, morelike, filter_disambiguation, filter_lan
         source (str): The source of the search.
         seed (str): The search term or seed.
         morelike (bool): Flag indicating whether to search for pages similar to the seed.
+        topics (str): The topics to search.
         filter_disambiguation (bool): Flag indicating whether to filter out disambiguation pages.
         filter_language (str): The language code to filter the search results.
             Only return language links with this language code.
@@ -162,19 +204,24 @@ def build_wiki_search(source, seeds, morelike, filter_disambiguation, filter_lan
         "gsrnamespace": 0,
         "gsrwhat": "text",
         "gsrlimit": "max",
-        "gsrsearch": seeds,
         "ppprop": "wikibase_item",
     }
-
+    params["gsrsearch"] = ""
     if morelike:
-        params["gsrsearch"] = f"morelike:{seeds}"
+        params["gsrsearch"] += f"morelike:{seeds}"
+
+    if topics:
+        topics = topics.replace(" ", "-").lower()
+        topic_and_items = topics.split("+")
+        search_expression = "+".join([f"articletopic:{topic_and_item.strip()}" for topic_and_item in topic_and_items])
+        params["gsrsearch"] += search_expression
 
     if filter_language:
         params["lllang"] = filter_language
 
     if filter_disambiguation:
         params["ppprop"] = "wikibase_item|disambiguation"
-
+    log.info(params)
     return endpoint, params, headers
 
 

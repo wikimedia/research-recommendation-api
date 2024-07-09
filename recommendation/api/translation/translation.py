@@ -20,6 +20,7 @@ router = APIRouter()
 finder_map = {
     "morelike": candidate_finders.get_morelike_candidates,
     "mostpopular": candidate_finders.get_top_pageview_candidates,
+    "topics": candidate_finders.get_topic_candidates,
 }
 
 
@@ -34,12 +35,17 @@ async def recommend(
     """
 
     candidates: List[TranslationRecommendationCandidate] = []
-
-    if rec_model.seed:
+    if rec_model.topic:
+        finder = finder_map["topics"]
+        candidates = await finder(rec_model.source, rec_model.topic, filter_language=rec_model.target)
+    elif rec_model.seed:
         finder = finder_map[rec_model.search_algorithm]
+        candidates = await finder(rec_model.source, rec_model.seed, filter_language=rec_model.target)
     else:
         finder = finder_map[RecommendationAlgorithmEnum.mostpopular]
-    candidates = await finder(rec_model.source, rec_model.seed, filter_language=rec_model.target)
+        candidates = await finder(rec_model.source, rec_model.seed, filter_language=rec_model.target)
+
+    log.debug("Using finder %s", finder)
 
     recs: List[TranslationRecommendation] = filters.filter_by_missing(rec_model.source, rec_model.target, candidates)
 
@@ -64,6 +70,9 @@ async def get_translation_recommendations(
     rec_model: Annotated[TranslationRecommendationRequest, Depends()],
     request: Request,
 ) -> List[TranslationRecommendation]:
+    """
+    Retrieves translation recommendations based on the provided recommendation model.
+    """
     t1 = time.time()
 
     event_logger.log_api_request(

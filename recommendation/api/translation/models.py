@@ -35,6 +35,12 @@ class TranslationRecommendationRequest(BaseModel):
         description="Seed article list for personalized recommendations, separated by |",
         default=None,
     )
+    topic: Optional[str] = Field(
+        description="""Article topic for personalized recommendations.
+                Refer https://www.mediawiki.org/wiki/ORES/Articletopic#Taxonomy for possible topics.""",
+        default=None,
+        examples=["Fashion", "Music+South Africa", "Southern Africa|Western Africa", "Women+Space"],
+    )
     include_pageviews: bool = Field(
         description="Whether to include pageview counts",
         default=False,

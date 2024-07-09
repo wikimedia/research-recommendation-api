@@ -84,3 +84,46 @@ async def get_morelike_candidates(
         recommendations.append(rec)
 
     return recommendations
+
+
+async def get_topic_candidates(
+    source: str, topics: str, filter_language: str = None
+) -> List[models.TranslationRecommendation]:
+    """
+    Retrieves translation recommendation candidates based on the given source and topics.
+
+    Args:
+        source (str): The source language.
+        topics (str): The topics to search.
+        filter_language (str, optional): The language to filter the results. Defaults to None.
+
+    Returns:
+        List[models.TranslationRecommendation]: A list of translation recommendation candidates.
+
+    """
+    results = await fetcher.wiki_topic_search(
+        source=source,
+        topics=topics,
+        filter_language=filter_language,
+        filter_disambiguation=True,
+    )
+
+    if len(results) == 0:
+        log.debug(f"Topic {topics} in {source} does not map to an article")
+        return []
+
+    recommendations = []
+
+    for page in results:
+        languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
+        rec = models.TranslationRecommendationCandidate(
+            title=page["title"],
+            rank=page["index"],
+            langlinks_count=int(page.get("langlinkscount", 0)),
+            languages=languages,
+            wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
+        )
+
+        recommendations.append(rec)
+
+    return recommendations
