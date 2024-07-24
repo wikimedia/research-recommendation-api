@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing_extensions import Self
@@ -72,6 +72,29 @@ class TranslationRecommendation(BaseModel):
     wikidata_id: Optional[str] = None
     rank: Optional[float] = 0.0
     langlinks_count: Optional[int] = 0
+
+
+class SectionTranslationRecommendation(BaseModel):
+    source_title: str = Field(
+        description="Source title of the section translation recommendation",
+    )
+    target_title: str = Field(
+        description="Target title of the section translation recommendation",
+    )
+    source_sections: List[str] = Field(
+        description="List of section titles of the source article of the section translation recommendation",
+    )
+    target_sections: List[str] = Field(
+        description="List of section titles of the target article of the section translation recommendation",
+    )
+    present: Dict[str, str] = Field(
+        description="""Dict that maps the source section titles that are also present in the target article,
+                    to the corresponding target section titles of the section translation recommendation""",
+    )
+    missing: Dict[str, str] = Field(
+        description="""Dict that maps the source section titles that are missing from the target article,
+                    to the corresponding proposed target section titles of the section translation recommendation""",
+    )
 
 
 class TranslationRecommendationCandidate(TranslationRecommendation):

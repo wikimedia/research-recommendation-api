@@ -81,3 +81,19 @@ async def test_recommendations_with_pageviews(client: AsyncClient):
     assert results[0].get("wikidata_id")
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
+
+
+@pytest.mark.anyio
+async def test_section_recommendations(client: AsyncClient):
+    response = await client.get(
+        "/api/v1/translation/sections?source=en&target=es&seed=Apple&search_algorithm=morelike&count=12"
+    )
+    assert response.status_code == 200
+    results = response.json()
+    assert len(results) == 12
+    assert results[0].get("source_title")
+    assert results[0].get("target_title")
+    assert results[0].get("source_sections")
+    assert results[0].get("target_sections")
+    assert results[0].get("present")
+    assert results[0].get("missing")

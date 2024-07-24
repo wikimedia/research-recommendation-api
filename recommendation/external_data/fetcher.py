@@ -1,5 +1,6 @@
+import asyncio
 import urllib.parse
-from typing import Dict
+from typing import Dict, List
 
 import httpx
 
@@ -18,8 +19,8 @@ async def get(url: str, params: dict = None, headers: dict = None):
     else:
         headers = default_headers
 
-    encoded_params = urllib.parse.urlencode(params, safe=":+|")
-    url = f"{url}?{encoded_params}"
+    encoded_params = urllib.parse.urlencode(params, safe=":+|") if params else ""
+    url = f"{url}?{encoded_params}" if encoded_params else url
     # We are encoding the params outside httpx since the httpx encoding
     # is very strict and does not allow some characters in the params
     try:
@@ -275,3 +276,55 @@ def get_formatted_endpoint(configuration, source=""):
     """
     endpoint = str(configuration).format(source=source)
     return endpoint
+
+
+async def get_section_suggestions(source: str, target: str, candidate_titles: List[str], count: int):
+    """
+    Get formatted endpoint with the appropriate source based on whether it runs on
+    LiftWing or wmflabs.
+    (see T348607)
+
+    Args:
+        source (str): The source language for the section suggestions, e.g. "en".
+        target (str): The target language for the section suggestions, e.g. "el".
+        candidate_titles (List[str]): List of article titles, for which this method will
+        try to fetch suggestions for sections to translate.
+        count (str): Number of articles for which section suggestions will be fetched.
+
+    Returns:
+        List: A list of Dicts, containing the section suggestions for each article,
+        as returned by the CXServer API. The fields included inside each Dict are:
+        "sourceLanguage", "targetLanguage", "sourceTitle", "targetTitle", "sourceSections",
+        "targetSections", "present", "missing".
+    """
+    if len(candidate_titles) == 0:
+        return []
+
+    section_suggestion_api = f"{configuration.CXSERVER_URL}/v2/suggest/sections/"
+
+    def get_url_for_candidate(title):
+        encoded_title = urllib.parse.quote(title)
+        return f"{section_suggestion_api}{encoded_title}/{source}/{target}"
+
+    urls = list(map(get_url_for_candidate, candidate_titles))
+    tasks = [asyncio.ensure_future(get(url)) for url in urls]
+
+    successful_results = []
+
+    while tasks and len(successful_results) < count:
+        done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+
+        for task in done:
+            result = await task
+            if result:
+                successful_results.append(result)
+                if len(successful_results) >= count:
+                    break
+
+        tasks = list(pending)
+
+    # cancel pending tasks when the desired length of suggestions has been met
+    for task in tasks:
+        task.cancel()
+
+    return successful_results
