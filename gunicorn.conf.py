@@ -4,7 +4,7 @@ import yaml
 
 bind = "0.0.0.0:8080"
 workers = os.getenv("GUNICORN_WORKERS", 4)
-accesslog = "/tmp/translate.access.log"
+accesslog = "/tmp/recommendation.access.log"
 wsgi_app = "recommendation.main:app"
 worker_class = "uvicorn.workers.UvicornWorker"
 
