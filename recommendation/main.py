@@ -4,6 +4,7 @@ from fastapi.exception_handlers import (
     request_validation_exception_handler,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.routing import APIRoute
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -33,6 +34,12 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
+
+
+@app.get("/")
+async def homepage_redirect():
+    response = RedirectResponse(url="/docs")
+    return response
 
 
 # Custom error handlers
