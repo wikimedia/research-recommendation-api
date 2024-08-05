@@ -22,6 +22,7 @@ router = APIRouter()
 finder_map = {
     "morelike": candidate_finders.get_candidates_by_search,
     "mostpopular": candidate_finders.get_top_pageview_candidates,
+    "campaigns": candidate_finders.get_campaign_candidates,
 }
 
 
@@ -29,11 +30,12 @@ async def find_candidates(rec_req_model: TranslationRecommendationRequest) -> Li
     candidates: List[TranslationRecommendationCandidate]
     if rec_req_model.topic or rec_req_model.seed:
         finder = finder_map["morelike"]
+    elif rec_req_model.include_campaigns:
+        finder = finder_map["campaigns"]
     else:
         finder = finder_map[RecommendationAlgorithmEnum.mostpopular]
 
     candidates = await finder(rec_req_model)
-
     log.debug(f"Using finder {finder.__name__} to get candidates")
 
     return candidates

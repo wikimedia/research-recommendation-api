@@ -5,6 +5,11 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing_extensions import Self
 
 
+class WikiDataArticle(BaseModel):
+    wikidata_id: str
+    langlinks: Dict[str, str]
+
+
 class RecommendationAlgorithmEnum(str, Enum):
     morelike = "morelike"
     mostpopular = "mostpopular"
@@ -39,6 +44,10 @@ class TranslationRecommendationRequest(BaseModel):
         default=None,
         examples=["Fashion", "Music+South Africa", "Southern Africa|Western Africa", "Women+Space"],
     )
+    include_campaigns: bool = Field(
+        description="Whether to include articles associated with a campaign",
+        default=False,
+    )
     include_pageviews: bool = Field(
         description="Whether to include pageview counts",
         default=False,
@@ -53,7 +62,7 @@ class TranslationRecommendationRequest(BaseModel):
     )
 
     @model_validator(mode="after")
-    def verify_languags(self) -> Self:
+    def verify_languages(self) -> Self:
         # This import is here to avoid circular imports
         from recommendation.utils import language_pairs
 

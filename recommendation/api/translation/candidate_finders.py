@@ -5,6 +5,7 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
+    WikiDataArticle,
 )
 from recommendation.external_data import fetcher
 from recommendation.utils.logger import log
@@ -78,3 +79,30 @@ async def get_candidates_by_search(
         recommendations.append(rec)
 
     return recommendations
+
+
+async def get_campaign_candidates(
+    rec_req_model: TranslationRecommendationRequest,
+) -> List[TranslationRecommendationCandidate]:
+    """
+    1. Find campaign pages marked with the translation campaign template
+    2. Get article candidates for each campaign page
+    """
+    campaign_candidates = []
+    campaign_pages = await fetcher.get_campaign_pages("meta")
+    for page in campaign_pages:
+        wikidata_articles: List[WikiDataArticle] = await fetcher.get_campaign_page_candidates(page, "meta")
+        log.debug(f"Found {len(wikidata_articles)} articles for campaign {page}")
+        for wikidata_article in wikidata_articles:
+            candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
+
+            if candidate_source_article_title:
+                campaign_candidate = TranslationRecommendationCandidate(
+                    title=candidate_source_article_title,
+                    wikidata_id=wikidata_article.wikidata_id,
+                    langlinks_count=len(wikidata_article.langlinks),
+                    languages=wikidata_article.langlinks.keys(),
+                )
+                campaign_candidates.append(campaign_candidate)
+
+    return campaign_candidates

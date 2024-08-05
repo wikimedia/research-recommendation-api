@@ -1,10 +1,11 @@
 import asyncio
+import re
 import urllib.parse
 from typing import Dict, List
 
 import httpx
 
-from recommendation.api.translation.models import TranslationRecommendationRequest
+from recommendation.api.translation.models import TranslationRecommendationRequest, WikiDataArticle
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
@@ -288,3 +289,137 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
         task.cancel()
 
     return successful_results
+
+
+async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
+    """
+    Get a list of articles by their Wikidata IDs.
+
+    Args:
+        qids (list): A list of Wikidata IDs
+
+    Returns:
+        list: A list of articles
+    """
+    endpoint = get_formatted_endpoint(configuration.WIKIDATA_API)
+    headers = set_headers_with_host_header(configuration.WIKIDATA_API_HEADER)
+
+    params = {
+        "action": "wbgetentities",
+        "format": "json",
+        "props": "sitelinks",
+        "ids": "|".join(qids),
+        "formatversion": 2,
+    }
+
+    wikidata_articles: List[WikiDataArticle] = []
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        return ""
+    if "error" in data:
+        log.error("Error fetching articles by QIDs: %s", data["error"])
+        return
+
+    if "entities" in data:
+        for qid in data["entities"]:
+            sitelinks = data["entities"][qid].get("sitelinks", {})
+            interlanguage_links = {}
+            for site, info in sitelinks.items():
+                if site.endswith("wiki"):
+                    language = site.split("wiki")[0]
+                    title = info["title"]
+                    interlanguage_links[language] = title
+
+            wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
+
+    return wikidata_articles
+
+
+async def get_campaign_pages(source):
+    """
+    Get the list of pages that are marked with the 'Translation_campaign' template marker.
+
+    Returns:
+        list: A list of page titles
+    """
+    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API, source)
+    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER, source)
+    params = {
+        "action": "query",
+        "format": "json",
+        "formatversion": "2",
+        "generator": "search",
+        "gsrlimit": "max",
+        "gsrnamespace": configuration.CAMPAIGNS_NAMESPACE,
+        "gsrsearch": "hastemplate:Translation_campaign",
+        "gsrwhat": "text",
+    }
+
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        return ""
+
+    if "query" not in data or "pages" not in data["query"] or len(data["query"]["pages"]) == 0:
+        log.error("Could not fetch the list")
+        return ""
+
+    return [page["title"] for page in data["query"]["pages"]]
+
+
+async def get_campaign_page_candidates(page, source) -> List[WikiDataArticle]:
+    """
+    Get the candidates for translation in a translation campaign.
+
+    Returns:
+        list: A list of candidates for the given campaign page
+    """
+    # First query for the interwiki links in each campaign page
+    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API, source)
+    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER, source)
+    params = {
+        "action": "query",
+        "format": "json",
+        "formatversion": "2",
+        "prop": "iwlinks",
+        "titles": page,
+        "iwlimit": "max",
+        "iwprop": "url",
+    }
+
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        return []
+
+    if "query" not in data or "pages" not in data["query"]:
+        log.error("Could not fetch the list")
+        return []
+
+    if "iwlinks" not in data["query"]["pages"][0]:
+        log.error("No candidates found")
+        return []
+
+    # Then query each interwiki link to complete the request with langlinks included
+    iwlinks = data["query"]["pages"][0]["iwlinks"]
+    qids = []
+    # find all links that are wikidata qids, Check if title is Q followed by a number
+    for link in iwlinks:
+        match = re.match(r"(Q[\d]+)", link["title"])
+        if match:
+            qid = match.group(1)
+            qids.append(qid)
+
+    # Split the qids into batches of 50
+    batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
+
+    # Create a list to store the results
+    wikidata_articles = []
+
+    # Iterate over each batch of qids
+    for batch in batches:
+        articles = await get_articles_by_qids(batch)
+        wikidata_articles.extend(articles)
+
+    return wikidata_articles
