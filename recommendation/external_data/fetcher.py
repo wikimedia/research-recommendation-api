@@ -4,6 +4,7 @@ from typing import Dict, List
 
 import httpx
 
+from recommendation.api.translation.models import TranslationRecommendationRequest
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
@@ -79,67 +80,34 @@ async def get_pageviews(source, titles) -> Dict[str, int]:
     return pageviews
 
 
-async def wiki_search(source, seeds, morelike=False, filter_disambiguation=False, filter_language=None):
+async def wiki_search(rec_req_model: TranslationRecommendationRequest):
     """
     A client to the Mediawiki search API
+
+    Args:
+        rec_req_model (TranslationRecommendationRequest): The translation recommendation request model.
+
+    Returns:
+        list: A list of pages that match the search query.
     """
-    endpoint, params, headers = build_wiki_search(source, seeds, morelike, None, filter_disambiguation, filter_language)
+    endpoint, params, headers = build_wiki_search(rec_req_model)
 
     try:
         response = await get(endpoint, params=params, headers=headers)
     except ValueError:
         log.error(
-            "Could not search for articles related to seed in %s. Choose another language.",
-            source,
+            f"Could not search for articles related to search {rec_req_model}. Choose another language.",
         )
         return []
 
     if "query" not in response or "pages" not in response["query"]:
-        log.info(
-            "Could not search for articles related to seed in %s. Choose another language.",
-            source,
-        )
+        log.debug(f"Recommendation request {rec_req_model} does not map to an article")
         return []
 
     pages = response["query"]["pages"]
 
     if len(pages) == 0:
-        log.info("No articles similar to %s in %s. Try another seed.", seeds, source)
-        return []
-
-    return pages
-
-
-async def wiki_topic_search(source, topics, filter_disambiguation=False, filter_language=None):
-    """
-    A client to the Mediawiki search API
-    """
-    endpoint, params, headers = build_wiki_search(
-        source=source,
-        seeds=None,
-        topics=topics,
-        morelike=False,
-        filter_disambiguation=filter_disambiguation,
-        filter_language=filter_language,
-    )
-    try:
-        response = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        log.error(
-            f"Could not search for articles related to topic {topics} in {source}. Choose another language.",
-        )
-        return []
-
-    if "query" not in response or "pages" not in response["query"]:
-        log.info(
-            f"Could not search for articles related to topic {topics} in {source}. Choose another language.",
-        )
-        return []
-
-    pages = response["query"]["pages"]
-
-    if len(pages) == 0:
-        log.info("No articles similar to %s in %s. Try another seed.", topics, source)
+        log.debug(f"Recommendation request {rec_req_model} does not map to an article")
         return []
 
     return pages
@@ -175,24 +143,18 @@ async def get_most_popular_articles(source, filter_language):
     return pages
 
 
-def build_wiki_search(source, seeds, morelike, topics, filter_disambiguation, filter_language):
+def build_wiki_search(rec_req_model: TranslationRecommendationRequest):
     """
     Builds the parameters and headers required for making a Wikipedia search API request.
 
     Args:
-        source (str): The source of the search.
-        seed (str): The search term or seed.
-        morelike (bool): Flag indicating whether to search for pages similar to the seed.
-        topics (str): The topics to search.
-        filter_disambiguation (bool): Flag indicating whether to filter out disambiguation pages.
-        filter_language (str): The language code to filter the search results.
-            Only return language links with this language code.
+        rec_req_model (TranslationRecommendationRequest): The translation recommendation request model.
 
     Returns:
         tuple: A tuple containing the endpoint URL, parameters, and headers for the API request.
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIPEDIA_API, source)
-    headers = set_headers_with_host_header(configuration.WIKIPEDIA_API_HEADER, source)
+    endpoint = get_formatted_endpoint(configuration.WIKIPEDIA_API, rec_req_model.source)
+    headers = set_headers_with_host_header(configuration.WIKIPEDIA_API_HEADER, rec_req_model.source)
 
     params = {
         "action": "query",
@@ -200,29 +162,35 @@ def build_wiki_search(source, seeds, morelike, topics, filter_disambiguation, fi
         "formatversion": 2,
         "prop": "langlinks|langlinkscount|pageprops",
         "lllimit": "max",
+        "lllang": rec_req_model.target,
         "generator": "search",
         "gsrprop": "wordcount",
         "gsrnamespace": 0,
         "gsrwhat": "text",
         "gsrlimit": "max",
-        "ppprop": "wikibase_item",
+        "ppprop": "wikibase_item|disambiguation",
     }
-    params["gsrsearch"] = ""
-    if morelike:
-        params["gsrsearch"] += f"morelike:{seeds}"
 
-    if topics:
-        topics = topics.replace(" ", "-").lower()
+    gsrsearch_query = []
+
+    if rec_req_model.topic:
+        topics = rec_req_model.topic.replace(" ", "-").lower()
         topic_and_items = topics.split("+")
         search_expression = "+".join([f"articletopic:{topic_and_item.strip()}" for topic_and_item in topic_and_items])
-        params["gsrsearch"] += search_expression
+        gsrsearch_query.append(search_expression)
 
-    if filter_language:
-        params["lllang"] = filter_language
+    if rec_req_model.seed:
+        # morelike is a "greedy" keyword, meaning that it cannot be combined with other search queries.
+        # To use other search queries, use morelikethis in your search:
+        # https://www.mediawiki.org/wiki/Help:CirrusSearch#morelike
+        if len(gsrsearch_query):
+            gsrsearch_query.append(f"morelikethis:{rec_req_model.seed}")
+        else:
+            gsrsearch_query.append(f"morelike:{rec_req_model.seed}")
 
-    if filter_disambiguation:
-        params["ppprop"] = "wikibase_item|disambiguation"
-    log.info(params)
+    params["gsrsearch"] = " ".join(gsrsearch_query)
+
+    log.debug(f"Search params: {params}")
     return endpoint, params, headers
 
 

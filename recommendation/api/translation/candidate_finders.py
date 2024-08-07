@@ -1,14 +1,16 @@
 import random
 from typing import List
 
-from recommendation.api.translation import models
+from recommendation.api.translation.models import (
+    TranslationRecommendation,
+    TranslationRecommendationCandidate,
+    TranslationRecommendationRequest,
+)
 from recommendation.external_data import fetcher
 from recommendation.utils.logger import log
 
 
-async def get_top_pageview_candidates(
-    source: str, _, filter_language: str
-) -> List[models.TranslationRecommendationCandidate]:
+async def get_top_pageview_candidates(source: str, _, filter_language: str) -> List[TranslationRecommendationCandidate]:
     """
     Retrieves the top pageview candidates based on the given source and filter language.
 
@@ -30,7 +32,7 @@ async def get_top_pageview_candidates(
     for index, article in enumerate(articles):
         if "disambiguation" not in article.get("pageprops", {}):
             languages = [langlink["lang"] for langlink in article.get("langlinks", [])]
-            rec = models.TranslationRecommendationCandidate(
+            rec = TranslationRecommendationCandidate(
                 title=article.get("title"),
                 rank=index,
                 langlinks_count=int(article.get("langlinkscount", 0)),
@@ -42,81 +44,30 @@ async def get_top_pageview_candidates(
     return recommendations
 
 
-async def get_morelike_candidates(
-    source: str, seeds: str, filter_language: str = None
-) -> List[models.TranslationRecommendation]:
+async def get_candidates_by_search(
+    rec_req_model: TranslationRecommendationRequest,
+) -> List[TranslationRecommendation]:
     """
     Retrieves translation recommendation candidates based on the given source and seeds.
 
     Args:
-        source (str): The source language.
-        seeds (str): The seed text used for finding similar articles.
-        filter_language (str, optional): The language to filter the results. Defaults to None.
+        rec_req_model (TranslationRecommendationRequest): The translation recommendation request model.
 
     Returns:
-        List[models.TranslationRecommendation]: A list of translation recommendation candidates.
+        List[TranslationRecommendation]: A list of translation recommendation candidates.
 
     """
-    results = await fetcher.wiki_search(
-        source,
-        seeds,
-        morelike=True,
-        filter_language=filter_language,
-        filter_disambiguation=True,
-    )
+    results = await fetcher.wiki_search(rec_req_model)
 
     if len(results) == 0:
-        log.debug(f"Seed {seeds} in {source} does not map to an article")
+        log.debug(f"Recommendation request {rec_req_model} does not map to an article")
         return []
 
     recommendations = []
 
     for page in results:
         languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
-        rec = models.TranslationRecommendationCandidate(
-            title=page["title"],
-            rank=page["index"],
-            langlinks_count=int(page.get("langlinkscount", 0)),
-            languages=languages,
-            wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
-        )
-
-        recommendations.append(rec)
-
-    return recommendations
-
-
-async def get_topic_candidates(
-    source: str, topics: str, filter_language: str = None
-) -> List[models.TranslationRecommendation]:
-    """
-    Retrieves translation recommendation candidates based on the given source and topics.
-
-    Args:
-        source (str): The source language.
-        topics (str): The topics to search.
-        filter_language (str, optional): The language to filter the results. Defaults to None.
-
-    Returns:
-        List[models.TranslationRecommendation]: A list of translation recommendation candidates.
-
-    """
-    results = await fetcher.wiki_topic_search(
-        source=source,
-        topics=topics,
-        filter_language=filter_language,
-        filter_disambiguation=True,
-    )
-
-    if len(results) == 0:
-        log.debug(f"Topic {topics} in {source} does not map to an article")
-        return []
-
-    recommendations = []
-
-    for page in results:
-        languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
-        rec = models.TranslationRecommendationCandidate(
+        rec = TranslationRecommendationCandidate(
             title=page["title"],
             rank=page["index"],
             langlinks_count=int(page.get("langlinkscount", 0)),

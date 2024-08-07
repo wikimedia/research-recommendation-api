@@ -4,8 +4,6 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing_extensions import Self
 
-from recommendation.utils import language_pairs
-
 
 class RecommendationAlgorithmEnum(str, Enum):
     morelike = "morelike"
@@ -56,6 +54,9 @@ class TranslationRecommendationRequest(BaseModel):
 
     @model_validator(mode="after")
     def verify_languags(self) -> Self:
+        # This import is here to avoid circular imports
+        from recommendation.utils import language_pairs
+
         if not language_pairs.is_valid_source_language(self.source):
             raise ValueError("Invalid source language code")
 
