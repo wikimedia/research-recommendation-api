@@ -301,13 +301,14 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
         return []
 
     section_suggestion_api = f"{configuration.CXSERVER_URL}/v2/suggest/sections/"
+    headers = set_headers_with_host_header(configuration.CXSERVER_HEADER, source)
 
     def get_url_for_candidate(title):
         encoded_title = urllib.parse.quote(title)
         return f"{section_suggestion_api}{encoded_title}/{source}/{target}"
 
     urls = list(map(get_url_for_candidate, candidate_titles))
-    tasks = [asyncio.ensure_future(get(url)) for url in urls]
+    tasks = [asyncio.ensure_future(get(url, headers=headers)) for url in urls]
 
     successful_results = []
 
