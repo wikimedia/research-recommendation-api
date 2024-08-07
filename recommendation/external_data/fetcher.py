@@ -226,16 +226,6 @@ def build_wiki_search(source, seeds, morelike, topics, filter_disambiguation, fi
     return endpoint, params, headers
 
 
-def get_related_articles(source, seed):
-    endpoint = configuration.get_config_value("endpoints", "related_articles")
-    headers = set_headers_with_host_header(configuration, "related_articles")
-    try:
-        response = get(endpoint, {"source": source, "seed": seed, "count": 500}, headers=headers)
-    except ValueError:
-        return []
-    return response
-
-
 def set_headers_with_host_header(configuration, source=""):
     """
     Sets headers with host header if .ini configuration has the 'endpoint_host_headers'
