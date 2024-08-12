@@ -290,7 +290,8 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
     if len(candidate_titles) == 0:
         return []
 
-    section_suggestion_api = f"{configuration.CXSERVER_URL}/v2/suggest/sections/"
+    # Note: Pydantic AnyUrl type returns trailing slash for the URL
+    section_suggestion_api = f"{configuration.CXSERVER_URL}v2/suggest/sections/"
     headers = set_headers_with_host_header(configuration.CXSERVER_HEADER, source)
 
     def get_url_for_candidate(title):
