@@ -10,19 +10,19 @@ from recommendation.external_data import fetcher
 from recommendation.utils.logger import log
 
 
-async def get_top_pageview_candidates(source: str, _, filter_language: str) -> List[TranslationRecommendationCandidate]:
+async def get_top_pageview_candidates(
+    rec_req_model: TranslationRecommendationRequest,
+) -> List[TranslationRecommendationCandidate]:
     """
     Retrieves the top pageview candidates based on the given source and filter language.
 
     Args:
-        source (str): The source of the articles.
-        count (int): The number of top candidates to retrieve.
-        filter_language (str): The language to filter the articles.
+        rec_req_model (TranslationRecommendationRequest): The translation recommendation request model.
 
     Returns:
         list: A list of TranslationRecommendationCandidate objects representing the top pageview candidates.
     """
-    articles = await fetcher.get_most_popular_articles(source, filter_language)
+    articles = await fetcher.get_most_popular_articles(rec_req_model.source, rec_req_model.target)
 
     # shuffle articles
     articles = sorted(articles, key=lambda x: random.random())
