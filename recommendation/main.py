@@ -20,10 +20,15 @@ app = FastAPI(
     title=configuration.PROJECT_NAME,
     debug=False,
     version=configuration.PROJECT_VERSION,
+    root_path=configuration.API_PREFIX,
+    servers=[
+        {"url": "https://recommend.wmcloud.org/", "description": "Staging environment"},
+        {"url": "https://api.wikimedia.org", "description": "Production environment"},
+    ],
 )
 app.include_router(
     translation_api_router,
-    prefix=f"{configuration.API_PREFIX}/{configuration.API_VERSION}",
+    prefix=f"/{configuration.API_VERSION}",
     tags=["translation"],
 )
 

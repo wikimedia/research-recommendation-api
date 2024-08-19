@@ -12,7 +12,7 @@ def anyio_backend():
 @pytest.fixture(scope="session")
 async def client():
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url=f"http://test{app.root_path}") as client:
         yield client
 
 
@@ -30,21 +30,21 @@ async def test_read_openapi_json(client: AsyncClient):
 
 @pytest.mark.anyio
 async def test_language_pair_validation(client: AsyncClient):
-    response = await client.get("/api/v1/translation?source=en&target=en&seed=Apple")
+    response = await client.get("/v1/translation?source=en&target=en&seed=Apple")
     assert response.status_code == 422
     assert response.json().get("detail")[0].get("msg") == "Value error, Source and target languages must be different"
 
 
 @pytest.mark.anyio
 async def test_language_validation(client: AsyncClient):
-    response = await client.get("/api/v1/translation?source=x12&target=en&seed=Apple")
+    response = await client.get("/v1/translation?source=x12&target=en&seed=Apple")
     assert response.status_code == 422
     assert response.json().get("detail")[0].get("msg") == "Value error, Invalid source language code"
 
 
 @pytest.mark.anyio
 async def test_recommendations_morelike(client: AsyncClient):
-    response = await client.get("/api/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike")
+    response = await client.get("/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike")
     assert response.status_code == 200
     results = response.json()
     assert len(results) > 0
@@ -57,7 +57,7 @@ async def test_recommendations_morelike(client: AsyncClient):
 
 @pytest.mark.anyio
 async def test_recommendations_mostpopular(client: AsyncClient):
-    response = await client.get("/api/v1/translation?source=en&target=es&seed=Moon&search_algorithm=morelike")
+    response = await client.get("/v1/translation?source=en&target=es&seed=Moon&search_algorithm=morelike")
     assert response.status_code == 200
     results = response.json()
     assert len(results) > 0
@@ -71,7 +71,7 @@ async def test_recommendations_mostpopular(client: AsyncClient):
 @pytest.mark.anyio
 async def test_recommendations_with_pageviews(client: AsyncClient):
     response = await client.get(
-        "/api/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike&include_pageviews=True"
+        "/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike&include_pageviews=True"
     )
     assert response.status_code == 200
     results = response.json()
@@ -86,7 +86,7 @@ async def test_recommendations_with_pageviews(client: AsyncClient):
 @pytest.mark.anyio
 async def test_section_recommendations(client: AsyncClient):
     response = await client.get(
-        "/api/v1/translation/sections?source=en&target=es&seed=Apple&search_algorithm=morelike&count=12"
+        "/v1/translation/sections?source=en&target=es&seed=Apple&search_algorithm=morelike&count=12"
     )
     assert response.status_code == 200
     results = response.json()
