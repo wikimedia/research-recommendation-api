@@ -1,8 +1,21 @@
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 from typing_extensions import Self
+
+
+class WikiPage(BaseModel):
+    id: int
+    title: str
+    revision_id: int
+    namespace: int
+    language: str
+
+    @computed_field
+    @property
+    def key(self) -> str:
+        return f"{self.language}:{self.id}:{self.revision_id}"
 
 
 class WikiDataArticle(BaseModel):
@@ -109,3 +122,14 @@ class SectionTranslationRecommendation(BaseModel):
 
 class TranslationRecommendationCandidate(TranslationRecommendation):
     languages: Optional[list[str]] = None
+
+
+class TranslationCampaign(BaseModel):
+    name: str
+    id: str
+    source: str
+    targets: List[str]
+    articles: List[WikiDataArticle] = []
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.id}) ({len(self.articles)} articles)"

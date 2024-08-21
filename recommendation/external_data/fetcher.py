@@ -5,7 +5,7 @@ from typing import Dict, List
 
 import httpx
 
-from recommendation.api.translation.models import TranslationRecommendationRequest, WikiDataArticle
+from recommendation.api.translation.models import TranslationRecommendationRequest, WikiDataArticle, WikiPage
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
@@ -336,7 +336,7 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     return wikidata_articles
 
 
-async def get_campaign_pages(source):
+async def get_campaign_pages(source) -> List[WikiPage]:
     """
     Get the list of pages that are marked with the 'Translation_campaign' template marker.
 
@@ -354,6 +354,7 @@ async def get_campaign_pages(source):
         "gsrnamespace": configuration.CAMPAIGNS_NAMESPACE,
         "gsrsearch": "hastemplate:Translation_campaign",
         "gsrwhat": "text",
+        "prop": "info",
     }
 
     try:
@@ -365,7 +366,16 @@ async def get_campaign_pages(source):
         log.error("Could not fetch the list")
         return ""
 
-    return [page["title"] for page in data["query"]["pages"]]
+    return [
+        WikiPage(
+            id=page["pageid"],
+            title=page["title"],
+            revision_id=page["lastrevid"],
+            language=page["pagelanguage"],
+            namespace=page["ns"],
+        )
+        for page in data["query"]["pages"]
+    ]
 
 
 async def get_campaign_page_candidates(page, source) -> List[WikiDataArticle]:

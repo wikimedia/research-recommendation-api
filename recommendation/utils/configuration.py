@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     EVENT_LOGGER_API: AnyUrl = "https://intake-analytics.wikimedia.org/v1/events?hasty=true"
     EVENT_LOGGER_API_HEADER: str | None = None
     USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmflabs.org/; leila@wikimedia.org)"
+    CACHE_DIRECTORY: str = ".cache"
 
 
 configuration = Settings()

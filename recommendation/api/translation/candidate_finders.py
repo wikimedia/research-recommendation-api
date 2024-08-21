@@ -2,11 +2,13 @@ import random
 from typing import List
 
 from recommendation.api.translation.models import (
+    TranslationCampaign,
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
-    WikiDataArticle,
+    WikiPage,
 )
+from recommendation.cache import get_campaign_cache
 from recommendation.external_data import fetcher
 from recommendation.utils.logger import log
 
@@ -89,9 +91,21 @@ async def get_campaign_candidates(
     2. Get article candidates for each campaign page
     """
     campaign_candidates = []
-    campaign_pages = await fetcher.get_campaign_pages("meta")
+    campaign_pages: List[WikiPage] = await fetcher.get_campaign_pages("meta")
+
+    campaign_cache = get_campaign_cache()
+    page: WikiPage
+    # FIXME: This should be a list of TranslationCampaign objects
+    # once we extract the campaign definition from the marker template
     for page in campaign_pages:
-        wikidata_articles: List[WikiDataArticle] = await fetcher.get_campaign_page_candidates(page, "meta")
+        translation_campaign: TranslationCampaign = campaign_cache.get_campaign_page(page.key)
+
+        if translation_campaign:
+            log.debug(f"Found campaign {translation_campaign} in cache")
+            wikidata_articles = translation_campaign.articles
+        else:
+            wikidata_articles = await fetcher.get_campaign_page_candidates(page.title, "meta")
+
         log.debug(f"Found {len(wikidata_articles)} articles for campaign {page}")
         for wikidata_article in wikidata_articles:
             candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
@@ -104,5 +118,16 @@ async def get_campaign_candidates(
                     languages=wikidata_article.langlinks.keys(),
                 )
                 campaign_candidates.append(campaign_candidate)
+
+        campaign_cache.set_campaign_page(
+            TranslationCampaign(
+                name=page.title,
+                id=page.key,
+                # FIXME these values should come from campaign marker template
+                source=rec_req_model.source,
+                targets=[rec_req_model.target],
+                articles=wikidata_articles,
+            ),
+        )
 
     return campaign_candidates
