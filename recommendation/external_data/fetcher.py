@@ -336,6 +336,53 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     return wikidata_articles
 
 
+async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
+    """
+    Get a list of articles by their titles.
+
+    Args:
+        titles (list): A list of Wikidata titles
+        source (str): The source language
+
+    Returns:
+        list: A list of articles
+    """
+    endpoint = get_formatted_endpoint(configuration.WIKIDATA_API)
+    headers = set_headers_with_host_header(configuration.WIKIDATA_API_HEADER)
+
+    params = {
+        "action": "wbgetentities",
+        "format": "json",
+        "props": "sitelinks",
+        "sites": f"{source}wiki",
+        "titles": "|".join(titles),
+        "formatversion": 2,
+    }
+
+    wikidata_articles: List[WikiDataArticle] = []
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        return ""
+    if "error" in data:
+        log.error("Error fetching articles by QIDs: %s", data["error"])
+        return
+
+    if "entities" in data:
+        for qid in data["entities"]:
+            sitelinks = data["entities"][qid].get("sitelinks", {})
+            interlanguage_links = {}
+            for site, info in sitelinks.items():
+                if site.endswith("wiki"):
+                    language = site.split("wiki")[0]
+                    title = info["title"]
+                    interlanguage_links[language] = title
+
+            wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
+
+    return wikidata_articles
+
+
 async def get_campaign_pages(source) -> List[WikiPage]:
     """
     Get the list of pages that are marked with the 'Translation_campaign' template marker.
@@ -413,13 +460,24 @@ async def get_campaign_page_candidates(page, source) -> List[WikiDataArticle]:
 
     # Then query each interwiki link to complete the request with langlinks included
     iwlinks = data["query"]["pages"][0]["iwlinks"]
+
     qids = []
+    iwlinks_group_by_language = {}
+
     # find all links that are wikidata qids, Check if title is Q followed by a number
     for link in iwlinks:
-        match = re.match(r"(Q[\d]+)", link["title"])
-        if match:
-            qid = match.group(1)
+        title = link["title"]
+        prefix = link["prefix"]
+        url = link["url"]
+        qid_match = re.match(r"(Q[\d]+)", title)
+        if qid_match and url.startswith("https://www.wikidata.org") and link["prefix"] == "d":
+            qid = qid_match.group(1)
             qids.append(qid)
+        else:
+            # Interwiki links that are not Wikidata QIDs
+            if prefix not in iwlinks_group_by_language:
+                iwlinks_group_by_language[prefix] = []
+            iwlinks_group_by_language[prefix].append(title)
 
     # Split the qids into batches of 50
     batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
@@ -431,5 +489,13 @@ async def get_campaign_page_candidates(page, source) -> List[WikiDataArticle]:
     for batch in batches:
         articles = await get_articles_by_qids(batch)
         wikidata_articles.extend(articles)
+
+    for language in iwlinks_group_by_language:
+        titles = iwlinks_group_by_language[language]
+        # Split the qids into batches of 50
+        batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
+        for batch in batches:
+            articles = await get_articles_by_titles(batch, language)
+            wikidata_articles.extend(articles)
 
     return wikidata_articles
