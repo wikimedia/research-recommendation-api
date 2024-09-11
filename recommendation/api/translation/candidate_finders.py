@@ -91,7 +91,7 @@ async def get_campaign_candidates(
     2. Get article candidates for each campaign page
     """
     campaign_candidates = []
-    campaign_pages: List[WikiPage] = await fetcher.get_campaign_pages("meta")
+    campaign_pages: List[WikiPage] = await fetcher.get_campaign_pages()
 
     campaign_cache = get_campaign_cache()
     page: WikiPage
@@ -104,7 +104,7 @@ async def get_campaign_candidates(
             log.debug(f"Found campaign {translation_campaign} in cache")
             wikidata_articles = translation_campaign.articles
         else:
-            wikidata_articles = await fetcher.get_campaign_page_candidates(page.title, "meta")
+            wikidata_articles = await fetcher.get_campaign_page_candidates(page.title)
 
         log.debug(f"Found {len(wikidata_articles)} articles for campaign {page}")
         for wikidata_article in wikidata_articles:

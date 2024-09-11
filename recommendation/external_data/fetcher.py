@@ -383,15 +383,15 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     return wikidata_articles
 
 
-async def get_campaign_pages(source) -> List[WikiPage]:
+async def get_campaign_pages() -> List[WikiPage]:
     """
     Get the list of pages that are marked with the 'Translation_campaign' template marker.
 
     Returns:
         list: A list of page titles
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API, source)
-    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER, source)
+    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
+    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
     params = {
         "action": "query",
         "format": "json",
@@ -425,7 +425,7 @@ async def get_campaign_pages(source) -> List[WikiPage]:
     ]
 
 
-async def get_campaign_page_candidates(page, source) -> List[WikiDataArticle]:
+async def get_campaign_page_candidates(page) -> List[WikiDataArticle]:
     """
     Get the candidates for translation in a translation campaign.
 
@@ -433,8 +433,8 @@ async def get_campaign_page_candidates(page, source) -> List[WikiDataArticle]:
         list: A list of candidates for the given campaign page
     """
     # First query for the interwiki links in each campaign page
-    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API, source)
-    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER, source)
+    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
+    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
     params = {
         "action": "query",
         "format": "json",

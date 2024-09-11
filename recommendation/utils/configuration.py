@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     WIKIPEDIA_API_HEADER: str | None = None
     WIKIDATA_API: AnyUrl = "https://wikidata.org/w/api.php"
     WIKIDATA_API_HEADER: str | None = None
-    WIKIMEDIA_API: AnyUrl = "https://{source}.wikimedia.org/w/api.php"
+    WIKIMEDIA_API: AnyUrl = "https://meta.wikimedia.org/w/api.php"
     WIKIMEDIA_API_HEADER: str | None = None
     EVENT_LOGGER_API: AnyUrl = "https://intake-analytics.wikimedia.org/v1/events?hasty=true"
     EVENT_LOGGER_API_HEADER: str | None = None
