@@ -27,7 +27,17 @@ loggers:
         handlers: [access_file, console]
         level: INFO
         qualname: uvicorn.access
+        propagate: false
     uvicorn.error:
         handlers: [error_file, console]
         level: INFO
         qualname: uvicorn.error
+        propagate: false
+    httpx:
+        handlers': [console]
+        level': INFO
+        propagate: false
+    httpcore:
+        handlers': [console]
+        level': INFO
+        propagate: false

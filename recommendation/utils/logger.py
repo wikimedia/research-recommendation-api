@@ -16,7 +16,7 @@ def initialize_logging():
     # Configure the logging module with the config file
     logging.config.dictConfig(config)
     logger = logging.getLogger(recommendation.__name__)
-    logger.setLevel(logging.getLevelName(configuration.LOG_LEVEL))
+    logger.setLevel(configuration.LOG_LEVEL)
     return logger
 
 
