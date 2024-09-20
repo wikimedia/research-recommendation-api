@@ -264,7 +264,7 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
     headers = set_headers_with_host_header(configuration.CXSERVER_HEADER, source)
 
     def get_url_for_candidate(title):
-        encoded_title = urllib.parse.quote(title)
+        encoded_title = urllib.parse.quote(title, safe="")
         return f"{section_suggestion_api}{encoded_title}/{source}/{target}"
 
     urls = list(map(get_url_for_candidate, candidate_titles))
