@@ -268,27 +268,32 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
         return f"{section_suggestion_api}{encoded_title}/{source}/{target}"
 
     urls = list(map(get_url_for_candidate, candidate_titles))
-    tasks = [asyncio.ensure_future(get(url, headers=headers)) for url in urls]
 
-    successful_results = []
+    semaphore = asyncio.Semaphore(configuration.CXSERVER_API_CONCURRENCY)  # Limit to 10 concurrent tasks
 
-    while tasks and len(successful_results) < count:
-        done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+    async def fetch_with_semaphore(url):
+        async with semaphore:
+            return await get(url, headers=headers)
 
-        for task in done:
-            result = await task
-            if result:
-                successful_results.append(result)
-                if len(successful_results) >= count:
-                    break
+    async def process_urls():
+        tasks = [asyncio.create_task(fetch_with_semaphore(url)) for url in urls]
+        results = []
+        for task in asyncio.as_completed(tasks):
+            try:
+                result = await task
+                if result:
+                    results.append(result)
+            except Exception as e:
+                log.error(f"Error fetching section suggestions: {e}")
 
-        tasks = list(pending)
+            if len(results) >= count:
+                # Cancel remaining tasks
+                [task.cancel() for task in tasks if not task.done()]
+                break
+        return results
 
-    # cancel pending tasks when the desired length of suggestions has been met
-    for task in tasks:
-        task.cancel()
-
-    return successful_results
+    successful_results = await process_urls()
+    return successful_results[:count]
 
 
 async def get_articles_by_qids(qids) -> List[WikiDataArticle]:

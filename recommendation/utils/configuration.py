@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     LANGUAGE_PAIRS_API: AnyUrl = "https://cxserver.wikimedia.org/v1/languagepairs"
     CXSERVER_URL: AnyUrl = "https://cxserver.wikimedia.org"
     CXSERVER_HEADER: str | None = None
+    CXSERVER_API_CONCURRENCY: int = 10
     LANGUAGE_PAIRS_API_HEADER: str | None = None
     WIKIPEDIA_API: AnyUrl = "https://{source}.wikipedia.org/w/api.php"
     WIKIPEDIA_API_HEADER: str | None = None
