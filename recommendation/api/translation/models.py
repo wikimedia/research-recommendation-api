@@ -1,5 +1,6 @@
+import asyncio
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 from typing_extensions import Self
@@ -17,10 +18,16 @@ class WikiPage(BaseModel):
     def key(self) -> str:
         return f"{self.language}:{self.id}:{self.revision_id}"
 
+    def __hash__(self) -> int:
+        return hash(self.key)
+
 
 class WikiDataArticle(BaseModel):
     wikidata_id: str
     langlinks: Dict[str, str]
+
+    def __hash__(self) -> str:
+        return hash(self.wikidata_id)
 
 
 class RecommendationAlgorithmEnum(str, Enum):
@@ -96,6 +103,9 @@ class TranslationRecommendation(BaseModel):
     rank: Optional[float] = 0.0
     langlinks_count: Optional[int] = 0
 
+    def __hash__(self) -> str:
+        return hash(self.wikidata_id)
+
 
 class SectionTranslationRecommendation(BaseModel):
     source_title: str = Field(
@@ -125,11 +135,70 @@ class TranslationRecommendationCandidate(TranslationRecommendation):
 
 
 class TranslationCampaign(BaseModel):
-    name: str
-    id: str
-    source: str
-    targets: List[str]
-    articles: List[WikiDataArticle] = []
+    name: str = Field(
+        ...,
+        description="Name of the translation campaign",
+        frozen=True,
+    )
+    source: str = Field(
+        ...,
+        description="Source wiki project language code",
+        frozen=True,
+    )
+    targets: Set[str] = Field(
+        ...,
+        description="Set of target wiki project language codes",
+        frozen=True,
+    )
+    pages: Set[WikiPage] = Field(
+        default=[],
+        description="Set of WikiPage objects associated with the translation campaign",
+    )
+    articles: Set[WikiDataArticle] = Field(
+        default=set(),
+        description="Set of articles that are part of this campaign",
+    )
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.id}) ({len(self.articles)} articles)"
+        return f"{self.name} ({len(self.articles)} articles)"
+
+    def matches(self, source: str, target: str) -> bool:
+        if self.source != source:
+            return False
+        if self.targets and len(self.targets) > 0:
+            # If not global campaign, check if target is in the list of targets
+            return target in self.targets
+        return True
+
+    async def fetch_articles(self):
+        # This import is here to avoid circular imports
+        from recommendation.external_data import fetcher
+
+        tasks = [fetcher.get_campaign_page_candidates(page) for page in self.pages]
+        results = await asyncio.gather(*tasks)
+
+        for candidates in results:
+            self.articles.update(candidates)
+
+    @computed_field
+    @property
+    def cache_key(self) -> str:
+        # Cache key will depend on revision id of all pages where this campaign applies
+        # So when any of the pages are updated, the cache will be invalidated
+        return "-".join([page.key for page in self.pages])
+
+    def __hash__(self) -> str:
+        return hash(self.cache_key)
+
+
+class CampaignMetadata(BaseModel):
+    name: str
+    source: str
+    targets: Set[str]
+
+
+class TranslationCampaignCollection(BaseModel):
+    list: Set[TranslationCampaign] = set()
+
+    def add(self, campaign: TranslationCampaign):
+        self.list.add(campaign)

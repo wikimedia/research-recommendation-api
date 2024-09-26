@@ -1,3 +1,6 @@
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import (
     http_exception_handler,
@@ -9,7 +12,26 @@ from fastapi.routing import APIRoute
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from recommendation.api.translation.translation import router as translation_api_router
+from recommendation.utils.cache_updater import update_campaign_cache
 from recommendation.utils.configuration import configuration
+from recommendation.utils.logger import log
+
+
+async def periodic_cache_update():
+    while True:
+        await asyncio.sleep(60 * 60)  # Sleep for 1 hour
+        await update_campaign_cache()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    log.info(f"Starting up the {configuration.PROJECT_NAME}")
+    await update_campaign_cache()
+    cache_updater = asyncio.create_task(periodic_cache_update())
+    yield
+
+    cache_updater.cancel()
+    log.info("Shutting down the service")
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -18,7 +40,8 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 
 app = FastAPI(
     title=configuration.PROJECT_NAME,
-    debug=False,
+    lifespan=lifespan,
+    debug=configuration.DEBUG,
     version=configuration.PROJECT_VERSION,
     root_path=configuration.API_PREFIX,
     servers=[

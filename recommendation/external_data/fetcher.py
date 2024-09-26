@@ -432,7 +432,7 @@ async def get_campaign_pages() -> List[WikiPage]:
     ]
 
 
-async def get_campaign_page_candidates(page) -> List[WikiDataArticle]:
+async def get_campaign_page_candidates(page: WikiPage) -> List[WikiDataArticle]:
     """
     Get the candidates for translation in a translation campaign.
 
@@ -447,7 +447,7 @@ async def get_campaign_page_candidates(page) -> List[WikiDataArticle]:
         "format": "json",
         "formatversion": "2",
         "prop": "iwlinks",
-        "titles": page,
+        "titles": page.title,
         "iwlimit": "max",
         "iwprop": "url",
     }

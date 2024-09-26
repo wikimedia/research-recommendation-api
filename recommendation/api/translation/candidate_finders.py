@@ -6,7 +6,7 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
-    WikiPage,
+    WikiDataArticle,
 )
 from recommendation.cache import get_campaign_cache
 from recommendation.external_data import fetcher
@@ -91,44 +91,27 @@ async def get_campaign_candidates(
     1. Find campaign pages marked with the translation campaign template
     2. Get article candidates for each campaign page
     """
-    campaign_candidates = []
-    campaign_pages: List[WikiPage] = await fetcher.get_campaign_pages()
-
+    campaign_candidates = set()
     campaign_cache = get_campaign_cache()
-    page: WikiPage
-    # FIXME: This should be a list of TranslationCampaign objects
-    # once we extract the campaign definition from the marker template
-    for page in campaign_pages:
-        translation_campaign: TranslationCampaign = campaign_cache.get_campaign_page(page.key)
+    campaigns: List[TranslationCampaign] = campaign_cache.get_translation_campaigns()
 
-        if translation_campaign:
-            log.debug(f"Found campaign {translation_campaign} in cache")
-            wikidata_articles = translation_campaign.articles
-        else:
-            wikidata_articles = await fetcher.get_campaign_page_candidates(page.title)
+    for campaign in campaigns:
+        if campaign.matches(rec_req_model.source, rec_req_model.target):
+            log.debug(f"Found campaign {campaign} in cache for {rec_req_model.source}-{rec_req_model.target}")
 
-        log.debug(f"Found {len(wikidata_articles)} articles for campaign {page}")
-        for wikidata_article in wikidata_articles:
-            candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
+            if len(campaign.articles) == 0:
+                log.warning(f"Found empty campaign {campaign}")
 
-            if candidate_source_article_title:
-                campaign_candidate = TranslationRecommendationCandidate(
-                    title=candidate_source_article_title,
-                    wikidata_id=wikidata_article.wikidata_id,
-                    langlinks_count=len(wikidata_article.langlinks),
-                    languages=wikidata_article.langlinks.keys(),
-                )
-                campaign_candidates.append(campaign_candidate)
-
-        campaign_cache.set_campaign_page(
-            TranslationCampaign(
-                name=page.title,
-                id=page.key,
-                # FIXME these values should come from campaign marker template
-                source=rec_req_model.source,
-                targets=[rec_req_model.target],
-                articles=wikidata_articles,
-            ),
-        )
+            wikidata_article: WikiDataArticle
+            for wikidata_article in campaign.articles:
+                candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
+                if candidate_source_article_title:
+                    campaign_candidate = TranslationRecommendationCandidate(
+                        title=candidate_source_article_title,
+                        wikidata_id=wikidata_article.wikidata_id,
+                        langlinks_count=len(wikidata_article.langlinks),
+                        languages=wikidata_article.langlinks.keys(),
+                    )
+                    campaign_candidates.add(campaign_candidate)
 
     return campaign_candidates

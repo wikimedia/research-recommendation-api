@@ -1,10 +1,11 @@
 import json
 import zlib
 from functools import lru_cache
+from typing import Set
 
 from diskcache import UNKNOWN, Cache, Disk
 
-from recommendation.api.translation.models import TranslationCampaign
+from recommendation.api.translation.models import TranslationCampaign, TranslationCampaignCollection
 from recommendation.utils.configuration import configuration
 
 CACHE_DIRECTORY = ".cache"
@@ -45,14 +46,16 @@ class CampaignCache(Cache):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def set_campaign_page(self, campaign: TranslationCampaign):
-        self.set(campaign.id, campaign)
+    def set_translation_campaigns(self, translation_campaign_collection: TranslationCampaignCollection):
+        self.set("translation_campaigns", translation_campaign_collection)
 
-    def get_campaign_page(self, campaign_id) -> TranslationCampaign | None:
-        cached_campaign: str = self.get(campaign_id)
-        if cached_campaign:
-            model: TranslationCampaign = TranslationCampaign.model_validate(cached_campaign)
-            return model
+    def get_translation_campaigns(self) -> Set[TranslationCampaign] | None:
+        collection: str = self.get("translation_campaigns")
+
+        if collection:
+            model: TranslationCampaignCollection = TranslationCampaignCollection.model_validate(collection)
+
+            return model.list
 
         return None
 
