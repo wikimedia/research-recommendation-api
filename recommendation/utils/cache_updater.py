@@ -21,19 +21,6 @@ def find_page_collection_by_cache_key(
     return None  # Return None if no match is found
 
 
-# stub method. Should be moved to fetcher.py file and use "pagecollectionsmetadata" API to fetch them
-async def get_campaign_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, CampaignMetadata]:
-    metadata_by_pages = {}
-    for page in pages:
-        metadata_by_pages[page.id] = CampaignMetadata(
-            name=str(page.id),
-            source="en",
-            targets=[],
-        )
-
-    return metadata_by_pages
-
-
 def combine_collection_pages_and_metadata(
     pages: List[WikiPage], metadata_by_pages: Dict[str, CampaignMetadata]
 ) -> Set[PageCollection]:
@@ -41,7 +28,12 @@ def combine_collection_pages_and_metadata(
     for page in pages:
         metadata = metadata_by_pages[page.id]
         page_collection = PageCollection(
-            name=metadata.name, source=metadata.source, targets=metadata.targets, pages={page}
+            name=metadata.name,
+            source=metadata.source,
+            targets=metadata.targets,
+            pages={page},
+            description=metadata.description,
+            end_date=metadata.end_date,
         )
         page_collections.add(page_collection)
 
@@ -56,10 +48,10 @@ async def update_page_collection_cache():
     collection_pages: List[WikiPage] = await fetcher.get_collection_pages()
 
     # Get metadata for each page
-    campaign_metadata_by_pages = await get_campaign_metadata_by_pages(collection_pages)
+    collection_metadata_by_pages = await fetcher.get_collection_metadata_by_pages(collection_pages)
 
     fetched_page_collections: Set[PageCollection] = combine_collection_pages_and_metadata(
-        collection_pages, campaign_metadata_by_pages
+        collection_pages, collection_metadata_by_pages
     )
     page_collection_cache = get_page_collection_cache()
     cached_page_collections: Set[PageCollection] = page_collection_cache.get_page_collections() or set()

@@ -5,7 +5,12 @@ from typing import Dict, List
 
 import httpx
 
-from recommendation.api.translation.models import TranslationRecommendationRequest, WikiDataArticle, WikiPage
+from recommendation.api.translation.models import (
+    CampaignMetadata,
+    TranslationRecommendationRequest,
+    WikiDataArticle,
+    WikiPage,
+)
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
@@ -505,3 +510,57 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             wikidata_articles.extend(articles)
 
     return wikidata_articles
+
+
+async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, CampaignMetadata]:
+    """
+    Get the page collection metadata for a list of pages including the <page-collection> marker
+    Args:
+        pages (List[WikiPage]): a list of pages including the <page-collection> marker
+    Returns:
+        Dict[str, CampaignMetadata] a dictionary mapping the page id (int) of each page to its corresponding metadata
+    """
+    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
+    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
+    params = {
+        "action": "query",
+        "format": "json",
+        "formatversion": "2",
+        "list": "pagecollectionsmetadata",
+        "titles": "|".join(page.title for page in pages),
+    }
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        return {}
+
+    result_property = "page_collections"
+    if (
+        "query" not in data
+        or result_property not in data["query"]
+        or not data["query"][result_property]
+        or "pages" not in data["query"]
+        or not data["query"]["pages"]
+    ):
+        log.error("Could not fetch the list")
+        return {}
+
+    normalization_map: Dict = {item["to"]: item["from"] for item in data["query"].get("normalized", [])}
+
+    metadata: Dict = data["query"][result_property]
+    metadata_by_pages = {}
+
+    for page in data["query"]["pages"]:
+        page_title = page["title"]
+        title = normalization_map.get(page_title) or page_title
+        page_metadata = metadata.get(title) or {}
+
+        metadata_by_pages[page.get("pageid")] = CampaignMetadata(
+            name=page_metadata.get("name", "unknown-name"),
+            source=page_metadata.get("source-language", "en"),
+            targets=set(page_metadata.get("target-languages", [])),
+            description=page_metadata.get("description", None),
+            end_date=page_metadata.get("end-date", None),
+        )
+
+    return metadata_by_pages

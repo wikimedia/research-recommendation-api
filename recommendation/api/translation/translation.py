@@ -87,19 +87,25 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
         # Sort by rank, from lowest to highest
         present = sorted(present, key=lambda x: x.rank, reverse=False)
 
-    def get_candidate_titles(candidate):
-        return candidate.title
-
-    candidate_titles = list(map(get_candidate_titles, present))
+    candidate_titles = [candidate.title for candidate in present]
 
     results = await fetcher.get_section_suggestions(
         rec_model.source, rec_model.target, candidate_titles, rec_model.count
     )
 
+    def find_by_title(title):
+        # Iterate over the list and return the object with the matching title
+        for candidate in present:
+            if candidate.title == title:
+                return candidate
+        return None  # Return None if no matching object is found
+
     section_suggestions: List[SectionTranslationRecommendation] = []
 
     for result in results:
         data = result["sections"]
+        candidate = find_by_title(data["sourceTitle"])
+
         recommendation = SectionTranslationRecommendation(
             source_title=data["sourceTitle"],
             target_title=data["targetTitle"],
@@ -107,6 +113,7 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
             target_sections=data["targetSections"],
             present=data["present"],
             missing=data["missing"],
+            campaign=candidate.campaign,
         )
         section_suggestions.append(recommendation)
 

@@ -96,12 +96,24 @@ class TranslationRecommendationRequest(BaseModel):
         return self
 
 
+class CampaignMetadata(BaseModel):
+    name: str
+    source: str
+    targets: Set[str]
+    description: Optional[str] = None
+    end_date: Optional[str] = None
+
+    def __hash__(self) -> str:
+        return hash(self.name)
+
+
 class TranslationRecommendation(BaseModel):
     title: str
     pageviews: Optional[int] = 0
     wikidata_id: Optional[str] = None
     rank: Optional[float] = 0.0
     langlinks_count: Optional[int] = 0
+    campaign: Optional[CampaignMetadata] = None
 
     def __hash__(self) -> str:
         return hash(self.wikidata_id)
@@ -127,6 +139,10 @@ class SectionTranslationRecommendation(BaseModel):
     missing: Dict[str, str] = Field(
         description="""Dict that maps the source section titles that are missing from the target article,
                     to the corresponding proposed target section titles of the section translation recommendation""",
+    )
+    campaign: Optional[CampaignMetadata] = Field(
+        description="An optional CampaignMetadata DTO, used for campaign list section translation recommendations",
+        default=None,
     )
 
 
@@ -158,6 +174,14 @@ class PageCollection(BaseModel):
         default=set(),
         description="Set of articles that are part of this page collection",
     )
+    description: Optional[str] = Field(
+        default=None,
+        description="Description of the translation campaign",
+    )
+    end_date: Optional[str] = Field(
+        default=None,
+        description="End date of the translation campaign",
+    )
 
     def __str__(self) -> str:
         return f"{self.name} ({len(self.articles)} articles)"
@@ -187,14 +211,19 @@ class PageCollection(BaseModel):
         # So when any of the pages are updated, the cache will be invalidated
         return "-".join([page.key for page in self.pages])
 
+    @computed_field
+    @property
+    def metadata(self) -> CampaignMetadata:
+        return CampaignMetadata(
+            name=self.name,
+            source=self.source,
+            targets=self.targets,
+            description=self.description,
+            end_date=self.end_date,
+        )
+
     def __hash__(self) -> str:
         return hash(self.cache_key)
-
-
-class CampaignMetadata(BaseModel):
-    name: str
-    source: str
-    targets: Set[str]
 
 
 class PageCollectionsList(BaseModel):
