@@ -403,11 +403,10 @@ async def get_campaign_pages() -> List[WikiPage]:
         "action": "query",
         "format": "json",
         "formatversion": "2",
-        "generator": "search",
-        "gsrlimit": "max",
-        "gsrnamespace": configuration.CAMPAIGNS_NAMESPACE,
-        "gsrsearch": "hastemplate:Translation_campaign",
-        "gsrwhat": "text",
+        "generator": "categorymembers",
+        "gcmlimit": "max",
+        "gcmnamespace": configuration.CAMPAIGNS_NAMESPACE,
+        "gcmtitle": "Category:Pages including a page collection",
         "prop": "info",
     }
 
