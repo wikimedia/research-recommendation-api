@@ -12,7 +12,7 @@ from fastapi.routing import APIRoute
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from recommendation.api.translation.translation import router as translation_api_router
-from recommendation.utils.cache_updater import update_campaign_cache
+from recommendation.utils.cache_updater import update_page_collection_cache
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
@@ -20,13 +20,13 @@ from recommendation.utils.logger import log
 async def periodic_cache_update():
     while True:
         await asyncio.sleep(60 * 60)  # Sleep for 1 hour
-        await update_campaign_cache()
+        await update_page_collection_cache()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info(f"Starting up the {configuration.PROJECT_NAME}")
-    await update_campaign_cache()
+    await update_page_collection_cache()
     cache_updater = asyncio.create_task(periodic_cache_update())
     yield
 

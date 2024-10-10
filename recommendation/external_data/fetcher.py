@@ -390,9 +390,9 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     return wikidata_articles
 
 
-async def get_campaign_pages() -> List[WikiPage]:
+async def get_collection_pages() -> List[WikiPage]:
     """
-    Get the list of pages that are marked with the 'Translation_campaign' template marker.
+    Get the list of pages that have the 'Pages including a page collection' tracking category.
 
     Returns:
         list: A list of page titles
@@ -405,8 +405,8 @@ async def get_campaign_pages() -> List[WikiPage]:
         "formatversion": "2",
         "generator": "categorymembers",
         "gcmlimit": "max",
-        "gcmnamespace": configuration.CAMPAIGNS_NAMESPACE,
-        "gcmtitle": "Category:Pages including a page collection",
+        "gcmnamespace": configuration.COLLECTIONS_NAMESPACE,
+        "gcmtitle": f"Category:{configuration.COLLECTIONS_CATEGORY}",
         "prop": "info",
     }
 
@@ -431,14 +431,14 @@ async def get_campaign_pages() -> List[WikiPage]:
     ]
 
 
-async def get_campaign_page_candidates(page: WikiPage) -> List[WikiDataArticle]:
+async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArticle]:
     """
-    Get the candidates for translation in a translation campaign.
+    Get the candidates for translation in a page with page-collection.
 
     Returns:
-        list: A list of candidates for the given campaign page
+        list: A list of candidates for the given page-collection page
     """
-    # First query for the interwiki links in each campaign page
+    # First query for the interwiki links in the page
     endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
     headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
     params = {

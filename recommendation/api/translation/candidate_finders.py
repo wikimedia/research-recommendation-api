@@ -2,13 +2,13 @@ import random
 from typing import List
 
 from recommendation.api.translation.models import (
-    TranslationCampaign,
+    PageCollection,
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
     WikiDataArticle,
 )
-from recommendation.cache import get_campaign_cache
+from recommendation.cache import get_page_collection_cache
 from recommendation.external_data import fetcher
 from recommendation.utils.logger import log
 
@@ -84,34 +84,34 @@ async def get_candidates_by_search(
     return recommendations
 
 
-async def get_campaign_candidates(
+async def get_collection_candidates(
     rec_req_model: TranslationRecommendationRequest,
 ) -> List[TranslationRecommendationCandidate]:
     """
-    1. Find campaign pages marked with the translation campaign template
-    2. Get article candidates for each campaign page
+    1. Find page-collection pages marked with the page-collection HTML marker
+    2. Get article candidates for each page-collection page
     """
-    campaign_candidates = set()
-    campaign_cache = get_campaign_cache()
-    campaigns: List[TranslationCampaign] = campaign_cache.get_translation_campaigns()
+    collection_candidates = set()
+    page_collection_cache = get_page_collection_cache()
+    collections: List[PageCollection] = page_collection_cache.get_page_collections()
 
-    for campaign in campaigns:
-        if campaign.matches(rec_req_model.source, rec_req_model.target):
-            log.debug(f"Found campaign {campaign} in cache for {rec_req_model.source}-{rec_req_model.target}")
+    for collection in collections:
+        if collection.matches(rec_req_model.source, rec_req_model.target):
+            log.debug(f"Found collection {collection} in cache for {rec_req_model.source}-{rec_req_model.target}")
 
-            if len(campaign.articles) == 0:
-                log.warning(f"Found empty campaign {campaign}")
+            if len(collection.articles) == 0:
+                log.warning(f"Found empty collection {collection}")
 
             wikidata_article: WikiDataArticle
-            for wikidata_article in campaign.articles:
+            for wikidata_article in collection.articles:
                 candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
                 if candidate_source_article_title:
-                    campaign_candidate = TranslationRecommendationCandidate(
+                    collection_candidate = TranslationRecommendationCandidate(
                         title=candidate_source_article_title,
                         wikidata_id=wikidata_article.wikidata_id,
                         langlinks_count=len(wikidata_article.langlinks),
                         languages=wikidata_article.langlinks.keys(),
                     )
-                    campaign_candidates.add(campaign_candidate)
+                    collection_candidates.add(collection_candidate)
 
-    return campaign_candidates
+    return list(collection_candidates)

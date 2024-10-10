@@ -64,8 +64,8 @@ class TranslationRecommendationRequest(BaseModel):
         default=None,
         examples=["Fashion", "Music+South Africa", "Southern Africa|Western Africa", "Women+Space"],
     )
-    include_campaigns: bool = Field(
-        description="Whether to include articles associated with a campaign",
+    collections: bool = Field(
+        description="Whether to fetch recommendations from page collections",
         default=False,
     )
     include_pageviews: bool = Field(
@@ -134,10 +134,10 @@ class TranslationRecommendationCandidate(TranslationRecommendation):
     languages: Optional[list[str]] = None
 
 
-class TranslationCampaign(BaseModel):
+class PageCollection(BaseModel):
     name: str = Field(
         ...,
-        description="Name of the translation campaign",
+        description="Name of the page collection",
         frozen=True,
     )
     source: str = Field(
@@ -152,11 +152,11 @@ class TranslationCampaign(BaseModel):
     )
     pages: Set[WikiPage] = Field(
         default=[],
-        description="Set of WikiPage objects associated with the translation campaign",
+        description="Set of WikiPage objects associated with the page collection",
     )
     articles: Set[WikiDataArticle] = Field(
         default=set(),
-        description="Set of articles that are part of this campaign",
+        description="Set of articles that are part of this page collection",
     )
 
     def __str__(self) -> str:
@@ -166,7 +166,7 @@ class TranslationCampaign(BaseModel):
         if self.source != source:
             return False
         if self.targets and len(self.targets) > 0:
-            # If not global campaign, check if target is in the list of targets
+            # If not "global" page collection, check if target is in the list of targets
             return target in self.targets
         return True
 
@@ -174,7 +174,7 @@ class TranslationCampaign(BaseModel):
         # This import is here to avoid circular imports
         from recommendation.external_data import fetcher
 
-        tasks = [fetcher.get_campaign_page_candidates(page) for page in self.pages]
+        tasks = [fetcher.get_candidates_in_collection_page(page) for page in self.pages]
         results = await asyncio.gather(*tasks)
 
         for candidates in results:
@@ -183,7 +183,7 @@ class TranslationCampaign(BaseModel):
     @computed_field
     @property
     def cache_key(self) -> str:
-        # Cache key will depend on revision id of all pages where this campaign applies
+        # Cache key will depend on revision id of all pages where this page-collection applies
         # So when any of the pages are updated, the cache will be invalidated
         return "-".join([page.key for page in self.pages])
 
@@ -197,8 +197,8 @@ class CampaignMetadata(BaseModel):
     targets: Set[str]
 
 
-class TranslationCampaignCollection(BaseModel):
-    list: Set[TranslationCampaign] = set()
+class PageCollectionsList(BaseModel):
+    list: Set[PageCollection] = set()
 
-    def add(self, campaign: TranslationCampaign):
-        self.list.add(campaign)
+    def add(self, collection: PageCollection):
+        self.list.add(collection)

@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
     API_VERSION: str = "v1"
-    CAMPAIGNS_NAMESPACE: int = 0
+    COLLECTIONS_NAMESPACE: int = 0
+    COLLECTIONS_CATEGORY: str = "Pages including a page collection"
     LANGUAGE_PAIRS_API: AnyUrl = "https://cxserver.wikimedia.org/v1/languagepairs"
     CXSERVER_URL: AnyUrl = "https://cxserver.wikimedia.org"
     CXSERVER_HEADER: str | None = None

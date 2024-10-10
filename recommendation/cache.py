@@ -5,7 +5,7 @@ from typing import Set
 
 from diskcache import UNKNOWN, Cache, Disk
 
-from recommendation.api.translation.models import TranslationCampaign, TranslationCampaignCollection
+from recommendation.api.translation.models import PageCollection, PageCollectionsList
 from recommendation.utils.configuration import configuration
 
 CACHE_DIRECTORY = ".cache"
@@ -42,18 +42,18 @@ class JSONDisk(Disk):
         return data
 
 
-class CampaignCache(Cache):
+class PageCollectionCache(Cache):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def set_translation_campaigns(self, translation_campaign_collection: TranslationCampaignCollection):
-        self.set("translation_campaigns", translation_campaign_collection)
+    def set_page_collections(self, page_collections_list: PageCollectionsList):
+        self.set("page_collections", page_collections_list)
 
-    def get_translation_campaigns(self) -> Set[TranslationCampaign] | None:
-        collection: str = self.get("translation_campaigns")
+    def get_page_collections(self) -> Set[PageCollection] | None:
+        collection: str = self.get("page_collections")
 
         if collection:
-            model: TranslationCampaignCollection = TranslationCampaignCollection.model_validate(collection)
+            model: PageCollectionsList = PageCollectionsList.model_validate(collection)
 
             return model.list
 
@@ -61,8 +61,8 @@ class CampaignCache(Cache):
 
 
 @lru_cache
-def get_campaign_cache():
-    return CampaignCache(
+def get_page_collection_cache():
+    return PageCollectionCache(
         disk=JSONDisk,
         disk_compress_level=6,  # zlib compression level,
         directory=configuration.CACHE_DIRECTORY,
@@ -70,4 +70,4 @@ def get_campaign_cache():
     )
 
 
-__all__ = ["get_campaign_cache"]
+__all__ = ["get_page_collection_cache"]
