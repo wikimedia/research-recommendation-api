@@ -69,14 +69,15 @@ async def get_candidates_by_search(
     recommendations = []
 
     for page in results:
-        languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
-        rec = TranslationRecommendationCandidate(
-            title=page["title"],
-            rank=page["index"],
-            langlinks_count=int(page.get("langlinkscount", 0)),
-            languages=languages,
-            wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
-        )
+        if "disambiguation" not in page.get("pageprops", {}):
+            languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
+            rec = TranslationRecommendationCandidate(
+                title=page["title"],
+                rank=page["index"],
+                langlinks_count=int(page.get("langlinkscount", 0)),
+                languages=languages,
+                wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
+            )
 
         recommendations.append(rec)
 
