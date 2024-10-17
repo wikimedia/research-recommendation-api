@@ -170,6 +170,8 @@ def build_wiki_search(rec_req_model: TranslationRecommendationRequest):
         "gsrwhat": "text",
         "gsrlimit": "max",
         "ppprop": "wikibase_item|disambiguation",
+        "gsrqiprofile": "classic_noboostlinks",
+        "gsrsort": "random",
     }
 
     gsrsearch_query = []
