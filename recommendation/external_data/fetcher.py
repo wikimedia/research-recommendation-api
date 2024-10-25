@@ -481,7 +481,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         prefix = link["prefix"]
         url = link["url"]
         qid_match = re.match(r"(Q[\d]+)", title)
-        if qid_match and url.startswith("https://www.wikidata.org") and link["prefix"] == "d":
+        if qid_match and url.startswith("https://www.wikidata.org"):
             qid = qid_match.group(1)
             qids.append(qid)
         else:
