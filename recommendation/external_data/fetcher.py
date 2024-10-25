@@ -509,7 +509,9 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             articles = await get_articles_by_titles(batch, language)
             wikidata_articles.extend(articles)
 
-    return wikidata_articles
+    wikidataarticles_with_langlinks = [article for article in wikidata_articles if len(article.langlinks) > 0]
+
+    return wikidataarticles_with_langlinks
 
 
 async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, CampaignMetadata]:
