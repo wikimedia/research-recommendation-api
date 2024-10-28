@@ -119,3 +119,6 @@ target/
 
 # IDEA
 .idea
+
+# Local config file
+.env
