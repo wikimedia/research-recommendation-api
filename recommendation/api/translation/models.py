@@ -98,8 +98,6 @@ class TranslationRecommendationRequest(BaseModel):
 
 class CampaignMetadata(BaseModel):
     name: str
-    source: str
-    targets: Set[str]
     description: Optional[str] = None
     end_date: Optional[str] = None
 
@@ -156,16 +154,6 @@ class PageCollection(BaseModel):
         description="Name of the page collection",
         frozen=True,
     )
-    source: str = Field(
-        ...,
-        description="Source wiki project language code",
-        frozen=True,
-    )
-    targets: Set[str] = Field(
-        ...,
-        description="Set of target wiki project language codes",
-        frozen=True,
-    )
     pages: Set[WikiPage] = Field(
         default=[],
         description="Set of WikiPage objects associated with the page collection",
@@ -185,14 +173,6 @@ class PageCollection(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.name} ({len(self.articles)} articles)"
-
-    def matches(self, source: str, target: str) -> bool:
-        if self.source != source:
-            return False
-        if self.targets and len(self.targets) > 0:
-            # If not "global" page collection, check if target is in the list of targets
-            return target in self.targets
-        return True
 
     async def fetch_articles(self):
         # This import is here to avoid circular imports
@@ -216,8 +196,6 @@ class PageCollection(BaseModel):
     def metadata(self) -> CampaignMetadata:
         return CampaignMetadata(
             name=self.name,
-            source=self.source,
-            targets=self.targets,
             description=self.description,
             end_date=self.end_date,
         )

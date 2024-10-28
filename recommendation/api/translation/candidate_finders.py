@@ -96,23 +96,20 @@ async def get_collection_candidates(
     collections: List[PageCollection] = page_collection_cache.get_page_collections()
 
     for collection in collections:
-        if collection.matches(rec_req_model.source, rec_req_model.target):
-            log.debug(f"Found collection {collection} in cache for {rec_req_model.source}-{rec_req_model.target}")
+        if len(collection.articles) == 0:
+            log.warning(f"Found empty collection {collection}")
 
-            if len(collection.articles) == 0:
-                log.warning(f"Found empty collection {collection}")
-
-            wikidata_article: WikiDataArticle
-            for wikidata_article in collection.articles:
-                candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
-                if candidate_source_article_title:
-                    collection_candidate = TranslationRecommendationCandidate(
-                        title=candidate_source_article_title,
-                        wikidata_id=wikidata_article.wikidata_id,
-                        langlinks_count=len(wikidata_article.langlinks),
-                        languages=wikidata_article.langlinks.keys(),
-                        campaign=collection.metadata,
-                    )
-                    collection_candidates.add(collection_candidate)
+        wikidata_article: WikiDataArticle
+        for wikidata_article in collection.articles:
+            candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
+            if candidate_source_article_title:
+                collection_candidate = TranslationRecommendationCandidate(
+                    title=candidate_source_article_title,
+                    wikidata_id=wikidata_article.wikidata_id,
+                    langlinks_count=len(wikidata_article.langlinks),
+                    languages=wikidata_article.langlinks.keys(),
+                    campaign=collection.metadata,
+                )
+                collection_candidates.add(collection_candidate)
 
     return list(collection_candidates)

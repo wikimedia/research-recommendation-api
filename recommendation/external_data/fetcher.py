@@ -559,8 +559,6 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, C
 
         metadata_by_pages[page.get("pageid")] = CampaignMetadata(
             name=page_metadata.get("name", "unknown-name"),
-            source=page_metadata.get("source-language", "en"),
-            targets=set(page_metadata.get("target-languages", [])),
             description=page_metadata.get("description", None),
             end_date=page_metadata.get("end-date", None),
         )

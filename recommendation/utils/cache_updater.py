@@ -29,8 +29,6 @@ def combine_collection_pages_and_metadata(
         metadata = metadata_by_pages[page.id]
         page_collection = PageCollection(
             name=metadata.name,
-            source=metadata.source,
-            targets=metadata.targets,
             pages={page},
             description=metadata.description,
             end_date=metadata.end_date,
