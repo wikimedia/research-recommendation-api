@@ -558,7 +558,7 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
         page_metadata = metadata.get(title) or {}
 
         metadata_by_pages[page.get("pageid")] = PageCollectionMetadata(
-            name=page_metadata.get("name", "unknown-name"),
+            name=page_metadata.get("name") or title,
             description=page_metadata.get("description", None),
             end_date=page_metadata.get("end-date", None),
         )
