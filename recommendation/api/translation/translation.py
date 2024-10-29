@@ -4,10 +4,13 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, Request
 
 from recommendation.api.translation.models import (
+    PageCollection,
+    PageCollectionResponse,
     SectionTranslationRecommendation,
     TranslationRecommendation,
     TranslationRecommendationRequest,
 )
+from recommendation.cache import get_page_collection_cache
 from recommendation.utils import event_logger
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import recommend, recommend_sections
@@ -55,3 +58,23 @@ async def get_section_translation_recommendations(
     log.info("Request processed in %f seconds", t2 - t1)
 
     return section_suggestions
+
+
+@router.get("/translation/page-collections", response_model=List[PageCollectionResponse])
+async def get_page_collections(request: Request) -> List[PageCollectionResponse]:
+    """
+    Retrieves page collections from cache and returns them, including only their metadata
+    """
+    t1 = time.time()
+
+    event_logger.log_api_request(
+        host=request.client.host, user_agent=request.headers.get("user-agent"), source=None, target=None
+    )
+
+    page_collection_cache = get_page_collection_cache()
+    page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
+
+    t2 = time.time()
+    log.info("Request processed in %f seconds", t2 - t1)
+
+    return page_collections

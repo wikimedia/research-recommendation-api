@@ -156,7 +156,7 @@ class PageCollection(BaseModel):
         frozen=True,
     )
     pages: Set[WikiPage] = Field(
-        default=[],
+        default=set(),
         description="Set of WikiPage objects associated with the page collection",
     )
     articles: Set[WikiDataArticle] = Field(
@@ -203,6 +203,12 @@ class PageCollection(BaseModel):
 
     def __hash__(self) -> str:
         return hash(self.cache_key)
+
+
+class PageCollectionResponse(BaseModel):
+    name: str
+    description: Optional[str] = None
+    end_date: Optional[str] = None
 
 
 class PageCollectionsList(BaseModel):
