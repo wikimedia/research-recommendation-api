@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional, Set
 
 from recommendation.api.translation.models import (
-    CampaignMetadata,
     PageCollection,
+    PageCollectionMetadata,
     PageCollectionsList,
     WikiPage,
 )
@@ -22,7 +22,7 @@ def find_page_collection_by_cache_key(
 
 
 def combine_collection_pages_and_metadata(
-    pages: List[WikiPage], metadata_by_pages: Dict[str, CampaignMetadata]
+    pages: List[WikiPage], metadata_by_pages: Dict[str, PageCollectionMetadata]
 ) -> Set[PageCollection]:
     page_collections: Set[PageCollection] = set()
     for page in pages:

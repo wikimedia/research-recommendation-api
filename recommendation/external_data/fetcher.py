@@ -6,7 +6,7 @@ from typing import Dict, List
 import httpx
 
 from recommendation.api.translation.models import (
-    CampaignMetadata,
+    PageCollectionMetadata,
     TranslationRecommendationRequest,
     WikiDataArticle,
     WikiPage,
@@ -514,13 +514,13 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
     return wikidataarticles_with_langlinks
 
 
-async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, CampaignMetadata]:
+async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, PageCollectionMetadata]:
     """
     Get the page collection metadata for a list of pages including the <page-collection> marker
     Args:
         pages (List[WikiPage]): a list of pages including the <page-collection> marker
     Returns:
-        Dict[str, CampaignMetadata] a dictionary mapping the page id (int) of each page to its corresponding metadata
+        Dict[str, PageCollectionMetadata] a dictionary mapping the page id (int) of each page to its metadata
     """
     endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
     headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
@@ -557,7 +557,7 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, C
         title = normalization_map.get(page_title) or page_title
         page_metadata = metadata.get(title) or {}
 
-        metadata_by_pages[page.get("pageid")] = CampaignMetadata(
+        metadata_by_pages[page.get("pageid")] = PageCollectionMetadata(
             name=page_metadata.get("name", "unknown-name"),
             description=page_metadata.get("description", None),
             end_date=page_metadata.get("end-date", None),

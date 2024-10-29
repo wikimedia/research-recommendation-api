@@ -96,7 +96,7 @@ class TranslationRecommendationRequest(BaseModel):
         return self
 
 
-class CampaignMetadata(BaseModel):
+class PageCollectionMetadata(BaseModel):
     name: str
     description: Optional[str] = None
     end_date: Optional[str] = None
@@ -111,7 +111,7 @@ class TranslationRecommendation(BaseModel):
     wikidata_id: Optional[str] = None
     rank: Optional[float] = 0.0
     langlinks_count: Optional[int] = 0
-    campaign: Optional[CampaignMetadata] = None
+    collection: Optional[PageCollectionMetadata] = None
 
     def __hash__(self) -> str:
         return hash(self.wikidata_id)
@@ -138,8 +138,9 @@ class SectionTranslationRecommendation(BaseModel):
         description="""Dict that maps the source section titles that are missing from the target article,
                     to the corresponding proposed target section titles of the section translation recommendation""",
     )
-    campaign: Optional[CampaignMetadata] = Field(
-        description="An optional CampaignMetadata DTO, used for campaign list section translation recommendations",
+    collection: Optional[PageCollectionMetadata] = Field(
+        description="""An optional PageCollectionMetadata DTO, used for section translation recommendations
+                    from page collections""",
         default=None,
     )
 
@@ -164,11 +165,11 @@ class PageCollection(BaseModel):
     )
     description: Optional[str] = Field(
         default=None,
-        description="Description of the translation campaign",
+        description="Description of the page collection",
     )
     end_date: Optional[str] = Field(
         default=None,
-        description="End date of the translation campaign",
+        description="End date of the page collection",
     )
 
     def __str__(self) -> str:
@@ -193,8 +194,8 @@ class PageCollection(BaseModel):
 
     @computed_field
     @property
-    def metadata(self) -> CampaignMetadata:
-        return CampaignMetadata(
+    def metadata(self) -> PageCollectionMetadata:
+        return PageCollectionMetadata(
             name=self.name,
             description=self.description,
             end_date=self.end_date,

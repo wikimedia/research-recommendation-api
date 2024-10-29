@@ -113,7 +113,7 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
             target_sections=data["targetSections"],
             present=data["present"],
             missing=data["missing"],
-            campaign=candidate.campaign,
+            collection=candidate.collection,
         )
         section_suggestions.append(recommendation)
 

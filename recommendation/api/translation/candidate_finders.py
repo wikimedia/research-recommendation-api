@@ -108,7 +108,7 @@ async def get_collection_candidates(
                     wikidata_id=wikidata_article.wikidata_id,
                     langlinks_count=len(wikidata_article.langlinks),
                     languages=wikidata_article.langlinks.keys(),
-                    campaign=collection.metadata,
+                    collection=collection.metadata,
                 )
                 collection_candidates.add(collection_candidate)
 
