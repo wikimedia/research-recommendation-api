@@ -21,10 +21,10 @@ finder_map = {
 
 async def find_candidates(rec_req_model: TranslationRecommendationRequest) -> List[TranslationRecommendationCandidate]:
     candidates: List[TranslationRecommendationCandidate]
-    if rec_req_model.topic or rec_req_model.seed:
-        finder = finder_map["morelike"]
-    elif rec_req_model.collections:
+    if rec_req_model.collections:
         finder = finder_map["collections"]
+    elif rec_req_model.topic or rec_req_model.seed:
+        finder = finder_map["morelike"]
     else:
         finder = finder_map[RecommendationAlgorithmEnum.mostpopular]
 

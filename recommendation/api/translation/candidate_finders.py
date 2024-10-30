@@ -95,6 +95,9 @@ async def get_collection_candidates(
     page_collection_cache = get_page_collection_cache()
     collections: List[PageCollection] = page_collection_cache.get_page_collections()
 
+    if rec_req_model.seed:
+        collections = [collection for collection in collections if collection.name == rec_req_model.seed]
+
     for collection in collections:
         if len(collection.articles) == 0:
             log.warning(f"Found empty collection {collection}")
