@@ -10,6 +10,7 @@ from recommendation.api.translation.models import (
     TranslationRecommendationRequest,
 )
 from recommendation.external_data import fetcher
+from recommendation.utils.collection_helper import reorder_page_collection_recommendations
 from recommendation.utils.logger import log, timeit
 
 finder_map = {
@@ -46,7 +47,9 @@ async def recommend(rec_model: TranslationRecommendationRequest) -> List[Transla
 
     missing: List[TranslationRecommendationCandidate] = filters.filter_by_missing(rec_model.target, candidates)
 
-    if rec_model.rank_method == RankMethodEnum.sitelinks:
+    if rec_model.collections:
+        missing = reorder_page_collection_recommendations(missing)
+    elif rec_model.rank_method == RankMethodEnum.sitelinks:
         # Sort by langlinks count, from highest to lowest
         missing = sorted(missing, key=lambda x: x.langlinks_count, reverse=True)
     else:
@@ -73,7 +76,9 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
 
     present: List[TranslationRecommendationCandidate] = filters.filter_by_present(rec_model.target, candidates)
 
-    if rec_model.rank_method == RankMethodEnum.sitelinks:
+    if rec_model.collections:
+        present = reorder_page_collection_recommendations(present)
+    elif rec_model.rank_method == RankMethodEnum.sitelinks:
         # Sort by langlinks count, from highest to lowest
         present = sorted(present, key=lambda x: x.langlinks_count, reverse=True)
     else:

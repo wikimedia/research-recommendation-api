@@ -1,5 +1,32 @@
+from typing import Set
+
 from pydantic import AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from recommendation.api.translation.models import PageCollection, WikiPage
+
+# Default collections to be used when the service is started. These are fallback collections
+# that can be used for all languages, if community-defined cannot provide as many recommendations
+# as required.
+DefaultCollections = [
+    PageCollection(
+        name="Vital articles",
+        pages=[
+            WikiPage(
+                title="Wikipedia:Vital articles/Level/1",
+                language="en",
+            ),
+            WikiPage(
+                title="Wikipedia:Vital articles/Level/2",
+                language="en",
+            ),
+            WikiPage(
+                title="Wikipedia:Vital articles/Level/3",
+                language="en",
+            ),
+        ],
+    ),
+]
 
 
 class Settings(BaseSettings):
@@ -33,6 +60,7 @@ class Settings(BaseSettings):
     USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmflabs.org/; leila@wikimedia.org)"
     CACHE_DIRECTORY: str = ".cache"
     DEBUG: bool = False
+    DEFAULT_COLLECTIONS: Set[PageCollection] = DefaultCollections
 
 
 configuration = Settings()

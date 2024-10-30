@@ -1,7 +1,7 @@
 import asyncio
 import re
 import urllib.parse
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import httpx
 
@@ -20,14 +20,15 @@ httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive
 
 
 async def get(url: str, params: dict = None, headers: dict = None):
-    log.debug("Get: %s", url)
     if headers:
         headers = {**default_headers, **headers}
     else:
         headers = default_headers
 
-    encoded_params = urllib.parse.urlencode(params, safe=":+|") if params else ""
+    encoded_params = urllib.parse.urlencode(params, safe=":+|/") if params else ""
     url = f"{url}?{encoded_params}" if encoded_params else url
+
+    log.debug(f"GET: {url}")
     # We are encoding the params outside httpx since the httpx encoding
     # is very strict and does not allow some characters in the params
     try:
@@ -45,7 +46,7 @@ async def get(url: str, params: dict = None, headers: dict = None):
 
 
 async def post(url, data=None, headers: dict = None):
-    log.debug("Post: %s", url)
+    log.debug(f"POST: {url}")
     if headers:
         headers = {**default_headers, **headers}
     else:
@@ -159,8 +160,7 @@ def build_wiki_search(rec_req_model: TranslationRecommendationRequest):
     Returns:
         tuple: A tuple containing the endpoint URL, parameters, and headers for the API request.
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIPEDIA_API, rec_req_model.source)
-    headers = set_headers_with_host_header(configuration.WIKIPEDIA_API_HEADER, rec_req_model.source)
+    endpoint, headers = get_endpoint_and_headers(rec_req_model.source)
 
     params = {
         "action": "query",
@@ -303,6 +303,56 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
     return successful_results[:count]
 
 
+async def get_wiki_page_info(language: str, titles: List[str]) -> Dict[str, WikiPage]:
+    """
+    Get the page information for given titles.
+
+    Args:
+        language (str): The language code of the Wikipedia instance.
+        titles (list): A list of page titles.
+
+    Returns:
+        dict: A dictionary of page titles and their corresponding WikiPage objects.
+    """
+    endpoint, headers = get_endpoint_and_headers(language)
+    if len(titles) > 50:
+        # FIXME: Implement batching & continue support
+        log.error("Too many titles to fetch. Batching not implemented. Fetching for first 50 titles.")
+        titles = titles[:50]
+
+    params = {
+        "action": "query",
+        "format": "json",
+        "formatversion": 2,
+        "prop": "info|pageprops",
+        "titles": "|".join(titles),
+    }
+
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+    except ValueError:
+        return {}
+
+    if not data.get("query") or not data.get("query").get("pages"):
+        log.error("Could not fetch page information the given titles")
+        return {}
+
+    pages = data.get("query", {}).get("pages", [])
+
+    return {
+        page.get("title"): WikiPage(
+            id=page.get("pageid"),
+            title=page.get("title"),
+            revision_id=page.get("lastrevid"),
+            language=page.get("pagelanguage"),
+            namespace=page.get("ns"),
+            wiki=language,
+            qid=page.get("pageprops", {}).get("wikibase_item"),
+        )
+        for page in pages
+    }
+
+
 async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     """
     Get a list of articles by their Wikidata IDs.
@@ -313,8 +363,7 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     Returns:
         list: A list of articles
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIDATA_API)
-    headers = set_headers_with_host_header(configuration.WIKIDATA_API_HEADER)
+    endpoint, headers = get_endpoint_and_headers("wikidata")
 
     params = {
         "action": "wbgetentities",
@@ -359,8 +408,7 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     Returns:
         list: A list of articles
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIDATA_API)
-    headers = set_headers_with_host_header(configuration.WIKIDATA_API_HEADER)
+    endpoint, headers = get_endpoint_and_headers("wikidata")
 
     params = {
         "action": "wbgetentities",
@@ -397,13 +445,13 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
 
 async def get_collection_pages() -> List[WikiPage]:
     """
-    Get the list of pages that have the 'Pages including a page collection' tracking category.
+    Get the list of pages that have the 'Pages including a page collection' ('page-collection-tracking-category')
+    tracking category.
 
     Returns:
         list: A list of page titles
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
-    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
+    endpoint, headers = get_endpoint_and_headers("meta")
     params = {
         "action": "query",
         "format": "json",
@@ -431,12 +479,13 @@ async def get_collection_pages() -> List[WikiPage]:
             revision_id=page["lastrevid"],
             language=page["pagelanguage"],
             namespace=page["ns"],
+            wiki="meta",
         )
         for page in data["query"]["pages"]
     ]
 
 
-async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArticle]:
+async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArticle]:  # noqa: C901
     """
     Get the candidates for translation in a page with page-collection.
 
@@ -444,18 +493,28 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         list: A list of candidates for the given page-collection page
     """
     # First query for the interwiki links in the page
-    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
-    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
-    params = {
-        "action": "query",
-        "format": "json",
-        "formatversion": "2",
-        "prop": "iwlinks",
-        "titles": page.title,
-        "iwlimit": "max",
-        "iwprop": "url",
-    }
-
+    endpoint, headers = get_endpoint_and_headers(page.wiki)
+    if page.wiki != "meta":
+        page_prop = "links"
+        params = {
+            "action": "query",
+            "format": "json",
+            "formatversion": 2,
+            "prop": page_prop,
+            "titles": page.title,
+            "pllimit": "max",
+        }
+    else:
+        page_prop = "iwlinks"
+        params = {
+            "action": "query",
+            "format": "json",
+            "formatversion": "2",
+            "prop": page_prop,
+            "titles": page.title,
+            "iwlimit": "max",
+            "iwprop": "url",
+        }
     try:
         data = await get(endpoint, params=params, headers=headers)
     except ValueError:
@@ -465,30 +524,35 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         log.error("Could not fetch the list")
         return []
 
-    if "iwlinks" not in data["query"]["pages"][0]:
-        log.error("No candidates found")
+    if page_prop not in data["query"]["pages"][0]:
+        log.error(f"No candidates found (page prop-page wiki: {page_prop}-{page.wiki}) for {page.title}")
         return []
 
     # Then query each interwiki link to complete the request with langlinks included
-    iwlinks = data["query"]["pages"][0]["iwlinks"]
+    links = data["query"]["pages"][0][page_prop]
 
     qids = []
-    iwlinks_group_by_language = {}
+    links_group_by_language = {}
 
     # find all links that are wikidata qids, Check if title is Q followed by a number
-    for link in iwlinks:
+    for link in links:
         title = link["title"]
-        prefix = link["prefix"]
-        url = link["url"]
+        prefix = link.get("prefix", page.wiki)
+        url = link.get("url", "")
+
         qid_match = re.match(r"(Q[\d]+)", title)
         if qid_match and url.startswith("https://www.wikidata.org"):
             qid = qid_match.group(1)
             qids.append(qid)
         else:
+            namespace = link.get("ns")
+            # Skip non-main namespace links
+            if namespace != 0:
+                continue
             # Interwiki links that are not Wikidata QIDs
-            if prefix not in iwlinks_group_by_language:
-                iwlinks_group_by_language[prefix] = []
-            iwlinks_group_by_language[prefix].append(title)
+            if prefix not in links_group_by_language:
+                links_group_by_language[prefix] = []
+            links_group_by_language[prefix].append(title)
 
     # Split the qids into batches of 50
     batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
@@ -501,8 +565,8 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         articles = await get_articles_by_qids(batch)
         wikidata_articles.extend(articles)
 
-    for language in iwlinks_group_by_language:
-        titles = iwlinks_group_by_language[language]
+    for language in links_group_by_language:
+        titles = links_group_by_language[language]
         # Split the qids into batches of 50
         batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
         for batch in batches:
@@ -522,8 +586,8 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
     Returns:
         Dict[str, PageCollectionMetadata] a dictionary mapping the page id (int) of each page to its metadata
     """
-    endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API)
-    headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER)
+    endpoint, headers = get_endpoint_and_headers("meta")
+
     params = {
         "action": "query",
         "format": "json",
@@ -564,3 +628,26 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
         )
 
     return metadata_by_pages
+
+
+def get_endpoint_and_headers(source: str) -> Tuple[str, Dict[str, str]]:
+    """
+    Retrieves the API endpoint and headers based on the given source.
+
+    Args:
+        source (str): The source for which the endpoint and headers are to be fetched.
+                      Possible values are "meta", "wikidata", and others.
+
+    Returns:
+        Tuple[str, Dict[str, str]]: A tuple containing the formatted endpoint URL and the headers dictionary.
+    """
+    if source == "meta":
+        endpoint = get_formatted_endpoint(configuration.WIKIMEDIA_API, source)
+        headers = set_headers_with_host_header(configuration.WIKIMEDIA_API_HEADER, source)
+    elif source == "wikidata":
+        endpoint = get_formatted_endpoint(configuration.WIKIDATA_API)
+        headers = set_headers_with_host_header(configuration.WIKIDATA_API_HEADER)
+    else:
+        endpoint = get_formatted_endpoint(configuration.WIKIPEDIA_API, source)
+        headers = set_headers_with_host_header(configuration.WIKIPEDIA_API_HEADER, source)
+    return endpoint, headers

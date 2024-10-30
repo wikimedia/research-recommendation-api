@@ -6,10 +6,10 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
-    WikiDataArticle,
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.external_data import fetcher
+from recommendation.utils.collection_helper import get_candidates_for_page_collections
 from recommendation.utils.logger import log
 
 
@@ -91,28 +91,14 @@ async def get_collection_candidates(
     1. Find page-collection pages marked with the page-collection HTML marker
     2. Get article candidates for each page-collection page
     """
-    collection_candidates = set()
     page_collection_cache = get_page_collection_cache()
-    collections: List[PageCollection] = page_collection_cache.get_page_collections()
+    page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
 
     if rec_req_model.seed:
-        collections = [collection for collection in collections if collection.name == rec_req_model.seed]
+        page_collections = [
+            collection for collection in page_collections if collection.name.casefold() == rec_req_model.seed.casefold()
+        ]
 
-    for collection in collections:
-        if len(collection.articles) == 0:
-            log.warning(f"Found empty collection {collection}")
-
-        wikidata_article: WikiDataArticle
-        for wikidata_article in collection.articles:
-            candidate_source_article_title = wikidata_article.langlinks.get(rec_req_model.source)
-            if candidate_source_article_title:
-                collection_candidate = TranslationRecommendationCandidate(
-                    title=candidate_source_article_title,
-                    wikidata_id=wikidata_article.wikidata_id,
-                    langlinks_count=len(wikidata_article.langlinks),
-                    languages=wikidata_article.langlinks.keys(),
-                    collection=collection.metadata,
-                )
-                collection_candidates.add(collection_candidate)
-
-    return list(collection_candidates)
+        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source))
+    else:
+        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source))

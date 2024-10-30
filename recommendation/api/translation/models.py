@@ -7,11 +7,13 @@ from typing_extensions import Self
 
 
 class WikiPage(BaseModel):
-    id: int
-    title: str
-    revision_id: int
-    namespace: int
-    language: str
+    id: Optional[int] = Field(default=None, description="Unique identifier for the wiki page")
+    title: str = Field(..., description="Title of the wiki page", frozen=True)
+    revision_id: Optional[int] = Field(default=None, description="Revision identifier for the wiki page")
+    namespace: Optional[int] = Field(default=0, description="Namespace of the wiki page")
+    language: str = Field(..., description="Language code of the wiki page", frozen=True)
+    wiki: Optional[str] = Field(default=None, description="Wiki project code")
+    qid: Optional[str] = Field(default=None, description="Wikidata identifier")
 
     @computed_field
     @property
@@ -185,12 +187,34 @@ class PageCollection(BaseModel):
         for candidates in results:
             self.articles.update(candidates)
 
+    # used for default collections
+    async def update_pages(self):
+        # This import is here to avoid circular imports
+        from recommendation.external_data import fetcher
+
+        grouped_pages = {}
+
+        for page in self.pages:
+            if page.language not in grouped_pages:
+                grouped_pages[page.language] = []
+            grouped_pages[page.language].append(page.title)
+
+        tasks = [fetcher.get_wiki_page_info(language, titles) for language, titles in grouped_pages.items()]
+
+        results = await asyncio.gather(*tasks)
+        updated_pages = [page for pages_dict in results for page in pages_dict.values()]
+
+        self.pages.clear()
+        self.pages.update(updated_pages)
+
     @computed_field
     @property
     def cache_key(self) -> str:
+        # sort page keys alphabetically, so that cache_key doesn't change with page order
+        page_keys = sorted([page.key for page in self.pages])
         # Cache key will depend on revision id of all pages where this page-collection applies
         # So when any of the pages are updated, the cache will be invalidated
-        return "-".join([page.key for page in self.pages])
+        return "-".join(page_keys)
 
     @computed_field
     @property
