@@ -176,12 +176,12 @@ def build_wiki_search(rec_req_model: TranslationRecommendationRequest):
         "gsrlimit": "max",
         "ppprop": "wikibase_item|disambiguation",
         "gsrqiprofile": "classic_noboostlinks",
-        "gsrsort": "random",
     }
 
     gsrsearch_query = []
 
     if rec_req_model.topic:
+        params["gsrsort"] = "random"
         topics = rec_req_model.topic.replace(" ", "-").lower()
         topic_and_items = topics.split("+")
         search_expression = "+".join([f"articletopic:{topic_and_item.strip()}" for topic_and_item in topic_and_items])
