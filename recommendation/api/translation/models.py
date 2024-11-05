@@ -102,6 +102,7 @@ class PageCollectionMetadata(BaseModel):
     name: str
     description: Optional[str] = None
     end_date: Optional[str] = None
+    articles_count: Optional[int] = None
 
     def __hash__(self) -> str:
         return hash(self.name)
@@ -218,11 +219,17 @@ class PageCollection(BaseModel):
 
     @computed_field
     @property
+    def articles_count(self) -> int:
+        return len(self.articles)
+
+    @computed_field
+    @property
     def metadata(self) -> PageCollectionMetadata:
         return PageCollectionMetadata(
             name=self.name,
             description=self.description,
             end_date=self.end_date,
+            articles_count=self.articles_count,
         )
 
     def __hash__(self) -> str:
@@ -233,6 +240,7 @@ class PageCollectionResponse(BaseModel):
     name: str
     description: Optional[str] = None
     end_date: Optional[str] = None
+    articles_count: int
 
 
 class PageCollectionsList(BaseModel):
