@@ -99,6 +99,6 @@ async def get_collection_candidates(
             collection for collection in page_collections if collection.name.casefold() == rec_req_model.seed.casefold()
         ]
 
-        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source))
+        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source, rec_req_model.target))
     else:
-        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source))
+        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source, rec_req_model.target))

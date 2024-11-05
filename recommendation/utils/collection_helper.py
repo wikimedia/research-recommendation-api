@@ -9,18 +9,20 @@ from recommendation.utils.logger import log
 
 
 def get_candidates_for_page_collections(
-    page_collections: List[PageCollection], source_language: str
+    page_collections: List[PageCollection], source_language: str, target_language: str
 ) -> List[TranslationRecommendationCandidate]:
     collection_candidates = []
 
     for page_collection in page_collections:
-        collection_candidates.extend(create_candidates_for_collection(page_collection, source_language))
+        collection_candidates.extend(
+            create_candidates_for_collection(page_collection, source_language, target_language)
+        )
 
     return collection_candidates
 
 
 def create_candidates_for_collection(
-    page_collection: PageCollection, source_language: str
+    page_collection: PageCollection, source_language: str, target_language: str
 ) -> List[TranslationRecommendationCandidate]:
     if len(page_collection.articles) == 0:
         log.warning(f"Found empty page-collection {page_collection}")
@@ -36,7 +38,7 @@ def create_candidates_for_collection(
                 wikidata_id=wikidata_article.wikidata_id,
                 langlinks_count=len(wikidata_article.langlinks),
                 languages=wikidata_article.langlinks.keys(),
-                collection=page_collection.metadata,
+                collection=page_collection.get_metadata(target_language),
             )
             collection_candidates.append(collection_candidate)
 

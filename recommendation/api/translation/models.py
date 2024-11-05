@@ -103,6 +103,7 @@ class PageCollectionMetadata(BaseModel):
     description: Optional[str] = None
     end_date: Optional[str] = None
     articles_count: Optional[int] = None
+    articles_by_language_count: Optional[Dict] = None
 
     def __hash__(self) -> str:
         return hash(self.name)
@@ -222,14 +223,16 @@ class PageCollection(BaseModel):
     def articles_count(self) -> int:
         return len(self.articles)
 
-    @computed_field
-    @property
-    def metadata(self) -> PageCollectionMetadata:
+    def articles_in_language_count(self, language) -> int:
+        return sum(1 for article in self.articles if any(language in key for key in article.langlinks))
+
+    def get_metadata(self, target_language) -> PageCollectionMetadata:
         return PageCollectionMetadata(
             name=self.name,
             description=self.description,
             end_date=self.end_date,
             articles_count=self.articles_count,
+            articles_by_language_count={target_language: self.articles_in_language_count(target_language)},
         )
 
     def __hash__(self) -> str:
