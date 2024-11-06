@@ -315,29 +315,31 @@ async def get_wiki_page_info(language: str, titles: List[str]) -> Dict[str, Wiki
         dict: A dictionary of page titles and their corresponding WikiPage objects.
     """
     endpoint, headers = get_endpoint_and_headers(language)
-    if len(titles) > 50:
-        # FIXME: Implement batching & continue support
-        log.error("Too many titles to fetch. Batching not implemented. Fetching for first 50 titles.")
-        titles = titles[:50]
 
-    params = {
-        "action": "query",
-        "format": "json",
-        "formatversion": 2,
-        "prop": "info|pageprops",
-        "titles": "|".join(titles),
-    }
+    batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
+    pages = []
+    for batch in batches:
+        params = {
+            "action": "query",
+            "format": "json",
+            "formatversion": 2,
+            "prop": "info|pageprops",
+            "titles": "|".join(batch),
+        }
 
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        return {}
+        try:
+            data = await get(endpoint, params=params, headers=headers)
+        except ValueError:
+            return {}
 
-    if not data.get("query") or not data.get("query").get("pages"):
+        if not data.get("query", {}).get("pages"):
+            continue
+        print(f"adding pages: {len(data.get('query', {}).get('pages'))}")
+        pages.extend(data.get("query", {}).get("pages", []))
+
+    if len(pages) == 0:
         log.error("Could not fetch page information the given titles")
         return {}
-
-    pages = data.get("query", {}).get("pages", [])
 
     return {
         page.get("title"): WikiPage(
