@@ -28,7 +28,7 @@ class WikiDataArticle(BaseModel):
     wikidata_id: str
     langlinks: Dict[str, str]
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self.wikidata_id)
 
 
@@ -105,7 +105,7 @@ class PageCollectionMetadata(BaseModel):
     articles_count: Optional[int] = None
     articles_by_language_count: Optional[Dict] = None
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self.name)
 
 
@@ -117,7 +117,7 @@ class TranslationRecommendation(BaseModel):
     langlinks_count: Optional[int] = 0
     collection: Optional[PageCollectionMetadata] = None
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self.wikidata_id)
 
 
@@ -235,7 +235,7 @@ class PageCollection(BaseModel):
             articles_by_language_count={target_language: self.articles_in_language_count(target_language)},
         )
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self.cache_key)
 
 
