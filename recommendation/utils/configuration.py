@@ -13,14 +13,6 @@ DefaultCollections = [
         name="Vital articles",
         pages=[
             WikiPage(
-                title="Wikipedia:Vital articles/Level/1",
-                language="en",
-            ),
-            WikiPage(
-                title="Wikipedia:Vital articles/Level/2",
-                language="en",
-            ),
-            WikiPage(
                 title="Wikipedia:Vital articles/Level/3",
                 language="en",
             ),
