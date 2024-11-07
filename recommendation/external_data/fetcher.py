@@ -334,7 +334,7 @@ async def get_wiki_page_info(language: str, titles: List[str]) -> Dict[str, Wiki
 
         if not data.get("query", {}).get("pages"):
             continue
-        print(f"adding pages: {len(data.get('query', {}).get('pages'))}")
+
         pages.extend(data.get("query", {}).get("pages", []))
 
     if len(pages) == 0:
