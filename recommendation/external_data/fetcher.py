@@ -19,30 +19,51 @@ default_headers = {"user-agent": configuration.USER_AGENT_HEADER}
 httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive_connections=5, max_connections=5))
 
 
-async def get(url: str, params: dict = None, headers: dict = None):
+async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all: bool = False):
     if headers:
         headers = {**default_headers, **headers}
     else:
         headers = default_headers
 
-    encoded_params = urllib.parse.urlencode(params, safe=":+|/") if params else ""
-    url = f"{url}?{encoded_params}" if encoded_params else url
+    results = []
+    # Clone original request params to avoid modifying the original dict
+    last_continue = {}
+    while True:
+        queryparams = params.copy() if params else {}
+        queryparams.update(last_continue)
 
-    log.debug(f"GET: {url}")
-    # We are encoding the params outside httpx since the httpx encoding
-    # is very strict and does not allow some characters in the params
-    try:
-        response = await httpx_client.get(
-            url,
-            # params=params,
-            headers=headers,
-            follow_redirects=True,
-        )
-        response.raise_for_status()
-        return response.json()
-    except (httpx.RequestError, ValueError) as exc:
-        log.error(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
-        raise ValueError(exc) from exc
+        # We are encoding the params outside httpx since the httpx encoding
+        # is very strict and does not allow some characters in the params
+        encoded_params = urllib.parse.urlencode(queryparams, safe=":+|") if params else ""
+
+        url = f"{api_url}?{encoded_params}" if encoded_params else api_url
+        log.debug(f"GET: {url}")
+
+        try:
+            response = await httpx_client.get(
+                url,
+                # params=params,
+                headers=headers,
+                follow_redirects=True,
+            )
+            response.raise_for_status()
+            result = response.json()
+
+            # this is a single fetch, return the result
+            if not fetch_all:
+                return result
+
+            # this is a fetch all, append the result and try to continue
+            results.append(result)
+            if "continue" not in result:
+                break
+            log.debug("Continue: %s", result["continue"])
+            last_continue = result["continue"]
+        except (httpx.RequestError, ValueError) as exc:
+            log.error(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
+            raise ValueError(exc) from exc
+
+    return results
 
 
 async def post(url, data=None, headers: dict = None):
@@ -75,7 +96,7 @@ async def get_pageviews(source, titles) -> Dict[str, int]:
         "pvipdays": 1,
     }
     try:
-        data = await get(url=endpoint, params=params, headers=headers)
+        data = await get(api_url=endpoint, params=params, headers=headers)
     except ValueError:
         data = {}
 
@@ -136,7 +157,7 @@ async def get_most_popular_articles(source, filter_language):
     }
 
     try:
-        data = await get(url=endpoint, params=params, headers=headers)
+        data = await get(api_url=endpoint, params=params, headers=headers)
     except ValueError:
         log.info("pageview query failed")
         return []
@@ -504,6 +525,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             "formatversion": 2,
             "prop": page_prop,
             "titles": page.title,
+            "plnamespace": 0,
             "pllimit": "max",
         }
     else:
@@ -518,21 +540,25 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             "iwprop": "url",
         }
     try:
-        data = await get(endpoint, params=params, headers=headers)
+        responses = await get(endpoint, params=params, headers=headers, fetch_all=True)
     except ValueError:
         return []
 
-    if "query" not in data or "pages" not in data["query"]:
+    if len(responses) == 0:
         log.error("Could not fetch the list")
         return []
 
-    if page_prop not in data["query"]["pages"][0]:
-        log.error(f"No candidates found (page prop-page wiki: {page_prop}-{page.wiki}) for {page.title}")
+    # Aggregate all the links from the responses
+    links = []
+    for response in responses:
+        if page_prop in response["query"]["pages"][0]:
+            links.extend(response["query"]["pages"][0][page_prop])
+
+    if len(links) == 0:
+        log.error(f"No {page_prop} found for {page.wiki}:{page.title}")
         return []
 
     # Then query each interwiki link to complete the request with langlinks included
-    links = data["query"]["pages"][0][page_prop]
-
     qids = []
     links_group_by_language = {}
 
@@ -547,10 +573,6 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             qid = qid_match.group(1)
             qids.append(qid)
         else:
-            namespace = link.get("ns")
-            # Skip non-main namespace links
-            if namespace != 0:
-                continue
             # Interwiki links that are not Wikidata QIDs
             if prefix not in links_group_by_language:
                 links_group_by_language[prefix] = []
