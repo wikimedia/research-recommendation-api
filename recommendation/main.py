@@ -1,4 +1,5 @@
 import asyncio
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -26,13 +27,19 @@ async def periodic_cache_update():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log.info(f"Starting up the {configuration.PROJECT_NAME}")
-    await update_page_collection_cache()
-    cache_updater = asyncio.create_task(periodic_cache_update())
-    yield
+    worker_id = os.getpid()
+    # TODO: Use env variable for number of workers
+    number_of_workers = 4
+    if worker_id % number_of_workers == 0:  # we are using 4
+        log.info(f"Starting up the {configuration.PROJECT_NAME}")
+        await update_page_collection_cache()
+        cache_updater = asyncio.create_task(periodic_cache_update())
+        yield
 
-    cache_updater.cancel()
-    log.info("Shutting down the service")
+        cache_updater.cancel()
+        log.info("Shutting down the service")
+    else:
+        yield
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
