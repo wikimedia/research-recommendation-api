@@ -78,8 +78,7 @@ async def get_candidates_by_search(
                 languages=languages,
                 wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
             )
-
-        recommendations.append(rec)
+            recommendations.append(rec)
 
     return recommendations
 
