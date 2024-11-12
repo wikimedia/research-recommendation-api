@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     WIKIMEDIA_API_HEADER: str | None = None
     EVENT_LOGGER_API: AnyUrl = "https://intake-analytics.wikimedia.org/v1/events?hasty=true"
     EVENT_LOGGER_API_HEADER: str | None = None
-    USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmflabs.org/; leila@wikimedia.org)"
+    USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmcloud.org/; leila@wikimedia.org)"
     CACHE_DIRECTORY: str = ".cache"
     DEBUG: bool = False
     DEFAULT_COLLECTIONS: Set[PageCollection] = DefaultCollections
