@@ -25,6 +25,10 @@ async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all
     else:
         headers = default_headers
 
+    if "Host" not in headers:
+        log.error(f"Host header is missing in the request headers for {api_url}")
+        raise ValueError("Host header is required.")
+
     results = []
     # Clone original request params to avoid modifying the original dict
     last_continue = {}
@@ -37,14 +41,15 @@ async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all
         encoded_params = urllib.parse.urlencode(queryparams, safe=":+|") if params else ""
 
         url = f"{api_url}?{encoded_params}" if encoded_params else api_url
-        log.debug(f"GET: {url}")
-
+        log.debug(f"GET: {url}, {headers}")
         try:
+            # follow_redirects is disabled to avoid proxy bypass.
+            # All requests must go through the proxy and have a proper host header.
             response = await httpx_client.get(
                 url,
                 # params=params,
                 headers=headers,
-                follow_redirects=True,
+                follow_redirects=False,
             )
             response.raise_for_status()
             result = response.json()
@@ -59,8 +64,8 @@ async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all
                 break
             log.debug("Continue: %s", result["continue"])
             last_continue = result["continue"]
-        except (httpx.RequestError, ValueError) as exc:
-            log.error(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
+        except httpx.HTTPError as exc:
+            log.error(f"HTTP Exception for {exc.request.url} - {exc}")
             raise ValueError(exc) from exc
 
     return results
@@ -492,7 +497,7 @@ async def get_collection_pages() -> List[WikiPage]:
         return ""
 
     if "query" not in data or "pages" not in data["query"] or len(data["query"]["pages"]) == 0:
-        log.error("Could not fetch the list")
+        log.error(f"Could not fetch the list from category Category:{configuration.COLLECTIONS_CATEGORY}")
         return ""
 
     return [

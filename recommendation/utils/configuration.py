@@ -38,15 +38,15 @@ class Settings(BaseSettings):
     COLLECTIONS_CATEGORY: str = "Pages including a page collection"
     LANGUAGE_PAIRS_API: AnyUrl = "https://cxserver.wikimedia.org/v1/languagepairs"
     CXSERVER_URL: AnyUrl = "https://cxserver.wikimedia.org"
-    CXSERVER_HEADER: str | None = None
+    CXSERVER_HEADER: str | None = "cxserver.wikimedia.org"
     CXSERVER_API_CONCURRENCY: int = 10
     LANGUAGE_PAIRS_API_HEADER: str | None = None
     WIKIPEDIA_API: AnyUrl = "https://{source}.wikipedia.org/w/api.php"
-    WIKIPEDIA_API_HEADER: str | None = None
-    WIKIDATA_API: AnyUrl = "https://wikidata.org/w/api.php"
-    WIKIDATA_API_HEADER: str | None = None
+    WIKIPEDIA_API_HEADER: str | None = "{source}.wikipedia.org"
+    WIKIDATA_API: AnyUrl = "https://www.wikidata.org/w/api.php"
+    WIKIDATA_API_HEADER: str | None = "www.wikidata.org"
     WIKIMEDIA_API: AnyUrl = "https://meta.wikimedia.org/w/api.php"
-    WIKIMEDIA_API_HEADER: str | None = None
+    WIKIMEDIA_API_HEADER: str | None = "meta.wikimedia.org"
     EVENT_LOGGER_API: AnyUrl = "https://intake-analytics.wikimedia.org/v1/events?hasty=true"
     EVENT_LOGGER_API_HEADER: str | None = None
     USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmcloud.org/; leila@wikimedia.org)"
