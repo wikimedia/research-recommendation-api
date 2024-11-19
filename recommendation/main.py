@@ -1,5 +1,7 @@
 import asyncio
 import os
+import sys
+import traceback
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -9,7 +11,7 @@ from fastapi.exception_handlers import (
 )
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse
 from fastapi.routing import APIRoute
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -92,6 +94,22 @@ async def value_error_exception_handler(request: Request, exc: ValueError):
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return await request_validation_exception_handler(request, exc)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> PlainTextResponse:
+    """
+    This middleware will log all unhandled exceptions.
+    Unhandled exceptions are all exceptions that are not HTTPExceptions or RequestValidationErrors.
+    """
+
+    url = f"{request.url.path}?{request.query_params}" if request.query_params else request.url.path
+    exception_type, exc_value, exception_traceback = sys.exc_info()
+    exc_name = getattr(exception_type, "__name__", None)
+    trace = "".join(traceback.format_tb(exception_traceback))
+    exc_details = f'{url}" 500 Internal Server Error <{exc_name}: {exc_value}>'
+    log.error(f"{exc_details} Trace: {trace}")
+    return PlainTextResponse(exc_details, status_code=500)
 
 
 def start():

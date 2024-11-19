@@ -81,8 +81,8 @@ async def post(url, data=None, headers: dict = None):
         response = await httpx_client.post(url, data=data, headers=headers)
         response.raise_for_status()
         return response.json()
-    except (httpx.RequestError, ValueError) as exc:
-        log.error(f"Error response {exc.response.status_code} while posting to {exc.request.url!r}.")
+    except httpx.HTTPError as exc:
+        log.error(f"HTTP Exception for {exc.request.url} - {exc}")
         raise ValueError(exc) from exc
 
 
@@ -550,7 +550,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         return []
 
     if len(responses) == 0:
-        log.error("Could not fetch the list")
+        log.error(f"Could not fetch the list of links for {page.wiki}:{page.title}")
         return []
 
     # Aggregate all the links from the responses
@@ -627,6 +627,7 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
     try:
         data = await get(endpoint, params=params, headers=headers)
     except ValueError:
+        log.error("Could not fetch the page collection metadata for the given pages")
         return {}
 
     result_property = "page_collections"
@@ -637,7 +638,7 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
         or "pages" not in data["query"]
         or not data["query"]["pages"]
     ):
-        log.error("Could not fetch the list")
+        log.error("No page collection metadata exists for the given pages")
         return {}
 
     normalization_map: Dict = {item["to"]: item["from"] for item in data["query"].get("normalized", [])}
