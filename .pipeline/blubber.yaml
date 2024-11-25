@@ -19,7 +19,7 @@ variants:
 
   production:
     includes: [build]
-    entrypoint: [ poetry, run, gunicorn]
+    entrypoint: [./entrypoint.sh]
   test:
     includes: [build]
     entrypoint: [poetry, run, tox]

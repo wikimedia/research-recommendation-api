@@ -34,10 +34,8 @@ async def lifespan(app: FastAPI):
     number_of_workers = 4
     if worker_id % number_of_workers == 0:  # we are using 4
         log.info(f"Starting up the {configuration.PROJECT_NAME}")
-        await update_page_collection_cache()
         cache_updater = asyncio.create_task(periodic_cache_update())
         yield
-
         cache_updater.cancel()
         log.info("Shutting down the service")
     else:

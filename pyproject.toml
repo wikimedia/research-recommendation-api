@@ -51,3 +51,4 @@ lint.select = [
 
 [tool.poetry.scripts]
 start = "recommendation.main:start"
+update-cache = "recommendation.utils.cache_updater:start"

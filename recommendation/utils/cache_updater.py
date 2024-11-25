@@ -81,3 +81,9 @@ async def update_page_collection_cache():
             page_collections_list.add(live_page_collection)
 
     page_collection_cache.set_page_collections(page_collections_list)
+
+
+def start():
+    import asyncio
+
+    asyncio.run(update_page_collection_cache())
