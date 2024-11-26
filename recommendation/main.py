@@ -4,6 +4,7 @@ import sys
 import traceback
 from contextlib import asynccontextmanager
 
+import psutil
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import (
     http_exception_handler,
@@ -29,17 +30,40 @@ async def periodic_cache_update():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    worker_id = os.getpid()
-    # TODO: Use env variable for number of workers
-    number_of_workers = 4
-    if worker_id % number_of_workers == 0:  # we are using 4
-        log.info(f"Starting up the {configuration.PROJECT_NAME}")
-        cache_updater = asyncio.create_task(periodic_cache_update())
-        yield
-        cache_updater.cancel()
-        log.info("Shutting down the service")
-    else:
-        yield
+    # Get the current process's parent process (Gunicorn parent process)
+    parent_pid = os.getppid()
+
+    try:
+        # Use psutil to find the parent process
+        parent_process = psutil.Process(parent_pid)
+        # Get all child processes (workers)
+        child_processes = parent_process.children()
+        # Extract the PIDs of the children
+        worker_pids = [child.pid for child in child_processes]
+
+        # Get the PID of the current worker and its index in the list
+        worker_id = os.getpid()
+        worker_index = worker_pids.index(worker_id)
+
+        if worker_index == 0:  # Execute the periodic task in the first worker only
+            log.info(f"Starting up the {configuration.PROJECT_NAME}")
+            cache_updater = asyncio.create_task(periodic_cache_update())
+            yield
+            cache_updater.cancel()
+            log.info("Shutting down the service")
+        else:
+            yield
+    except psutil.NoSuchProcess:
+        log.error("Parent process not found. Worker lifespan setup will be skipped.")
+        yield  # Proceed without periodic updates in this case
+
+    except ValueError as e:
+        log.error(f"Worker ID not found in the list of worker PIDs: {e}")
+        yield  # Proceed even if worker ID is not in the list
+
+    except Exception as e:
+        log.exception(f"An unexpected error occurred in the lifespan context: {e}")
+        yield  # Ensure the app doesn't crash due to unhandled exceptions
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
