@@ -405,10 +405,10 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     try:
         data = await get(endpoint, params=params, headers=headers)
     except ValueError:
-        return ""
+        return []
     if "error" in data:
         log.error("Error fetching articles by QIDs: %s", data["error"])
-        return
+        return []
 
     if "entities" in data:
         for qid in data["entities"]:
@@ -451,10 +451,10 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     try:
         data = await get(endpoint, params=params, headers=headers)
     except ValueError:
-        return ""
+        return []
     if "error" in data:
         log.error("Error fetching articles by QIDs: %s", data["error"])
-        return
+        return []
 
     if "entities" in data:
         for qid in data["entities"]:
@@ -494,11 +494,11 @@ async def get_collection_pages() -> List[WikiPage]:
     try:
         data = await get(endpoint, params=params, headers=headers)
     except ValueError:
-        return ""
+        return []
 
     if "query" not in data or "pages" not in data["query"] or len(data["query"]["pages"]) == 0:
         log.error(f"Could not fetch the list from category Category:{configuration.COLLECTIONS_CATEGORY}")
-        return ""
+        return []
 
     return [
         WikiPage(
