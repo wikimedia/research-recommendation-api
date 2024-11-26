@@ -13,6 +13,7 @@ from recommendation.api.translation.models import (
 )
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
+from recommendation.utils.sitematrix_helper import get_dbname_by_prefix
 
 default_headers = {"user-agent": configuration.USER_AGENT_HEADER}
 
@@ -425,13 +426,13 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     return wikidata_articles
 
 
-async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
+async def get_articles_by_titles(titles, dbname) -> List[WikiDataArticle]:
     """
     Get a list of articles by their titles.
 
     Args:
         titles (list): A list of Wikidata titles
-        source (str): The source language
+        dbname (str): The dbname of the wiki
 
     Returns:
         list: A list of articles
@@ -442,7 +443,7 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
         "action": "wbgetentities",
         "format": "json",
         "props": "sitelinks",
-        "sites": f"{source}wiki",
+        "sites": dbname,
         "titles": "|".join(titles),
         "formatversion": 2,
     }
@@ -565,7 +566,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
 
     # Then query each interwiki link to complete the request with langlinks included
     qids = []
-    links_group_by_language = {}
+    links_group_by_dbname = {}
 
     # find all links that are wikidata qids, Check if title is Q followed by a number
     for link in links:
@@ -579,9 +580,13 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             qids.append(qid)
         else:
             # Interwiki links that are not Wikidata QIDs
-            if prefix not in links_group_by_language:
-                links_group_by_language[prefix] = []
-            links_group_by_language[prefix].append(title)
+            dbname = get_dbname_by_prefix(prefix)
+            if dbname is None:
+                continue  # Skip if there is no wiki for this link
+
+            if dbname not in links_group_by_dbname:
+                links_group_by_dbname[dbname] = []
+            links_group_by_dbname[dbname].append(title)
 
     # Split the qids into batches of 50
     batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
@@ -594,17 +599,17 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         articles = await get_articles_by_qids(batch)
         wikidata_articles.extend(articles)
 
-    for language in links_group_by_language:
-        titles = links_group_by_language[language]
+    for dbname in links_group_by_dbname:
+        titles = links_group_by_dbname[dbname]
         # Split the qids into batches of 50
         batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
         for batch in batches:
-            articles = await get_articles_by_titles(batch, language)
+            articles = await get_articles_by_titles(batch, dbname)
             wikidata_articles.extend(articles)
 
-    wikidataarticles_with_langlinks = [article for article in wikidata_articles if len(article.langlinks) > 0]
+    wikidata_articles_with_langlinks = [article for article in wikidata_articles if len(article.langlinks) > 0]
 
-    return wikidataarticles_with_langlinks
+    return wikidata_articles_with_langlinks
 
 
 async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, PageCollectionMetadata]:
@@ -658,6 +663,36 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
         )
 
     return metadata_by_pages
+
+
+async def get_sitematrix() -> List:
+    endpoint, headers = get_endpoint_and_headers("meta")
+    params = {
+        "action": "sitematrix",
+        "format": "json",
+        "formatversion": "2",
+        "smtype": "language",
+        "smlangprop": "code|site",
+    }
+
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+        sitematrix = data["sitematrix"]
+        del sitematrix["count"]
+        return list(sitematrix.values())
+    except ValueError:
+        return []
+
+
+async def get_interwiki_map() -> List:
+    endpoint, headers = get_endpoint_and_headers("meta")
+    params = {"action": "query", "format": "json", "formatversion": "2", "meta": "siteinfo", "siprop": "interwikimap"}
+
+    try:
+        data = await get(endpoint, params=params, headers=headers)
+        return data["query"]["interwikimap"]
+    except ValueError:
+        return []
 
 
 def get_endpoint_and_headers(source: str) -> Tuple[str, Dict[str, str]]:

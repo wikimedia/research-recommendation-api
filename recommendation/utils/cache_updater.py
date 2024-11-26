@@ -6,7 +6,7 @@ from recommendation.api.translation.models import (
     PageCollectionsList,
     WikiPage,
 )
-from recommendation.cache import get_page_collection_cache
+from recommendation.cache import get_interwiki_map_cache, get_page_collection_cache, get_sitematrix_cache
 from recommendation.external_data import fetcher
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
@@ -83,7 +83,27 @@ async def update_page_collection_cache():
     page_collection_cache.set_page_collections(page_collections_list)
 
 
+async def initialize_interwiki_map_cache():
+    interwiki_map = await fetcher.get_interwiki_map()
+    # log.debug(f"interwiki_map {interwiki_map}")
+
+    interwiki_map_cache = get_interwiki_map_cache()
+    interwiki_map_cache.set_interwiki_map(interwiki_map)
+
+
+async def initialize_sitematrix_cache():
+    sitematrix = await fetcher.get_sitematrix()
+
+    sitematrix_cache = get_sitematrix_cache()
+    sitematrix_cache.set_sitematrix(sitematrix)
+
+
 def start():
     import asyncio
 
-    asyncio.run(update_page_collection_cache())
+    async def initialize_cache():
+        await initialize_interwiki_map_cache()
+        await initialize_sitematrix_cache()
+        await update_page_collection_cache()
+
+    asyncio.run(initialize_cache())
