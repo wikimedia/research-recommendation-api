@@ -236,7 +236,6 @@ def set_headers_with_host_header(configuration, source=""):
 
     Args:
         configuration (Configuration): The configuration object.
-        endpoint_name (str): The name of the endpoint, e.g. "wikipedia" or "pageviews".
         source (str): The source of the data, e.g. "en" or "fr". This parameter defaults to ''
         so that this function can be used for host headers that don't require it.
 
@@ -258,7 +257,6 @@ def get_formatted_endpoint(configuration, source=""):
 
     Args:
         configuration (Configuration): The configuration object.
-        endpoint_name (str): The name of the endpoint.
         source (str): The source of the data, e.g. "en".
         This parameter defaults to '' so that this function can be used for endpoints that don't
         require it e.g the source is not set for LiftWing wikipedia endpoints but it's set
@@ -458,7 +456,7 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     except ValueError:
         return []
     if "error" in data:
-        log.error("Error fetching articles by QIDs: %s", data["error"])
+        log.error("Error fetching articles by titles: %s", data["error"])
         return []
 
     if "entities" in data:
@@ -610,15 +608,15 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
 
     for language in links_group_by_language:
         # Filter out language links that were already retrieve from wikidata
-        initialCount = len(links_group_by_language[language])
+        initial_count = len(links_group_by_language[language])
         titles_from_wikidata = wikidata_articles_links_by_language.get(language, [])
         # Convert titles from wikidata to underscore format
         titles_from_wikidata = [title.replace(" ", "_") for title in titles_from_wikidata]
         titles = list(set(links_group_by_language[language]) - set(titles_from_wikidata))
-        finalCount = len(titles)
-        skipped = initialCount - finalCount
+        final_count = len(titles)
+        skipped = initial_count - final_count
         if skipped > 0:
-            log.debug(f"Skipped {skipped}/{initialCount} links for {language} as they are already in the cache")
+            log.debug(f"Skipped {skipped}/{initial_count} links for {language} as they are already in the cache")
 
         # Split the remaining titles into batches of 50
         batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
