@@ -426,24 +426,23 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     return wikidata_articles
 
 
-async def get_articles_by_titles(titles, dbname) -> List[WikiDataArticle]:
+async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     """
     Get a list of articles by their titles.
 
     Args:
         titles (list): A list of Wikidata titles
-        dbname (str): The dbname of the wiki
+        source (str): The source language
 
     Returns:
         list: A list of articles
     """
     endpoint, headers = get_endpoint_and_headers("wikidata")
-
     params = {
         "action": "wbgetentities",
         "format": "json",
         "props": "sitelinks",
-        "sites": dbname,
+        "sites": get_dbname_by_prefix(source),
         "titles": "|".join(titles),
         "formatversion": 2,
     }
@@ -566,7 +565,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
 
     # Then query each interwiki link to complete the request with langlinks included
     qids = []
-    links_group_by_dbname = {}
+    links_group_by_language = {}
 
     # find all links that are wikidata qids, Check if title is Q followed by a number
     for link in links:
@@ -580,13 +579,9 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             qids.append(qid)
         else:
             # Interwiki links that are not Wikidata QIDs
-            dbname = get_dbname_by_prefix(prefix)
-            if dbname is None:
-                continue  # Skip if there is no wiki for this link
-
-            if dbname not in links_group_by_dbname:
-                links_group_by_dbname[dbname] = []
-            links_group_by_dbname[dbname].append(title)
+            if prefix not in links_group_by_language:
+                links_group_by_language[prefix] = []
+            links_group_by_language[prefix].append(title)
 
     # Split the qids into batches of 50
     batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
@@ -599,12 +594,29 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         articles = await get_articles_by_qids(batch)
         wikidata_articles.extend(articles)
 
-    for dbname in links_group_by_dbname:
-        titles = links_group_by_dbname[dbname]
-        # Split the qids into batches of 50
+    wikidata_articles_links_by_language = {}
+    for wikidata_article in wikidata_articles:
+        for language, title in wikidata_article.langlinks.items():
+            if language not in wikidata_articles_links_by_language:
+                wikidata_articles_links_by_language[language] = []
+            wikidata_articles_links_by_language[language].append(title)
+
+    for language in links_group_by_language:
+        # Filter out language links that were already retrieve from wikidata
+        initialCount = len(links_group_by_language[language])
+        titles_from_wikidata = wikidata_articles_links_by_language.get(language, [])
+        # Convert titles from wikidata to underscore format
+        titles_from_wikidata = [title.replace(" ", "_") for title in titles_from_wikidata]
+        titles = list(set(links_group_by_language[language]) - set(titles_from_wikidata))
+        finalCount = len(titles)
+        skipped = initialCount - finalCount
+        if skipped > 0:
+            log.debug(f"Skipped {skipped}/{initialCount} links for {language} as they are already in the cache")
+
+        # Split the remaining titles into batches of 50
         batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
         for batch in batches:
-            articles = await get_articles_by_titles(batch, dbname)
+            articles = await get_articles_by_titles(batch, language)
             wikidata_articles.extend(articles)
 
     wikidata_articles_with_langlinks = [article for article in wikidata_articles if len(article.langlinks) > 0]
