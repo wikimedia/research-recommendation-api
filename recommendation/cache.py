@@ -50,7 +50,7 @@ class PageCollectionCache(Cache):
     def set_page_collections(self, page_collections_list: PageCollectionsList):
         self.set("page_collections", page_collections_list)
 
-    def get_page_collections(self) -> Set[PageCollection] | None:
+    def get_page_collections(self) -> Set[PageCollection]:
         collection: str = self.get("page_collections")
 
         if collection:
@@ -58,7 +58,7 @@ class PageCollectionCache(Cache):
 
             return model.list
 
-        return None
+        return []
 
 
 class SiteMatrixCache(Cache):
