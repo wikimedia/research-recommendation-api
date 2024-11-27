@@ -438,11 +438,16 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
         list: A list of articles
     """
     endpoint, headers = get_endpoint_and_headers("wikidata")
+    dbname = get_dbname_by_prefix(source)
+    if not dbname:
+        log.error(f"Could not find dbname for wiki prefix {source}")
+        return []
+
     params = {
         "action": "wbgetentities",
         "format": "json",
         "props": "sitelinks",
-        "sites": get_dbname_by_prefix(source),
+        "sites": dbname,
         "titles": "|".join(titles),
         "formatversion": 2,
     }
