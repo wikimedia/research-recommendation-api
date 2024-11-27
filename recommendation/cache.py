@@ -1,7 +1,7 @@
 import json
 import zlib
 from functools import lru_cache
-from typing import Set
+from typing import List, Set
 
 from diskcache import UNKNOWN, Cache, Disk
 
@@ -27,12 +27,13 @@ class JSONDisk(Disk):
 
     def store(self, value, read, key=UNKNOWN):
         if not read:
-            if value.model_dump_json:
+            if hasattr(value, "model_dump_json"):
                 # pydantic model
                 json_bytes = value.model_dump_json().encode("utf-8")
             else:
                 json_bytes = json.dumps(value).encode("utf-8")
             value = zlib.compress(json_bytes, self.compress_level)
+
         return super().store(value, read, key=key)
 
     def fetch(self, mode, filename, value, read):
@@ -60,6 +61,28 @@ class PageCollectionCache(Cache):
         return None
 
 
+class SiteMatrixCache(Cache):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def set_sitematrix(self, sitematrix: List):
+        self.set("sitematrix", sitematrix)
+
+    def get_sitematrix(self) -> List | None:
+        return self.get("sitematrix")
+
+
+class InterWikiMapCache(Cache):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def set_interwiki_map(self, sitematrix: List):
+        self.set("interwiki_map", sitematrix)
+
+    def get_interwiki_map(self) -> List | None:
+        return self.get("interwiki_map")
+
+
 @lru_cache
 def get_page_collection_cache():
     return PageCollectionCache(
@@ -70,4 +93,24 @@ def get_page_collection_cache():
     )
 
 
-__all__ = ["get_page_collection_cache"]
+@lru_cache
+def get_sitematrix_cache():
+    return SiteMatrixCache(
+        disk=JSONDisk,
+        disk_compress_level=6,  # zlib compression level,
+        directory=configuration.CACHE_DIRECTORY,
+        size_limit=1e9,
+    )
+
+
+@lru_cache
+def get_interwiki_map_cache():
+    return InterWikiMapCache(
+        disk=JSONDisk,
+        disk_compress_level=6,  # zlib compression level,
+        directory=configuration.CACHE_DIRECTORY,
+        size_limit=1e9,
+    )
+
+
+__all__ = ["get_page_collection_cache", "get_sitematrix_cache", "get_interwiki_map_cache"]
