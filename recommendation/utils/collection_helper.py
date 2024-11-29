@@ -1,7 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from recommendation.api.translation.models import (
     PageCollection,
+    SectionTranslationRecommendation,
     TranslationRecommendationCandidate,
     WikiDataArticle,
 )
@@ -46,7 +47,7 @@ def create_candidates_for_collection(
 
 
 def reorder_page_collection_recommendations(
-    recommendations: List[TranslationRecommendationCandidate],
+    recommendations: Union[List[TranslationRecommendationCandidate], List[SectionTranslationRecommendation]],
 ) -> List[TranslationRecommendationCandidate]:
     """
     Reorders a list of recommendations such that recommendations from different collections are
@@ -54,7 +55,7 @@ def reorder_page_collection_recommendations(
     ensuring that each collection's recommendations are listed in a round-robin fashion.
 
     Args:
-        recommendations (List[TranslationRecommendationCandidate]):
+        recommendations (Union[List[TranslationRecommendationCandidate], List[SectionTranslationRecommendation]]):
             A list of recommendations.
 
     Returns:
@@ -70,8 +71,8 @@ def reorder_page_collection_recommendations(
         >>> rec3 = TranslationRecommendationCandidate( title="Article 3", collection=collection2 )
         >>> rec4 = TranslationRecommendationCandidate( title="Article 4", collection=collection2 )
         >>> rec5 = TranslationRecommendationCandidate( title="Article 5", collection=collection3 )
-        >>> recommendations = [rec1, rec2, rec3, rec4, rec5]
-        >>> reorder_recommendations(recommendations)
+        >>> test_recommendations = [rec1, rec2, rec3, rec4, rec5]
+        >>> reorder_page_collection_recommendations(test_recommendations)
         [rec1, rec3, rec5, rec2, rec4]
     """
     recommendations_by_collection: Dict[str, List[TranslationRecommendationCandidate]] = {}
@@ -81,7 +82,7 @@ def reorder_page_collection_recommendations(
             recommendations_by_collection[collection_name] = []  # Initialize a list for this collection
         recommendations_by_collection[collection_name].append(recommendation)
 
-    collection_groups: List[TranslationRecommendationCandidate] = recommendations_by_collection.values()
+    collection_groups: List[List[TranslationRecommendationCandidate]] = list(recommendations_by_collection.values())
     max_len = max((len(group) for group in collection_groups), default=0)
 
     # Interleave the recommendations so each one has a different collection

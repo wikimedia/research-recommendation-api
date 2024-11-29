@@ -115,4 +115,7 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
         )
         section_suggestions.append(recommendation)
 
+    if rec_model.collections:
+        section_suggestions = reorder_page_collection_recommendations(section_suggestions)
+
     return section_suggestions
