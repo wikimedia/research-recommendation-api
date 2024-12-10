@@ -60,7 +60,14 @@ def get_collection_recommendations_by_status(source_language, target_language, c
                 wikidata_article = next(article_iterator)
                 candidate_source_article_title = wikidata_article.langlinks.get(source_language)
                 candidate_target_article_title = wikidata_article.langlinks.get(target_language)
-                if candidate_source_article_title and bool(candidate_target_article_title) != missing:
+                already_exists = any(
+                    wikidata_article.wikidata_id == recommendation.wikidata_id for recommendation in recommendations
+                )
+                if (
+                    candidate_source_article_title
+                    and bool(candidate_target_article_title) != missing
+                    and not already_exists
+                ):
                     valid_recommendation_for_collection = TranslationRecommendation(
                         title=candidate_source_article_title,
                         wikidata_id=wikidata_article.wikidata_id,
