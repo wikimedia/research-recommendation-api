@@ -2,14 +2,11 @@ import random
 from typing import List
 
 from recommendation.api.translation.models import (
-    PageCollection,
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
 )
-from recommendation.cache import get_page_collection_cache
 from recommendation.external_data import fetcher
-from recommendation.utils.collection_helper import get_candidates_for_page_collections
 from recommendation.utils.logger import log
 
 
@@ -81,23 +78,3 @@ async def get_candidates_by_search(
             recommendations.append(rec)
 
     return recommendations
-
-
-async def get_collection_candidates(
-    rec_req_model: TranslationRecommendationRequest,
-) -> List[TranslationRecommendationCandidate]:
-    """
-    1. Find page-collection pages marked with the page-collection HTML marker
-    2. Get article candidates for each page-collection page
-    """
-    page_collection_cache = get_page_collection_cache()
-    page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
-
-    if rec_req_model.seed:
-        page_collections = [
-            collection for collection in page_collections if collection.name.casefold() == rec_req_model.seed.casefold()
-        ]
-
-        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source, rec_req_model.target))
-    else:
-        return list(get_candidates_for_page_collections(page_collections, rec_req_model.source, rec_req_model.target))
