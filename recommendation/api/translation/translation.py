@@ -82,6 +82,8 @@ async def get_page_collections(
         event_logger.log_api_request,
         host=request.client.host,
         user_agent=request.headers.get("user-agent"),
+        source=None,
+        target=None,
     )
 
     page_collection_cache = get_page_collection_cache()
