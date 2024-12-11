@@ -2,7 +2,6 @@ from typing import List
 
 from recommendation.api.translation import candidate_finders, filters, pageviews
 from recommendation.api.translation.models import (
-    RankMethodEnum,
     SectionTranslationRecommendation,
     TranslationRecommendation,
     TranslationRecommendationCandidate,
@@ -34,9 +33,6 @@ async def recommend(rec_model: TranslationRecommendationRequest) -> List[Transla
         candidates = await candidate_finders.get_top_pageview_candidates(rec_model)
         missing: List[TranslationRecommendationCandidate] = filters.filter_by_missing(rec_model.target, candidates)
 
-    if not rec_model.collections:
-        missing = sort_recommendations(missing, rec_model.rank_method)
-
     missing = missing[: rec_model.count]
 
     if missing and rec_model.include_pageviews:
@@ -61,9 +57,6 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
     else:
         candidates = await candidate_finders.get_top_pageview_candidates(rec_model)
         present: List[TranslationRecommendationCandidate] = filters.filter_by_present(rec_model.target, candidates)
-
-    if not rec_model.collections:
-        present = sort_recommendations(present, rec_model.rank_method)
 
     candidate_titles = [candidate.title for candidate in present]
 
@@ -92,12 +85,3 @@ async def recommend_sections(rec_model: TranslationRecommendationRequest) -> Lis
         section_suggestions = reorder_page_collection_section_recommendations(section_suggestions)
 
     return section_suggestions
-
-
-def sort_recommendations(recommendations, rank_method):
-    if rank_method == RankMethodEnum.sitelinks:
-        # Sort by langlinks count, from highest to lowest
-        return sorted(recommendations, key=lambda x: x.langlinks_count, reverse=True)
-    else:
-        # Sort by rank, from lowest to highest
-        return sorted(recommendations, key=lambda x: x.rank, reverse=False)

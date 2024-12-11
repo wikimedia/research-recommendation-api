@@ -2,6 +2,7 @@ import random
 from typing import List
 
 from recommendation.api.translation.models import (
+    RankMethodEnum,
     TranslationRecommendation,
     TranslationRecommendationCandidate,
     TranslationRecommendationRequest,
@@ -24,9 +25,6 @@ async def get_top_pageview_candidates(
     """
     articles = await fetcher.get_most_popular_articles(rec_req_model.source, rec_req_model.target)
 
-    # shuffle articles
-    articles = sorted(articles, key=lambda x: random.random())
-
     recommendations = []
 
     for index, article in enumerate(articles):
@@ -41,7 +39,7 @@ async def get_top_pageview_candidates(
             )
             recommendations.append(rec)
 
-    return recommendations
+    return sort_recommendations(recommendations, rec_req_model.rank_method)
 
 
 async def get_candidates_by_search(
@@ -77,4 +75,13 @@ async def get_candidates_by_search(
             )
             recommendations.append(rec)
 
-    return recommendations
+    return sort_recommendations(recommendations, rec_req_model.rank_method)
+
+
+def sort_recommendations(recommendations, rank_method):
+    if rank_method == RankMethodEnum.sitelinks:
+        # Sort by langlinks count, from highest to lowest
+        return sorted(recommendations, key=lambda x: x.langlinks_count, reverse=True)
+    else:
+        # shuffle recommendations
+        return sorted(recommendations, key=lambda x: random.random())
