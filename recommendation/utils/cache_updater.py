@@ -8,7 +8,6 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_interwiki_map_cache, get_page_collection_cache, get_sitematrix_cache
 from recommendation.external_data import fetcher
-from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
 
@@ -56,19 +55,7 @@ async def update_page_collection_cache():
     cached_page_collections: Set[PageCollection] = page_collection_cache.get_page_collections() or set()
     page_collections_list: PageCollectionsList = PageCollectionsList()
 
-    default_collection: PageCollection
-    default_page_collections: Set[PageCollection] = set()
-
-    for default_collection in configuration.DEFAULT_COLLECTIONS:
-        # Fetch page info for all pages in the collection
-        # Revision id of the page is used as cache key
-        await default_collection.update_pages()
-        default_page_collections.add(default_collection)
-
-    # all collections (community-defined and default) updated with the latest information from API
-    live_page_collections: Set[PageCollection] = fetched_page_collections | default_page_collections
-
-    for live_page_collection in live_page_collections:
+    for live_page_collection in fetched_page_collections:
         cached_page_collection = find_page_collection_by_cache_key(
             cached_page_collections, live_page_collection.cache_key
         )
