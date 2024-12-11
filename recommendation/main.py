@@ -27,10 +27,21 @@ from recommendation.utils.logger import log
 
 
 async def periodic_cache_update():
-    await initialize_interwiki_map_cache()
-    await initialize_sitematrix_cache()
+    try:
+        await initialize_interwiki_map_cache()
+    except Exception as e:
+        log.error(f"Failed to initialize interwiki map cache: {e}")
+        return
+    try:
+        await initialize_sitematrix_cache()
+    except Exception as e:
+        log.error(f"Failed to initialize sitematrix cache: {e}")
+        return
     while True:
-        await update_page_collection_cache()
+        try:
+            await update_page_collection_cache()
+        except Exception as e:
+            log.error(f"Failed to update page collection cache: {e}")
         await asyncio.sleep(60 * 60)  # Sleep for 1 hour
 
 
