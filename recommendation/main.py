@@ -25,20 +25,32 @@ from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
 
+def has_lowest_pid():
+    parent_pid = os.getppid()
+    parent_process = psutil.Process(parent_pid)
+    child_processes = parent_process.children()
+    worker_pids = [child.pid for child in child_processes]
+    worker_id = os.getpid()
+    return worker_id == min(worker_pids)
+
+
 async def periodic_cache_update():
     try:
-        await initialize_interwiki_map_cache()
+        if has_lowest_pid():
+            await initialize_interwiki_map_cache()
     except Exception as e:
         log.error(f"Failed to initialize interwiki map cache: {e}")
         return
     try:
-        await initialize_sitematrix_cache()
+        if has_lowest_pid():
+            await initialize_sitematrix_cache()
     except Exception as e:
         log.error(f"Failed to initialize sitematrix cache: {e}")
         return
     while True:
         try:
-            await update_page_collection_cache()
+            if has_lowest_pid():
+                await update_page_collection_cache()
         except Exception as e:
             log.error(f"Failed to update page collection cache: {e}")
         await asyncio.sleep(60 * 60)  # Sleep for 1 hour
@@ -46,36 +58,12 @@ async def periodic_cache_update():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Get the current process's parent process (Gunicorn parent process)
-    parent_pid = os.getppid()
-
     try:
-        # Use psutil to find the parent process
-        parent_process = psutil.Process(parent_pid)
-        # Get all child processes (workers)
-        child_processes = parent_process.children()
-        # Extract the PIDs of the children
-        worker_pids = [child.pid for child in child_processes]
-
-        # Get the PID of the current worker and its index in the list
-        worker_id = os.getpid()
-        worker_index = worker_pids.index(worker_id)
-
-        if worker_index == 0:  # Execute the periodic task in the first worker only
-            log.info(f"Starting up the {configuration.PROJECT_NAME}")
-            cache_updater = asyncio.create_task(periodic_cache_update())
-            yield
-            cache_updater.cancel()
-            log.info("Shutting down the service")
-        else:
-            yield
-    except psutil.NoSuchProcess:
-        log.error("Parent process not found. Worker lifespan setup will be skipped.")
-        yield  # Proceed without periodic updates in this case
-
-    except ValueError as e:
-        log.error(f"Worker ID not found in the list of worker PIDs: {e}")
-        yield  # Proceed even if worker ID is not in the list
+        log.info(f"Starting up the {configuration.PROJECT_NAME}")
+        cache_updater = asyncio.create_task(periodic_cache_update())
+        yield
+        cache_updater.cancel()
+        log.info("Shutting down the service")
 
     except Exception as e:
         log.exception(f"An unexpected error occurred in the lifespan context: {e}")
