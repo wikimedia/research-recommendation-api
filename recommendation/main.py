@@ -13,7 +13,6 @@ from fastapi.exception_handlers import (
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, RedirectResponse
-from fastapi.routing import APIRoute
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from recommendation.api.translation.translation import router as translation_api_router
@@ -81,10 +80,6 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         log.exception(f"An unexpected error occurred in the lifespan context: {e}")
         yield  # Ensure the app doesn't crash due to unhandled exceptions
-
-
-def custom_generate_unique_id(route: APIRoute) -> str:
-    return f"{route.tags[0]}-{route.name}"
 
 
 app = FastAPI(
