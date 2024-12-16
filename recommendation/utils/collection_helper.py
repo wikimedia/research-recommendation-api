@@ -50,10 +50,14 @@ def get_collection_recommendations_by_status(source_language, target_language, c
     active_iterators = cycle(article_iterators)
 
     recommendations = []
+    active_iterator = None
     while article_iterators and len(recommendations) < count:
         try:
             # Get the next iterator and its associated page collection
-            article_iterator, page_collection = next(active_iterators)
+            active_iterator = next(active_iterators)
+            article_iterator = active_iterator[0]
+            page_collection = active_iterator[1]
+
             valid_recommendation_for_collection = None
             while not valid_recommendation_for_collection:
                 # Fetch the next article from the current iterator
@@ -74,14 +78,16 @@ def get_collection_recommendations_by_status(source_language, target_language, c
                         langlinks_count=len(wikidata_article.langlinks),
                         collection=page_collection.get_metadata(target_language),
                     )
+
             recommendations.append(valid_recommendation_for_collection)
+
         except StopIteration:
-            # Remove exhausted iterators
-            iterator_to_remove = next(active_iterators)
-            article_iterators.remove(iterator_to_remove)
+            # Remove exhausted iterator
+            article_iterators.remove(active_iterator)
             active_iterators = cycle(article_iterators)
             if not article_iterators:
                 break
+
     return recommendations
 
 
