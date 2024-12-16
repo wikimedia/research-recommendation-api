@@ -189,26 +189,6 @@ class PageCollection(BaseModel):
         for candidates in results:
             self.articles.update(candidates)
 
-    # used for default collections
-    async def update_pages(self):
-        # This import is here to avoid circular imports
-        from recommendation.external_data import fetcher
-
-        grouped_pages = {}
-
-        for page in self.pages:
-            if page.language not in grouped_pages:
-                grouped_pages[page.language] = []
-            grouped_pages[page.language].append(page.title)
-
-        tasks = [fetcher.get_wiki_page_info(language, titles) for language, titles in grouped_pages.items()]
-
-        results = await asyncio.gather(*tasks)
-        updated_pages = [page for pages_dict in results for page in pages_dict.values()]
-
-        self.pages.clear()
-        self.pages.update(updated_pages)
-
     @computed_field
     @property
     def cache_key(self) -> str:
