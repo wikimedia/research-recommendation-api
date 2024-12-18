@@ -1,3 +1,4 @@
+import random
 from itertools import cycle
 from typing import Dict, List
 
@@ -25,6 +26,18 @@ async def get_collection_section_recommendations(
     )
 
 
+def shuffle_collections(page_collections: List[PageCollection]):
+    """
+    Shuffles in place page collections and their articles to randomize the recommendations.
+
+    Args:
+        page_collections (List[PageCollection]): A list of page collections.
+    """
+    random.shuffle(page_collections)
+    for collection in page_collections:
+        random.shuffle(collection.articles)
+
+
 def get_collection_recommendations_by_status(source_language, target_language, count, collection_name, missing=True):
     page_collection_cache = get_page_collection_cache()
     page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
@@ -43,6 +56,8 @@ def get_collection_recommendations_by_status(source_language, target_language, c
 
     if not active_collections:
         return []  # Exit early if no page collections have articles
+
+    shuffle_collections(active_collections)
 
     # Create iterators for the articles of each page collection, paired with their collection
     article_iterators = [(iter(collection.articles), collection) for collection in active_collections]

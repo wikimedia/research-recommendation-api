@@ -1,7 +1,7 @@
 import json
 import zlib
 from functools import lru_cache
-from typing import List, Set
+from typing import List
 
 from diskcache import UNKNOWN, Cache, Disk
 
@@ -50,7 +50,7 @@ class PageCollectionCache(Cache):
     def set_page_collections(self, page_collections_list: PageCollectionsList):
         self.set("page_collections", page_collections_list)
 
-    def get_page_collections(self) -> Set[PageCollection]:
+    def get_page_collections(self) -> List[PageCollection]:
         collection: str = self.get("page_collections")
 
         if collection:

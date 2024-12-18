@@ -163,7 +163,7 @@ class PageCollection(BaseModel):
         default=set(),
         description="Set of WikiPage objects associated with the page collection",
     )
-    articles: Set[WikiDataArticle] = Field(
+    articles: List[WikiDataArticle] = Field(
         default=set(),
         description="Set of articles that are part of this page collection",
     )
@@ -227,7 +227,7 @@ class PageCollectionResponse(BaseModel):
 
 
 class PageCollectionsList(BaseModel):
-    list: Set[PageCollection] = set()
+    list: List[PageCollection] = []
 
     def add(self, collection: PageCollection):
         self.list.add(collection)
