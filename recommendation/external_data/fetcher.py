@@ -328,58 +328,6 @@ async def get_section_suggestions(source: str, target: str, candidate_titles: Li
     return successful_results[:count]
 
 
-async def get_wiki_page_info(language: str, titles: List[str]) -> Dict[str, WikiPage]:
-    """
-    Get the page information for given titles.
-
-    Args:
-        language (str): The language code of the Wikipedia instance.
-        titles (list): A list of page titles.
-
-    Returns:
-        dict: A dictionary of page titles and their corresponding WikiPage objects.
-    """
-    endpoint, headers = get_endpoint_and_headers(language)
-
-    batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
-    pages = []
-    for batch in batches:
-        params = {
-            "action": "query",
-            "format": "json",
-            "formatversion": 2,
-            "prop": "info|pageprops",
-            "titles": "|".join(batch),
-        }
-
-        try:
-            data = await get(endpoint, params=params, headers=headers)
-        except ValueError:
-            return {}
-
-        if not data.get("query", {}).get("pages"):
-            continue
-
-        pages.extend(data.get("query", {}).get("pages", []))
-
-    if len(pages) == 0:
-        log.error("Could not fetch page information the given titles")
-        return {}
-
-    return {
-        page.get("title"): WikiPage(
-            id=page.get("pageid"),
-            title=page.get("title"),
-            revision_id=page.get("lastrevid"),
-            language=page.get("pagelanguage"),
-            namespace=page.get("ns"),
-            wiki=language,
-            qid=page.get("pageprops", {}).get("wikibase_item"),
-        )
-        for page in pages
-    }
-
-
 async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
     """
     Get a list of articles by their Wikidata IDs.
