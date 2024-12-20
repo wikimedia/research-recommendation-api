@@ -149,10 +149,6 @@ class SectionTranslationRecommendation(BaseModel):
     )
 
 
-class TranslationRecommendationCandidate(TranslationRecommendation):
-    languages: Optional[list[str]] = None
-
-
 class PageCollection(BaseModel):
     name: str = Field(
         ...,

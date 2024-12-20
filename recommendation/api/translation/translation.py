@@ -1,8 +1,10 @@
+import inspect
 import time
 from typing import Annotated, List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 
+from recommendation.api.translation import pageviews
 from recommendation.api.translation.models import (
     PageCollection,
     PageCollectionResponse,
@@ -11,9 +13,9 @@ from recommendation.api.translation.models import (
     TranslationRecommendationRequest,
 )
 from recommendation.cache import get_page_collection_cache
+from recommendation.recommenders.recommender_factory import RecommenderFactory
 from recommendation.utils import event_logger
 from recommendation.utils.logger import log
-from recommendation.utils.recommendation_helper import recommend, recommend_sections
 
 router = APIRouter()
 
@@ -36,7 +38,18 @@ async def get_translation_recommendations(
         **rec_model.model_dump(),
     )
 
-    recs = await recommend(rec_model)
+    # Initialize the factory with the request model
+    factory = RecommenderFactory(rec_model)
+    recommender = factory.get_recommender()
+    if inspect.iscoroutinefunction(recommender.recommend):
+        recs = await recommender.recommend()  # Await async method
+    else:
+        recs = recommender.recommend()  # Call sync method directly
+
+    if recs and rec_model.include_pageviews:
+        log.debug("Getting pageviews for %d recommendations", len(recs))
+        recs = await pageviews.set_pageview_data(rec_model.source, recs)
+
     t2 = time.time()
     log.info("Request processed in %f seconds", t2 - t1)
     return recs
@@ -60,7 +73,12 @@ async def get_section_translation_recommendations(
         **rec_model.model_dump(),
     )
 
-    section_suggestions = await recommend_sections(rec_model)
+    factory = RecommenderFactory(rec_model)
+    recommender = factory.get_recommender()
+    if inspect.iscoroutinefunction(recommender.recommend_sections):
+        section_suggestions = await recommender.recommend_sections()  # Await async method
+    else:
+        section_suggestions = recommender.recommend_sections()  # Call sync method directly
 
     t2 = time.time()
     log.info("Request processed in %f seconds", t2 - t1)
