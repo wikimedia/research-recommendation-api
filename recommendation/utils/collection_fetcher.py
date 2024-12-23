@@ -127,23 +127,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
     batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
 
     # Create a list to store the results
-    wikidata_articles = []
-
-    # Iterate over each batch of qids
-    semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)  # Limit to 10 concurrent tasks
-
-    async def fetch_with_semaphore(batch):
-        async with semaphore:
-            return await get_articles_by_qids(batch)
-
-    tasks = [asyncio.create_task(fetch_with_semaphore(batch)) for batch in batches]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-
-    for result in results:
-        if isinstance(result, Exception):
-            log.error(f"Error fetching articles by QIDs: {result}")
-        else:
-            wikidata_articles.extend(result)
+    wikidata_articles = await process_batches(batches, get_articles_by_qids)
 
     wikidata_articles_links_by_language = {}
     for wikidata_article in wikidata_articles:
@@ -166,24 +150,33 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
 
         # Split the remaining titles into batches of 50
         batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
-        semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)  # Limit to 10 concurrent tasks
 
-        async def fetch_with_semaphore(batch):
-            async with semaphore:  # noqa: B023
-                return await get_articles_by_titles(batch, language)  # noqa: B023
-
-        tasks = [asyncio.create_task(fetch_with_semaphore(batch)) for batch in batches]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        for result in results:
-            if isinstance(result, Exception):
-                log.error(f"Error fetching articles by titles: {result}")
-            else:
-                wikidata_articles.extend(result)
+        articles_by_titles = await process_batches(batches, get_articles_by_titles, language)
+        wikidata_articles.extend(articles_by_titles)
 
     wikidata_articles_with_langlinks = [article for article in wikidata_articles if len(article.langlinks) > 0]
 
     return wikidata_articles_with_langlinks
+
+
+async def fetch_with_semaphore(batch, fetch_function, *args):
+    semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)  # Limit to 10 concurrent tasks
+    async with semaphore:
+        return await fetch_function(batch, *args)
+
+
+async def process_batches(batches, fetch_function, *args) -> List[WikiDataArticle]:
+    tasks = [asyncio.create_task(fetch_with_semaphore(batch, fetch_function, *args)) for batch in batches]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    articles = []
+    for result in results:
+        if isinstance(result, Exception):
+            log.error(f"Error fetching articles: {result}")
+        else:
+            articles.extend(result)
+
+    return articles
 
 
 async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, PageCollectionMetadata]:
