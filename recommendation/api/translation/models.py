@@ -177,9 +177,9 @@ class PageCollection(BaseModel):
 
     async def fetch_articles(self):
         # This import is here to avoid circular imports
-        from recommendation.external_data import fetcher
+        from recommendation.utils.collection_fetcher import get_candidates_in_collection_page
 
-        tasks = [fetcher.get_candidates_in_collection_page(page) for page in self.pages]
+        tasks = [get_candidates_in_collection_page(page) for page in self.pages]
         results = await asyncio.gather(*tasks)
 
         for candidates in results:

@@ -8,6 +8,7 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_interwiki_map_cache, get_page_collection_cache, get_sitematrix_cache
 from recommendation.external_data import fetcher
+from recommendation.utils.collection_fetcher import get_collection_metadata_by_pages, get_collection_pages
 from recommendation.utils.logger import log
 
 
@@ -43,10 +44,10 @@ async def update_page_collection_cache():
     Update the page-collection cache with the page-collection pages and their articles
     """
     # Get all pages containing a page-collection marker
-    collection_pages: List[WikiPage] = await fetcher.get_collection_pages()
+    collection_pages: List[WikiPage] = await get_collection_pages()
 
     # Get metadata for each page
-    collection_metadata_by_pages = await fetcher.get_collection_metadata_by_pages(collection_pages)
+    collection_metadata_by_pages = await get_collection_metadata_by_pages(collection_pages)
 
     fetched_page_collections: Set[PageCollection] = combine_collection_pages_and_metadata(
         collection_pages, collection_metadata_by_pages
