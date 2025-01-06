@@ -230,4 +230,4 @@ class PageCollectionsList(BaseModel):
     list: List[PageCollection] = []
 
     def add(self, collection: PageCollection):
-        self.list.add(collection)
+        self.list.append(collection)
