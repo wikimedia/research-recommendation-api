@@ -243,7 +243,6 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
         list: A list of articles
     """
     endpoint, headers = get_endpoint_and_headers("wikidata")
-
     params = {
         "action": "wbgetentities",
         "format": "json",
@@ -251,29 +250,7 @@ async def get_articles_by_qids(qids) -> List[WikiDataArticle]:
         "ids": "|".join(qids),
         "formatversion": 2,
     }
-
-    wikidata_articles: List[WikiDataArticle] = []
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        return []
-    if "error" in data:
-        log.error("Error fetching articles by QIDs: %s", data["error"])
-        return []
-
-    if "entities" in data:
-        for qid in data["entities"]:
-            sitelinks = data["entities"][qid].get("sitelinks", {})
-            interlanguage_links = {}
-            for site, info in sitelinks.items():
-                if site.endswith("wiki"):
-                    language = site.split("wiki")[0]
-                    title = info["title"]
-                    interlanguage_links[language] = title
-
-            wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
-
-    return wikidata_articles
+    return await fetch_articles(params, endpoint, headers)
 
 
 async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
@@ -301,26 +278,37 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
         "titles": "|".join(titles),
         "formatversion": 2,
     }
+    return await fetch_articles(params, endpoint, headers)
 
+
+async def fetch_articles(params: dict, endpoint: str, headers: dict) -> List[WikiDataArticle]:
+    """
+    Fetch articles from the Wikidata API based on given parameters.
+
+    Args:
+        params (dict): Parameters for the API request
+        endpoint (str): The API endpoint URL
+        headers (dict): The API headers
+
+    Returns:
+        list: A list of WikiDataArticle instances
+    """
     wikidata_articles: List[WikiDataArticle] = []
     try:
         data = await get(endpoint, params=params, headers=headers)
     except ValueError:
         return []
+
     if "error" in data:
-        log.error("Error fetching articles by titles: %s", data["error"])
+        log.error("Error fetching articles: %s", data["error"])
         return []
 
     if "entities" in data:
-        for qid in data["entities"]:
-            sitelinks = data["entities"][qid].get("sitelinks", {})
-            interlanguage_links = {}
-            for site, info in sitelinks.items():
-                if site.endswith("wiki"):
-                    language = site.split("wiki")[0]
-                    title = info["title"]
-                    interlanguage_links[language] = title
-
+        for qid, entity in data["entities"].items():
+            sitelinks = entity.get("sitelinks", {})
+            interlanguage_links = {
+                site.split("wiki")[0]: info["title"] for site, info in sitelinks.items() if site.endswith("wiki")
+            }
             wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
 
     return wikidata_articles
