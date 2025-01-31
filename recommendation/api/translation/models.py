@@ -160,7 +160,7 @@ class PageCollection(BaseModel):
         description="Set of WikiPage objects associated with the page collection",
     )
     articles: List[WikiDataArticle] = Field(
-        default=set(),
+        default=[],
         description="Set of articles that are part of this page collection",
     )
     description: Optional[str] = Field(
@@ -183,7 +183,7 @@ class PageCollection(BaseModel):
         results = await asyncio.gather(*tasks)
 
         for candidates in results:
-            self.articles.update(candidates)
+            self.articles.extend(candidates)
 
     @computed_field
     @property
