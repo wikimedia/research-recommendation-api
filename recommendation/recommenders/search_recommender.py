@@ -6,6 +6,7 @@ from recommendation.api.translation.models import (
     TranslationRecommendationRequest,
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
+from recommendation.utils.language_pairs import is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
@@ -74,7 +75,7 @@ class SearchRecommender:
         for page in results:
             if "disambiguation" not in page.get("pageprops", {}):
                 languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
-                if missing == (self.target_language not in languages):
+                if missing == is_missing_in_target_language(self.target_language, languages):
                     rec = TranslationRecommendation(
                         title=page["title"],
                         rank=page["index"],

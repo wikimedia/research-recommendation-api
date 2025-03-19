@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import httpx
 
@@ -71,3 +72,25 @@ def get_language_pairs():
 
 def get_language_to_domain_mapping():
     return _language_to_domain_mapping
+
+
+def is_missing_in_target_language(language, available_languages: List[str]) -> bool:
+    """
+    Check if a language is missing both as is and after domain mapping in a list of available languages.
+
+    This function verifies whether a given language is missing from the available languages list
+    in two ways:
+    1. Direct match - checking if the language exists in available_languages
+    2. Domain mapping match - checking if any available language maps to the given language
+
+    Args:
+        language (str): The language code to check for
+        available_languages (List[str]): List of available language codes
+
+    Returns:
+        bool: True if the language is missing (both directly and after mapping), False otherwise
+    """
+    language_to_domain_mapping = get_language_to_domain_mapping()
+    return language not in available_languages and language not in [
+        language_to_domain_mapping.get(language, language) for language in available_languages
+    ]

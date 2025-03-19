@@ -8,6 +8,7 @@ from recommendation.api.translation.models import (
 from recommendation.external_data.fetcher import get, get_formatted_endpoint, set_headers_with_host_header
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.configuration import configuration
+from recommendation.utils.language_pairs import is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
@@ -54,7 +55,7 @@ class PopularRecommender(BaseRecommender):
         for index, article in enumerate(articles):
             if "disambiguation" not in article.get("pageprops", {}):
                 languages = [langlink["lang"] for langlink in article.get("langlinks", [])]
-                if missing == (self.target_language not in languages):
+                if missing == is_missing_in_target_language(self.target_language, languages):
                     rec = TranslationRecommendation(
                         title=article.get("title"),
                         rank=index,
