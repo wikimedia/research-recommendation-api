@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict, List, Optional, Set
 
 from recommendation.api.translation.models import (
@@ -47,7 +48,25 @@ async def update_page_collection_cache():
     collection_pages: List[WikiPage] = await get_collection_pages()
 
     # Get metadata for each page
-    collection_metadata_by_pages = await get_collection_metadata_by_pages(collection_pages)
+    batch_size = 20
+    collection_metadata_by_pages: Dict[str, PageCollectionMetadata] = {}
+    semaphore = asyncio.Semaphore(10)  # Limit to 10 concurrent tasks
+
+    async def limited_task(task):
+        async with semaphore:
+            return await task
+
+    tasks = [
+        limited_task(get_collection_metadata_by_pages(collection_pages[i : i + batch_size]))
+        for i in range(0, len(collection_pages), batch_size)
+    ]
+    try:
+        batch_results = await asyncio.gather(*tasks)
+        for result in batch_results:
+            collection_metadata_by_pages.update(result)
+    except Exception as e:
+        log.error(f"Failed to fetch page collection metadata: {e}")
+        return
 
     fetched_page_collections: Set[PageCollection] = combine_collection_pages_and_metadata(
         collection_pages, collection_metadata_by_pages
@@ -69,6 +88,7 @@ async def update_page_collection_cache():
             page_collections_list.add(live_page_collection)
 
     page_collection_cache.set_page_collections(page_collections_list)
+    log.info("Page collection cache updated successfully.")
 
 
 async def initialize_interwiki_map_cache():
