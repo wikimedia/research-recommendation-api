@@ -66,6 +66,13 @@ class TranslationRecommendationRequest(BaseModel):
         default=None,
         examples=["Fashion", "Music+South Africa", "Southern Africa|Western Africa", "Women+Space"],
     )
+    country: Optional[str] = Field(
+        description="""Article country for personalized recommendations.
+                See https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
+                for supported country codes (A-3 format).""",
+        default=None,
+        examples=["blz", "can+usa", "prk|kor"],
+    )
     collections: bool = Field(
         description="Whether to fetch recommendations from page collections",
         default=False,

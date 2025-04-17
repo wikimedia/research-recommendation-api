@@ -69,6 +69,19 @@ async def test_recommendations_mostpopular(client: AsyncClient):
 
 
 @pytest.mark.anyio
+async def test_recommendations_country(client: AsyncClient):
+    response = await client.get("/v1/translation?source=en&target=es&country=ita")
+    assert response.status_code == 200
+    results = response.json()
+    assert len(results) > 0
+    assert results[0].get("title")
+    assert results[0].get("pageviews") == 0
+    assert results[0].get("wikidata_id")
+    assert results[0].get("rank") > 0
+    assert results[0].get("langlinks_count") >= 0
+
+
+@pytest.mark.anyio
 async def test_recommendations_with_pageviews(client: AsyncClient):
     response = await client.get(
         "/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike&include_pageviews=True"

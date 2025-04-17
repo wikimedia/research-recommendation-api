@@ -9,6 +9,7 @@ from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.utils.language_pairs import is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
+from recommendation.utils.search_query_builder import build_search_query
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
 
 
@@ -18,6 +19,7 @@ class SearchRecommender:
         self.target_language = request_model.target
         self.seed = request_model.seed
         self.topic = request_model.topic
+        self.country = request_model.country
         self.count = request_model.count
         self.rank_method = request_model.rank_method
         self.include_pageviews = request_model.include_pageviews
@@ -29,13 +31,14 @@ class SearchRecommender:
             "target_language": self.target_language,
             "seed": self.seed,
             "topic": self.topic,
+            "country": self.country,
             "count": self.count,
             "rank_method": self.rank_method,
             "include_pageviews": self.include_pageviews,
         }
 
     def match(self) -> bool:
-        return bool(self.topic or self.seed)
+        return bool(self.topic or self.seed or self.country)
 
     async def recommend(self) -> List[TranslationRecommendation]:
         """
@@ -147,11 +150,15 @@ class SearchRecommender:
         if self.topic:
             params["gsrsort"] = "random"
             topics = self.topic.replace(" ", "-").lower()
-            topic_and_items = topics.split("+")
-            search_expression = "+".join(
-                [f"articletopic:{topic_and_item.strip()}" for topic_and_item in topic_and_items]
-            )
-            gsrsearch_query.append(search_expression)
+            search_expression = build_search_query("articletopic", topics)
+            if search_expression:
+                gsrsearch_query.append(search_expression)
+
+        if self.country:
+            params["gsrsort"] = "random"
+            search_expression = build_search_query("articlecountry", self.country)
+            if search_expression:
+                gsrsearch_query.append(search_expression)
 
         if self.seed:
             # morelike is a "greedy" keyword, meaning that it cannot be combined with other search queries.
