@@ -6,7 +6,7 @@ from recommendation.api.translation.models import (
     TranslationRecommendationRequest,
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
-from recommendation.utils.language_pairs import is_missing_in_target_language
+from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.search_query_builder import build_search_query
@@ -129,13 +129,15 @@ class SearchRecommender:
         """
         endpoint, headers = get_endpoint_and_headers(self.source_language)
 
+        # langlinks filtering uses the domain code when it differs from the language code
+        lllang = get_language_to_domain_mapping().get(self.target_language, self.target_language)
         params = {
             "action": "query",
             "format": "json",
             "formatversion": 2,
             "prop": "langlinks|langlinkscount|pageprops",
             "lllimit": "max",
-            "lllang": self.target_language,
+            "lllang": lllang,
             "generator": "search",
             "gsrprop": "wordcount",
             "gsrnamespace": 0,
