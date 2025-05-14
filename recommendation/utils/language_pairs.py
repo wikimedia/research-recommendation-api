@@ -17,14 +17,12 @@ _language_pairs = None
 _language_to_domain_mapping = {
     "be-x-old": "be-tarask",
     "bho": "bh",
-    "en-simple": "simple",
     "gsw": "als",
     "lzh": "zh-classical",
     "nan": "zh-min-nan",
     "nb": "no",
     "rup": "roa-rup",
     "sgs": "bat-smg",
-    "simple": "simple",
     "vro": "fiu-vro",
     "yue": "zh-yue",
 }
