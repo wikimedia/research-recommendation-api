@@ -6,6 +6,7 @@ from recommendation.api.translation.models import (
     TranslationRecommendationRequest,
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
+from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
@@ -13,7 +14,7 @@ from recommendation.utils.search_query_builder import build_search_query
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
 
 
-class SearchRecommender:
+class SearchRecommender(BaseRecommender):
     def __init__(self, request_model: TranslationRecommendationRequest):
         self.source_language = request_model.source
         self.target_language = request_model.target
