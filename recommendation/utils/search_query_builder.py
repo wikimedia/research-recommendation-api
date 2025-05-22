@@ -20,4 +20,4 @@ def build_search_query(prefix, value) -> str:
         return ""
 
     groups = value.split("+")
-    return "+".join([f"{prefix}:{group.strip()}" for group in groups])
+    return " ".join([f"{prefix}:{group.strip()}" for group in groups])

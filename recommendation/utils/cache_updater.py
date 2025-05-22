@@ -28,7 +28,10 @@ def combine_collection_pages_and_metadata(
 ) -> Set[PageCollection]:
     page_collections: Set[PageCollection] = set()
     for page in pages:
-        metadata = metadata_by_pages[page.id]
+        metadata = metadata_by_pages.get(page.id)
+        if not metadata:
+            log.warning(f"Collection metadata not found for: {page.title}")
+            continue
         page_collection = PageCollection(
             name=metadata.name,
             pages={page},

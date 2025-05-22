@@ -30,7 +30,7 @@ async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all
 
         # We are encoding the params outside httpx since the httpx encoding
         # is very strict and does not allow some characters in the params
-        encoded_params = urllib.parse.urlencode(queryparams, safe=":+|") if params else ""
+        encoded_params = urllib.parse.urlencode(queryparams, safe=":|") if params else ""
 
         url = f"{api_url}?{encoded_params}" if encoded_params else api_url
         log.debug(f"GET: {url}, {headers}")

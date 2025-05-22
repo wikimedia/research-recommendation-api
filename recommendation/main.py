@@ -51,8 +51,8 @@ async def periodic_cache_update():
         try:
             if has_lowest_pid():
                 await update_page_collection_cache()
-        except Exception as e:
-            log.error(f"Failed to update page collection cache: {e}")
+        except Exception:
+            log.error(f"Failed to update page collection cache: {traceback.format_exc()}")
         await asyncio.sleep(60 * 60)  # Sleep for 1 hour
 
 
