@@ -76,7 +76,7 @@ async def fetch_section_suggestions(source: str, target: str, candidate_titles: 
         for task in asyncio.as_completed(tasks):
             try:
                 result = await task
-                if result:
+                if result and result.get("sections", {}).get("missing"):
                     results.append(result)
             except Exception as e:
                 log.error(f"Error fetching section suggestions: {e}")

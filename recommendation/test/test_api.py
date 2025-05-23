@@ -63,7 +63,7 @@ async def test_recommendations_mostpopular(client: AsyncClient):
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
-    assert results[0].get("wikidata_id")
+    assert results[0].get("wikidata_id"), results[0].get("title")
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
 
@@ -76,7 +76,7 @@ async def test_recommendations_country(client: AsyncClient):
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
-    assert results[0].get("wikidata_id")
+    assert results[0].get("wikidata_id"), results[0].get("title")
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
 
@@ -109,4 +109,4 @@ async def test_section_recommendations(client: AsyncClient):
     assert results[0].get("source_sections")
     assert results[0].get("target_sections")
     assert results[0].get("present")
-    assert results[0].get("missing")
+    assert results[0].get("missing"), results[0].get("source_title")
