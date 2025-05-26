@@ -60,7 +60,6 @@ class PopularRecommender(BaseRecommender):
                         title=article.get("title"),
                         rank=index,
                         langlinks_count=int(article.get("langlinkscount", 0)),
-                        languages=languages,
                         wikidata_id=article.get("pageprops", {}).get("wikibase_item"),
                     )
                     recommendations.append(rec)
