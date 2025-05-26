@@ -50,6 +50,9 @@ lint.select = [
     "B", # flake8-bugbear
 ]
 
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "session"
+
 [tool.poetry.scripts]
 start = "recommendation.main:start"
 update-cache = "recommendation.utils.cache_updater:start"
