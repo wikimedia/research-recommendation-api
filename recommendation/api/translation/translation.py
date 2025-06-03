@@ -1,6 +1,7 @@
 import inspect
 import time
-from typing import Annotated, List
+from collections import defaultdict
+from typing import Annotated, Dict, List
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 
@@ -111,3 +112,47 @@ async def get_page_collections(
     log.info("Request processed in %f seconds", t2 - t1)
 
     return page_collections
+
+
+@router.get("/translation/page-collection-groups", response_model=Dict[str, List[PageCollectionResponse]])
+async def get_page_collection_groups(
+    request: Request,
+    background_tasks: BackgroundTasks,
+) -> Dict[str, List[PageCollectionResponse]]:
+    """
+    Retrieves page collections from cache, groups them based on their name and returns the groups
+    """
+    t1 = time.time()
+
+    background_tasks.add_task(
+        event_logger.log_api_request,
+        host=request.client.host,
+        user_agent=request.headers.get("user-agent"),
+        source=None,
+        target=None,
+    )
+
+    page_collection_cache = get_page_collection_cache()
+    page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
+
+    grouped = defaultdict(list)
+    ungrouped = []
+
+    for collection in page_collections:
+        if "/" in collection.name:
+            prefix = collection.name.split("/", 1)[0]
+            grouped[prefix].append(collection)
+        else:
+            ungrouped.append(collection)
+
+    # Step 2: Filter groups that have at least 2 items
+    final_groups = {
+        group_name: group_collections for group_name, group_collections in grouped.items() if len(group_collections) > 1
+    }
+
+    grouped = {**final_groups, "ungrouped": ungrouped}
+
+    t2 = time.time()
+    log.info("Request processed in %f seconds", t2 - t1)
+
+    return grouped
