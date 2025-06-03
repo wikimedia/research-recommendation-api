@@ -59,6 +59,7 @@ class CollectionRecommender(BaseRecommender):
                 collection
                 for collection in page_collections
                 if collection.name.casefold() == self.collection_name.casefold()
+                or collection.name.casefold().startswith(f"{self.collection_name.casefold()}/")
             ]
 
         active_collections = []
