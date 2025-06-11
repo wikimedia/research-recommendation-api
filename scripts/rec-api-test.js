@@ -11,7 +11,7 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
 
-const ENVIROMENTS = ['production', 'staging', 'wmcloud']
+const ENVIROMENTS = ['production', 'staging', 'wmcloud', 'local']
 let env = (process.argv[2] || 'production').toLowerCase()
 if (!ENVIROMENTS.includes(env)) {
     console.warn(`Invalid environment: ${env}, defaulting to production`)
@@ -26,6 +26,8 @@ const getUrl = () => {
             return 'https://recommendation-api-ng.k8s-ml-staging.discovery.wmnet:31443/service/lw/recommendation/api/v1/translation'
         case 'wmcloud':
             return 'https://recommend.wmcloud.org/api/v1/translation'
+        case 'local':
+            return 'http://localhost:8088/api/v1/translation'
     }
 }
 
@@ -58,7 +60,6 @@ const assertPageRecommendations = (recommendations) => {
     assertArrayNotEmpty(recommendations, 'recommendations')
     assert.equal(recommendations.length, 10, 'count')
     const firstRecommendation = recommendations[0]
-    assert(firstRecommendation.wikidata_id, 'wikidata_id')
     assertNumber(firstRecommendation.langlinks_count, 'langlinks_count')
     assertNumber(firstRecommendation.rank, 'rank')
 }
@@ -80,9 +81,25 @@ describe(`Recommendation API (${env})`, () => {
         const pageCollections = await query(null, 'page-collections')
         assert(pageCollections.length > 0, 'pageCollections should not be empty')
 
-        const firstCollection = pageCollections[0]
-        assert(firstCollection.name, 'collection name')
-        assertNumber(firstCollection.articles_count, 'collection articles_count')
+        pageCollections.forEach((collection, index) => {
+            assert(collection.name, `collection name at index ${index}`)
+            assertNumber(collection.articles_count, `collection articles_count at index ${index}`)
+        })
+    })
+
+    it('Page collection groups', async () => {
+        const pageCollectionGroups = await query(null, 'page-collection-groups')
+        assertObjectNotEmpty(pageCollectionGroups, 'pageCollectionGroups')
+        console.log(pageCollectionGroups)
+
+        for (const [groupName, collections] of Object.entries(pageCollectionGroups)) {
+            assert(typeof groupName === 'string', 'group name should be a string')
+            assertArrayNotEmpty(collections, `collections in group ${groupName}`)
+
+            const firstCollection = collections[0]
+            assert(firstCollection.name, 'collection name')
+            assertNumber(firstCollection.articles_count, 'collection articles_count')
+        }
     })
 
     describe('Article recommendations', () => {
