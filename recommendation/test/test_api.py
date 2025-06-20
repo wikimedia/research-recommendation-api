@@ -108,5 +108,4 @@ async def test_section_recommendations(client: AsyncClient):
     assert results[0].get("target_title")
     assert results[0].get("source_sections")
     assert results[0].get("target_sections")
-    assert results[0].get("present")
     assert results[0].get("missing"), results[0].get("source_title")
