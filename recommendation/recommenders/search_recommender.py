@@ -84,7 +84,6 @@ class SearchRecommender(BaseRecommender):
                         title=page["title"],
                         rank=page["index"],
                         langlinks_count=int(page.get("langlinkscount", 0)),
-                        languages=languages,
                         wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
                     )
                     recommendations.append(rec)
