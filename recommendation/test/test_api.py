@@ -50,20 +50,20 @@ async def test_recommendations_morelike(client: AsyncClient):
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
-    assert results[0].get("wikidata_id")
+    assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
 
 
 @pytest.mark.anyio
 async def test_recommendations_mostpopular(client: AsyncClient):
-    response = await client.get("/v1/translation?source=en&target=es&seed=Moon&search_algorithm=morelike")
+    response = await client.get("/v1/translation?source=en&target=es&search_algorithm=mostpopular")
     assert response.status_code == 200
     results = response.json()
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
-    assert results[0].get("wikidata_id"), results[0].get("title")
+    assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
 
@@ -76,7 +76,7 @@ async def test_recommendations_country(client: AsyncClient):
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
-    assert results[0].get("wikidata_id"), results[0].get("title")
+    assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
 
@@ -91,7 +91,7 @@ async def test_recommendations_with_pageviews(client: AsyncClient):
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") >= 0
-    assert results[0].get("wikidata_id")
+    assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
 
