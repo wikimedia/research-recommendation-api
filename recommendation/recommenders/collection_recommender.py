@@ -106,6 +106,8 @@ class CollectionRecommender(BaseRecommender):
                             title=candidate_source_article_title,
                             wikidata_id=wikidata_article.wikidata_id,
                             langlinks_count=len(wikidata_article.langlinks),
+                            size=None,  # Collections don't have size data available
+                            difficulty=None,  # Collections don't have difficulty data available
                             collection=page_collection.get_metadata(self.target_language),
                         )
 

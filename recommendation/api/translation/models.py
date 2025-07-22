@@ -42,6 +42,12 @@ class RankMethodEnum(str, Enum):
     sitelinks = "sitelinks"
 
 
+class DifficultyEnum(str, Enum):
+    easy = "easy"
+    medium = "medium"
+    hard = "hard"
+
+
 class TranslationRecommendationRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=False)
     source: str = Field(
@@ -89,6 +95,11 @@ class TranslationRecommendationRequest(BaseModel):
         description="rank_method",
         default=RankMethodEnum.default,
     )
+    difficulty: Optional[DifficultyEnum] = Field(
+        description="Article difficulty level based on size",
+        default=None,
+        examples=["easy", "medium", "hard"],
+    )
 
     @model_validator(mode="after")
     def verify_languages(self) -> Self:
@@ -122,10 +133,23 @@ class TranslationRecommendation(BaseModel):
     wikidata_id: Optional[str] = None
     rank: Optional[float] = 0.0
     langlinks_count: Optional[int] = 0
+    size: Optional[int] = Field(default=None, description="Article size in bytes")
+    difficulty: Optional[DifficultyEnum] = Field(
+        description="Article difficulty level based on size",
+        default=None,
+    )
     collection: Optional[PageCollectionMetadata] = None
 
     def __hash__(self) -> int:
         return hash(self.wikidata_id)
+
+
+class SourceSectionInfo(BaseModel):
+    size: int = Field(description="Section size in bytes")
+    difficulty: Optional[DifficultyEnum] = Field(
+        description="Section difficulty level based on size",
+        default=None,
+    )
 
 
 class SectionTranslationRecommendation(BaseModel):
@@ -148,6 +172,10 @@ class SectionTranslationRecommendation(BaseModel):
     missing: Dict[str, str] = Field(
         description="""Dict that maps the source section titles that are missing from the target article,
                     to the corresponding proposed target section titles of the section translation recommendation""",
+    )
+    source_section_info: Optional[Dict[str, SourceSectionInfo]] = Field(
+        description="Map of section titles to their detailed information including size and difficulty",
+        default=None,
     )
     collection: Optional[PageCollectionMetadata] = Field(
         description="""An optional PageCollectionMetadata DTO, used for section translation recommendations

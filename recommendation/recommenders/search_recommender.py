@@ -1,12 +1,17 @@
 from typing import Dict, List
 
 from recommendation.api.translation.models import (
+    DifficultyEnum,
     SectionTranslationRecommendation,
     TranslationRecommendation,
     TranslationRecommendationRequest,
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.recommenders.base_recommender import BaseRecommender
+from recommendation.utils.difficulty_helper import (
+    get_article_difficulty,
+    matches_article_difficulty_filter,
+)
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
@@ -24,6 +29,7 @@ class SearchRecommender(BaseRecommender):
         self.count = request_model.count
         self.rank_method = request_model.rank_method
         self.include_pageviews = request_model.include_pageviews
+        self.difficulty = request_model.difficulty
 
     @property
     def debug_request_params(self) -> Dict:
@@ -36,6 +42,7 @@ class SearchRecommender(BaseRecommender):
             "count": self.count,
             "rank_method": self.rank_method,
             "include_pageviews": self.include_pageviews,
+            "difficulty": self.difficulty,
         }
 
     def match(self) -> bool:
@@ -48,7 +55,7 @@ class SearchRecommender(BaseRecommender):
         Returns:
             List[TranslationRecommendation]: A list of translation recommendations.
         """
-        recommendations = await self.get_recommendations_by_status(missing=True)
+        recommendations = await self.get_recommendations_by_status(True, self.difficulty)
         recommendations = recommendations[: self.count]
 
         return recommendations
@@ -61,13 +68,15 @@ class SearchRecommender(BaseRecommender):
         Returns:
             List[SectionTranslationRecommendation]: A list of section translation recommendations.
         """
-        recommendations = await self.get_recommendations_by_status(missing=False)
+        recommendations = await self.get_recommendations_by_status(False, None)
 
         return await get_section_suggestions_for_recommendations(
-            recommendations, self.source_language, self.target_language, self.count
+            recommendations, self.source_language, self.target_language, self.count, self.difficulty
         )
 
-    async def get_recommendations_by_status(self, missing=True) -> List[TranslationRecommendation]:
+    async def get_recommendations_by_status(
+        self, missing: bool, difficulty: DifficultyEnum
+    ) -> List[TranslationRecommendation]:
         results = await self.search_wiki()
 
         if len(results) == 0:
@@ -79,11 +88,17 @@ class SearchRecommender(BaseRecommender):
         for page in results:
             if "disambiguation" not in page.get("pageprops", {}):
                 languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
-                if missing == is_missing_in_target_language(self.target_language, languages):
+                size = page.get("size", 0)
+
+                if missing == is_missing_in_target_language(
+                    self.target_language, languages
+                ) and matches_article_difficulty_filter(size, difficulty):
                     rec = TranslationRecommendation(
                         title=page["title"],
                         rank=page["index"],
                         langlinks_count=int(page.get("langlinkscount", 0)),
+                        size=size,
+                        difficulty=get_article_difficulty(size),
                         wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
                     )
                     recommendations.append(rec)
@@ -139,7 +154,7 @@ class SearchRecommender(BaseRecommender):
             "lllimit": "max",
             "lllang": lllang,
             "generator": "search",
-            "gsrprop": "wordcount",
+            "gsrprop": "size",
             "gsrnamespace": 0,
             "gsrwhat": "text",
             "gsrlimit": "max",

@@ -1,6 +1,7 @@
 from typing import List
 
 from recommendation.api.translation.models import (
+    DifficultyEnum,
     SectionTranslationRecommendation,
     TranslationRecommendation,
     TranslationRecommendationRequest,
@@ -8,6 +9,7 @@ from recommendation.api.translation.models import (
 from recommendation.external_data.fetcher import get, get_formatted_endpoint, set_headers_with_host_header
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.configuration import configuration
+from recommendation.utils.difficulty_helper import get_article_difficulty, matches_article_difficulty_filter
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
@@ -20,30 +22,33 @@ class PopularRecommender(BaseRecommender):
         self.target_language = request_model.target
         self.count = request_model.count
         self.rank_method = request_model.rank_method
+        self.difficulty = request_model.difficulty
 
     def match(self) -> bool:
         return True
 
     async def recommend(self) -> List[TranslationRecommendation]:
-        recommendations = await self.get_recommendations_by_status(missing=True)
+        recommendations = await self.get_recommendations_by_status(True, self.difficulty)
         recommendations = recommendations[: self.count]
-
         return recommendations
 
     async def recommend_sections(self) -> List[SectionTranslationRecommendation]:
-        recommendations = await self.get_recommendations_by_status(missing=False)
+        recommendations = await self.get_recommendations_by_status(False, None)
 
         return await get_section_suggestions_for_recommendations(
-            recommendations, self.source_language, self.target_language, self.count
+            recommendations, self.source_language, self.target_language, self.count, self.difficulty
         )
 
-    async def get_recommendations_by_status(self, missing=True) -> List[TranslationRecommendation]:
+    async def get_recommendations_by_status(
+        self, missing: bool, difficulty: DifficultyEnum
+    ) -> List[TranslationRecommendation]:
         """
         Retrieves the top pageview candidates based on the given source and target language, and the
         given present/missing status - as indicated by the "missing" argument.
 
         Args:
             missing: A boolean indicating whether we need to return present or missing recommendations.
+            difficulty: A DifficultyEnum to filter recommendations by article difficulty.
 
         Returns:
             list: A list of TranslationRecommendation objects representing the top pageview candidates.
@@ -55,11 +60,17 @@ class PopularRecommender(BaseRecommender):
         for index, article in enumerate(articles):
             if "disambiguation" not in article.get("pageprops", {}):
                 languages = [langlink["lang"] for langlink in article.get("langlinks", [])]
-                if missing == is_missing_in_target_language(self.target_language, languages):
+                size = article.get("length", 0)
+
+                if missing == is_missing_in_target_language(
+                    self.target_language, languages
+                ) and matches_article_difficulty_filter(size, difficulty):
                     rec = TranslationRecommendation(
                         title=article.get("title"),
                         rank=index,
                         langlinks_count=int(article.get("langlinkscount", 0)),
+                        size=size,
+                        difficulty=get_article_difficulty(size),
                         wikidata_id=article.get("pageprops", {}).get("wikibase_item"),
                     )
                     recommendations.append(rec)
@@ -71,11 +82,12 @@ class PopularRecommender(BaseRecommender):
         headers = set_headers_with_host_header(configuration.WIKIPEDIA_API_HEADER, self.source_language)
         # langlinks filtering uses the domain code when it differs from the language code
         lllang = get_language_to_domain_mapping().get(self.target_language, self.target_language)
+
         params = {
             "action": "query",
             "format": "json",
             "formatversion": 2,
-            "prop": "langlinks|langlinkscount|pageprops",
+            "prop": "langlinks|langlinkscount|pageprops|info",
             "lllimit": "max",
             "lllang": lllang,
             "generator": "mostviewed",

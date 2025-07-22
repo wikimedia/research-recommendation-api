@@ -53,6 +53,7 @@ async def test_recommendations_morelike(client: AsyncClient):
     assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
+    assert results[0].get("size") > 0
 
 
 @pytest.mark.anyio
@@ -66,6 +67,7 @@ async def test_recommendations_mostpopular(client: AsyncClient):
     assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
+    assert results[0].get("size") > 0
 
 
 @pytest.mark.anyio
@@ -79,6 +81,7 @@ async def test_recommendations_country(client: AsyncClient):
     assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
+    assert results[0].get("size") > 0
 
 
 @pytest.mark.anyio
@@ -94,6 +97,7 @@ async def test_recommendations_with_pageviews(client: AsyncClient):
     assert "wikidata_id" in results[0]  # Field should exist, even if None
     assert results[0].get("rank") > 0
     assert results[0].get("langlinks_count") >= 0
+    assert results[0].get("size") > 0
 
 
 @pytest.mark.anyio
