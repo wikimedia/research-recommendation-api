@@ -3,7 +3,7 @@ import re
 from typing import Dict, List
 
 from recommendation.api.translation.models import PageCollectionMetadata, WikiDataArticle, WikiPage
-from recommendation.external_data.fetcher import get, get_endpoint_and_headers
+from recommendation.external_data.fetcher import get, get_endpoint_and_headers, get_wikipedia_article_sizes
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 from recommendation.utils.sitematrix_helper import get_dbname_by_prefix
@@ -311,4 +311,34 @@ async def fetch_articles(params: dict, endpoint: str, headers: dict) -> List[Wik
             }
             wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
 
+    # Fetch English Wikipedia article sizes
+    await populate_article_sizes(wikidata_articles, "en")
+
     return wikidata_articles
+
+
+async def populate_article_sizes(wikidata_articles: List[WikiDataArticle], language: str) -> None:
+    """
+    Helper function to populate Wikipedia article sizes for WikiDataArticle instances.
+
+    Args:
+        wikidata_articles: List of WikiDataArticle instances to populate with sizes
+        language: Language code to fetch sizes for (e.g., "en", "es", "fr")
+    """
+    titles = []
+    article_to_title = {}
+
+    for article in wikidata_articles:
+        if language in article.langlinks:
+            title = article.langlinks[language]
+            titles.append(title)
+            article_to_title[title] = article
+
+    if titles:
+        try:
+            sizes = await get_wikipedia_article_sizes(language, titles)
+            for title, size in sizes.items():
+                if title in article_to_title:
+                    article_to_title[title].sizes[language] = size
+        except Exception as e:
+            log.warning(f"Failed to fetch {language} Wikipedia article sizes: {e}")

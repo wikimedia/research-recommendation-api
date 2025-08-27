@@ -27,6 +27,7 @@ class WikiPage(BaseModel):
 class WikiDataArticle(BaseModel):
     wikidata_id: str
     langlinks: Dict[str, str]
+    sizes: Dict[str, int] = Field(default_factory=dict, description="Article sizes by language code in bytes")
 
     def __hash__(self) -> int:
         return hash(self.wikidata_id)

@@ -1,3 +1,4 @@
+import asyncio
 import urllib.parse
 from typing import Dict, List, Tuple
 
@@ -146,6 +147,64 @@ async def get_interwiki_map() -> List:
         return data["query"]["interwikimap"]
     except ValueError:
         return []
+
+
+async def get_wikipedia_article_sizes(language: str, titles: List[str]) -> Dict[str, int]:
+    """
+    Fetch article sizes from Wikipedia API for a list of titles.
+
+    Args:
+        language (str): Language code (e.g., "en", "es", "fr")
+        titles (List[str]): List of article titles
+
+    Returns:
+        Dict[str, int]: Mapping of article titles to their sizes in bytes
+    """
+    if not titles:
+        return {}
+
+    endpoint, headers = get_endpoint_and_headers(language)
+
+    # Wikipedia API can handle up to 50 titles per request
+    batch_size = 50
+
+    async def fetch_batch_sizes(batch_titles: List[str]) -> Dict[str, int]:
+        params = {
+            "action": "query",
+            "format": "json",
+            "formatversion": "2",
+            "prop": "info",
+            "titles": "|".join(batch_titles),
+        }
+
+        try:
+            data = await get(endpoint, params=params, headers=headers)
+            batch_sizes = {}
+            if "query" in data and "pages" in data["query"]:
+                for page in data["query"]["pages"]:
+                    if "length" in page and "title" in page:
+                        batch_sizes[page["title"]] = page["length"]
+            return batch_sizes
+        except ValueError:
+            log.error(f"Failed to fetch article sizes for language {language}, batch: {batch_titles}")
+            return {}
+
+    # Create batches and tasks
+    batches = [titles[i : i + batch_size] for i in range(0, len(titles), batch_size)]
+    batch_tasks = [fetch_batch_sizes(batch) for batch in batches]
+
+    # Execute all batches concurrently
+    batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+
+    # Merge results
+    all_sizes = {}
+    for result in batch_results:
+        if isinstance(result, dict):
+            all_sizes.update(result)
+        elif isinstance(result, Exception):
+            log.error(f"Error fetching article sizes batch: {result}")
+
+    return all_sizes
 
 
 def get_endpoint_and_headers(source: str) -> Tuple[str, Dict[str, str]]:
