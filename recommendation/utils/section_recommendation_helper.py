@@ -1,33 +1,15 @@
 import asyncio
 import urllib.parse
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from recommendation.api.translation.models import (
-    DifficultyEnum,
     SectionTranslationRecommendation,
-    SourceSectionInfo,
     TranslationRecommendation,
 )
 from recommendation.external_data.fetcher import get, set_headers_with_host_header
 from recommendation.utils.configuration import configuration
-from recommendation.utils.difficulty_helper import get_section_difficulty, matches_section_difficulty_filter
 from recommendation.utils.logger import log
-
-
-def get_source_section_infos(data) -> Dict[str, SourceSectionInfo]:
-    # Extract section sizes if available
-    source_section_sizes = data.get("sourceSectionSizes", {})
-    # Use source sections as the basis for creating section info
-    source_sections = data.get("sourceSections", [])
-
-    source_section_info = {}
-    for section_title in source_sections:
-        if section_title in source_section_sizes:
-            section_size = source_section_sizes[section_title]
-            section_difficulty = get_section_difficulty(section_size)
-            source_section_info[section_title] = SourceSectionInfo(size=section_size, difficulty=section_difficulty)
-
-    return source_section_info
+from recommendation.utils.size_helper import matches_section_size_filter
 
 
 async def get_section_suggestions_for_recommendations(
@@ -35,22 +17,23 @@ async def get_section_suggestions_for_recommendations(
     source_language: str,
     target_language: str,
     count,
-    difficulty: Optional[DifficultyEnum] = None,
+    min_size: Optional[int] = None,
+    max_size: Optional[int] = None,
 ) -> List[SectionTranslationRecommendation]:
     title_to_collection_map = {recommendation.title: recommendation.collection for recommendation in recommendations}
     titles = list(title_to_collection_map.keys())
 
     def is_suggestion_valid(my_result):
         my_data = my_result["sections"]
-        source_section_info = get_source_section_infos(my_data)
-        if difficulty:
+        source_section_sizes = my_data.get("sourceSectionSizes", {})
+        if min_size is not None or max_size is not None:
             missing_sections = my_data.get("missing", {})
             missing_section_sizes = {
-                section: source_section_info[section].size
+                section: source_section_sizes[section]
                 for section in missing_sections.keys()
-                if section in source_section_info
+                if section in source_section_sizes
             }
-            if not matches_section_difficulty_filter(missing_section_sizes, difficulty):
+            if not matches_section_size_filter(missing_section_sizes, min_size, max_size):
                 return False
 
         return my_result and my_result.get("sections", {}).get("missing")
@@ -60,7 +43,7 @@ async def get_section_suggestions_for_recommendations(
 
     for result in results:
         data = result["sections"]
-        source_section_info = get_source_section_infos(data)
+        source_section_sizes = data.get("sourceSectionSizes", {})
 
         recommendation = SectionTranslationRecommendation(
             source_title=data["sourceTitle"],
@@ -69,7 +52,7 @@ async def get_section_suggestions_for_recommendations(
             target_sections=data["targetSections"],
             present=data["present"],
             missing=data["missing"],
-            source_section_info=source_section_info,
+            source_section_sizes=source_section_sizes,
             collection=title_to_collection_map[data["sourceTitle"]],
         )
         section_suggestions.append(recommendation)

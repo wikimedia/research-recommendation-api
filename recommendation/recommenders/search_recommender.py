@@ -1,22 +1,18 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from recommendation.api.translation.models import (
-    DifficultyEnum,
     SectionTranslationRecommendation,
     TranslationRecommendation,
     TranslationRecommendationRequest,
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.recommenders.base_recommender import BaseRecommender
-from recommendation.utils.difficulty_helper import (
-    get_article_difficulty,
-    matches_article_difficulty_filter,
-)
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.search_query_builder import build_search_query
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
+from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class SearchRecommender(BaseRecommender):
@@ -29,7 +25,8 @@ class SearchRecommender(BaseRecommender):
         self.count = request_model.count
         self.rank_method = request_model.rank_method
         self.include_pageviews = request_model.include_pageviews
-        self.difficulty = request_model.difficulty
+        self.min_size = request_model.min_size
+        self.max_size = request_model.max_size
 
     @property
     def debug_request_params(self) -> Dict:
@@ -42,7 +39,8 @@ class SearchRecommender(BaseRecommender):
             "count": self.count,
             "rank_method": self.rank_method,
             "include_pageviews": self.include_pageviews,
-            "difficulty": self.difficulty,
+            "min_size": self.min_size,
+            "max_size": self.max_size,
         }
 
     def match(self) -> bool:
@@ -55,7 +53,7 @@ class SearchRecommender(BaseRecommender):
         Returns:
             List[TranslationRecommendation]: A list of translation recommendations.
         """
-        recommendations = await self.get_recommendations_by_status(True, self.difficulty)
+        recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
 
         return recommendations
@@ -68,14 +66,14 @@ class SearchRecommender(BaseRecommender):
         Returns:
             List[SectionTranslationRecommendation]: A list of section translation recommendations.
         """
-        recommendations = await self.get_recommendations_by_status(False, None)
+        recommendations = await self.get_recommendations_by_status(False, None, None)
 
         return await get_section_suggestions_for_recommendations(
-            recommendations, self.source_language, self.target_language, self.count, self.difficulty
+            recommendations, self.source_language, self.target_language, self.count, self.min_size, self.max_size
         )
 
     async def get_recommendations_by_status(
-        self, missing: bool, difficulty: DifficultyEnum
+        self, missing: bool, min_size: Optional[int], max_size: Optional[int]
     ) -> List[TranslationRecommendation]:
         results = await self.search_wiki()
 
@@ -92,13 +90,12 @@ class SearchRecommender(BaseRecommender):
 
                 if missing == is_missing_in_target_language(
                     self.target_language, languages
-                ) and matches_article_difficulty_filter(size, difficulty):
+                ) and matches_article_size_filter(size, min_size, max_size):
                     rec = TranslationRecommendation(
                         title=page["title"],
                         rank=page["index"],
                         langlinks_count=int(page.get("langlinkscount", 0)),
                         size=size,
-                        difficulty=get_article_difficulty(size),
                         wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
                     )
                     recommendations.append(rec)

@@ -1,7 +1,6 @@
-from typing import List
+from typing import List, Optional
 
 from recommendation.api.translation.models import (
-    DifficultyEnum,
     SectionTranslationRecommendation,
     TranslationRecommendation,
     TranslationRecommendationRequest,
@@ -9,11 +8,11 @@ from recommendation.api.translation.models import (
 from recommendation.external_data.fetcher import get, get_formatted_endpoint, set_headers_with_host_header
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.configuration import configuration
-from recommendation.utils.difficulty_helper import get_article_difficulty, matches_article_difficulty_filter
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
+from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class PopularRecommender(BaseRecommender):
@@ -22,25 +21,26 @@ class PopularRecommender(BaseRecommender):
         self.target_language = request_model.target
         self.count = request_model.count
         self.rank_method = request_model.rank_method
-        self.difficulty = request_model.difficulty
+        self.min_size = request_model.min_size
+        self.max_size = request_model.max_size
 
     def match(self) -> bool:
         return True
 
     async def recommend(self) -> List[TranslationRecommendation]:
-        recommendations = await self.get_recommendations_by_status(True, self.difficulty)
+        recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
         return recommendations
 
     async def recommend_sections(self) -> List[SectionTranslationRecommendation]:
-        recommendations = await self.get_recommendations_by_status(False, None)
+        recommendations = await self.get_recommendations_by_status(False, None, None)
 
         return await get_section_suggestions_for_recommendations(
-            recommendations, self.source_language, self.target_language, self.count, self.difficulty
+            recommendations, self.source_language, self.target_language, self.count, self.min_size, self.max_size
         )
 
     async def get_recommendations_by_status(
-        self, missing: bool, difficulty: DifficultyEnum
+        self, missing: bool, min_size: Optional[int], max_size: Optional[int]
     ) -> List[TranslationRecommendation]:
         """
         Retrieves the top pageview candidates based on the given source and target language, and the
@@ -48,7 +48,8 @@ class PopularRecommender(BaseRecommender):
 
         Args:
             missing: A boolean indicating whether we need to return present or missing recommendations.
-            difficulty: A DifficultyEnum to filter recommendations by article difficulty.
+            min_size: Minimum size in bytes to filter recommendations.
+            max_size: Maximum size in bytes to filter recommendations.
 
         Returns:
             list: A list of TranslationRecommendation objects representing the top pageview candidates.
@@ -64,13 +65,12 @@ class PopularRecommender(BaseRecommender):
 
                 if missing == is_missing_in_target_language(
                     self.target_language, languages
-                ) and matches_article_difficulty_filter(size, difficulty):
+                ) and matches_article_size_filter(size, min_size, max_size):
                     rec = TranslationRecommendation(
                         title=article.get("title"),
                         rank=index,
                         langlinks_count=int(article.get("langlinkscount", 0)),
                         size=size,
-                        difficulty=get_article_difficulty(size),
                         wikidata_id=article.get("pageprops", {}).get("wikibase_item"),
                     )
                     recommendations.append(rec)

@@ -34,15 +34,5 @@ class Settings(BaseSettings):
     CACHE_DIRECTORY: str = ".cache"
     DEBUG: bool = False
 
-    # Article difficulty thresholds (in bytes)
-    ARTICLE_EASY_THRESHOLD: int = 5000  # 5 KB - below this is stub, above is easy
-    ARTICLE_MEDIUM_THRESHOLD: int = 25000  # 25 KB - above this is medium difficulty
-    ARTICLE_HARD_THRESHOLD: int = 75000  # 75 KB - above this is hard difficulty
-
-    # Section difficulty thresholds (in bytes)
-    SECTION_EASY_THRESHOLD: int = 1000  # 1 KB - below this is stub, above is easy
-    SECTION_MEDIUM_THRESHOLD: int = 3000  # 3 KB - above this is medium difficulty
-    SECTION_HARD_THRESHOLD: int = 10000  # 10 KB - above this is hard difficulty
-
 
 configuration = Settings()
