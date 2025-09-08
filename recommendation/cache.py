@@ -83,6 +83,26 @@ class InterWikiMapCache(Cache):
         return self.get("interwiki_map")
 
 
+class AppendixTitlesCache(Cache):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def add_appendix_titles_for_language(self, lang: str, section_titles: List[str]) -> None:
+        """
+        Store appendix section titles for a given language.
+        """
+        appendix_map = self.get("appendix_titles") or {}
+        appendix_map[lang] = section_titles
+        self.set("appendix_titles", appendix_map)
+
+    def get_appendix_titles_for_language(self, lang: str) -> List[str]:
+        """
+        Retrieve appendix section titles for a given language.
+        """
+        appendix_map = self.get("appendix_titles") or {}
+        return appendix_map.get(lang, [])
+
+
 @lru_cache
 def get_page_collection_cache():
     return PageCollectionCache(
@@ -113,4 +133,35 @@ def get_interwiki_map_cache():
     )
 
 
-__all__ = ["get_page_collection_cache", "get_sitematrix_cache", "get_interwiki_map_cache"]
+@lru_cache
+def get_appendix_titles_cache():
+    cache = AppendixTitlesCache(
+        disk=JSONDisk,
+        disk_compress_level=6,
+        directory=configuration.CACHE_DIRECTORY,
+        size_limit=1e9,
+    )
+
+    # Pre-populate English appendix titles if not already present
+    if not cache.get_appendix_titles_for_language("en"):
+        cache.add_appendix_titles_for_language(
+            "en",
+            [
+                "Works",
+                "Publications",
+                "Bibliography",
+                "Discography",
+                "Filmography",
+                "See also",
+                "Notes",
+                "Citations",
+                "References",
+                "Further reading",
+                "External links",
+            ],
+        )
+
+    return cache
+
+
+__all__ = ["get_page_collection_cache", "get_sitematrix_cache", "get_interwiki_map_cache", "get_appendix_titles_cache"]

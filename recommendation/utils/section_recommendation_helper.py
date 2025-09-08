@@ -6,7 +6,8 @@ from recommendation.api.translation.models import (
     SectionTranslationRecommendation,
     TranslationRecommendation,
 )
-from recommendation.external_data.fetcher import get, set_headers_with_host_header
+from recommendation.cache import get_appendix_titles_cache
+from recommendation.external_data.fetcher import fetch_appendix_section_titles, get, set_headers_with_host_header
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 from recommendation.utils.size_helper import matches_section_size_filter
@@ -22,21 +23,31 @@ async def get_section_suggestions_for_recommendations(
 ) -> List[SectionTranslationRecommendation]:
     title_to_collection_map = {recommendation.title: recommendation.collection for recommendation in recommendations}
     titles = list(title_to_collection_map.keys())
+    appendix_titles_cache = get_appendix_titles_cache()
+    source_appendix_titles = appendix_titles_cache.get_appendix_titles_for_language(source_language)
+    if not source_appendix_titles:
+        english_appendix_titles = appendix_titles_cache.get_appendix_titles_for_language("en")
+        source_appendix_titles = await fetch_appendix_section_titles(source_language, english_appendix_titles)
+        appendix_titles_cache.add_appendix_titles_for_language(source_language, source_appendix_titles)
 
     def is_suggestion_valid(my_result):
+        if not (my_result and my_result.get("sections", {}).get("missing")):
+            return False
+
         my_data = my_result["sections"]
+        missing_source_sections = my_data["missing"].keys()
+        not_appendix_missing = [title for title in missing_source_sections if title not in source_appendix_titles]
         source_section_sizes = my_data.get("sourceSectionSizes", {})
         if min_size is not None or max_size is not None:
-            missing_sections = my_data.get("missing", {})
             missing_section_sizes = {
                 section: source_section_sizes[section]
-                for section in missing_sections.keys()
+                for section in not_appendix_missing
                 if section in source_section_sizes
             }
             if not matches_section_size_filter(missing_section_sizes, min_size, max_size):
                 return False
 
-        return my_result and my_result.get("sections", {}).get("missing")
+        return not_appendix_missing
 
     results = await fetch_section_suggestions(source_language, target_language, titles, count, is_suggestion_valid)
     section_suggestions: List[SectionTranslationRecommendation] = []

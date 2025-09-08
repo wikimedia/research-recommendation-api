@@ -149,6 +149,27 @@ async def get_interwiki_map() -> List:
         return []
 
 
+async def fetch_appendix_section_titles(language: str, english_appendix: List[str]) -> List[str]:
+    """
+    Fetch appendix section titles in the given language.
+    """
+    title_query_params = "|".join(urllib.parse.quote(title) for title in english_appendix)
+
+    cxserver_path = f"v2/suggest/sections/titles/en/{language}?titles={title_query_params}"
+    cxserver_url = f"{configuration.CXSERVER_URL}{cxserver_path}"
+    headers = set_headers_with_host_header(configuration.CXSERVER_HEADER)
+
+    try:
+        response = await get(cxserver_url, headers=headers)
+        response.raise_for_status()
+
+        data = response.json()
+        return [item for values in data.values() for item in values]
+
+    except ValueError:
+        return []
+
+
 async def get_wikipedia_article_sizes(language: str, titles: List[str]) -> Dict[str, int]:
     """
     Fetch article sizes from Wikipedia API for a list of titles.
