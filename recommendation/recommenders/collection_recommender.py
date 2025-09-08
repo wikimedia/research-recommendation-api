@@ -10,6 +10,7 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
+from recommendation.utils.lead_section_size_helper import add_lead_section_sizes_to_recommendations
 from recommendation.utils.logger import log
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
 from recommendation.utils.size_helper import matches_article_size_filter
@@ -28,8 +29,12 @@ class CollectionRecommender(BaseRecommender):
     def match(self) -> bool:
         return self.collections
 
-    def recommend(self) -> List[TranslationRecommendation]:
-        return self.get_recommendations_by_status(missing=True, min_size=self.min_size, max_size=self.max_size)
+    async def recommend(self) -> List[TranslationRecommendation]:
+        recommendations = self.get_recommendations_by_status(
+            missing=True, min_size=self.min_size, max_size=self.max_size
+        )
+
+        return await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
     async def recommend_sections(
         self,

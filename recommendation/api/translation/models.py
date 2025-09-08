@@ -134,6 +134,7 @@ class TranslationRecommendation(BaseModel):
     rank: Optional[float] = 0.0
     langlinks_count: Optional[int] = 0
     size: Optional[int] = Field(default=None, description="Article size in bytes")
+    lead_section_size: Optional[int] = Field(default=None, description="Lead section size in bytes")
     collection: Optional[PageCollectionMetadata] = None
 
     def __hash__(self) -> int:

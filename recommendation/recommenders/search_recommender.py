@@ -8,6 +8,7 @@ from recommendation.api.translation.models import (
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
+from recommendation.utils.lead_section_size_helper import add_lead_section_sizes_to_recommendations
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.search_query_builder import build_search_query
@@ -56,7 +57,7 @@ class SearchRecommender(BaseRecommender):
         recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
 
-        return recommendations
+        return await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
     async def recommend_sections(self) -> List[SectionTranslationRecommendation]:
         """
