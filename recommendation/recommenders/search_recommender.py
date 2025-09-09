@@ -8,12 +8,15 @@ from recommendation.api.translation.models import (
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
-from recommendation.utils.lead_section_size_helper import add_lead_section_sizes_to_recommendations
+from recommendation.utils.lead_section_size_helper import (
+    add_lead_section_sizes_to_recommendations,
+    get_limited_lead_section_sizes,
+)
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import sort_recommendations
 from recommendation.utils.search_query_builder import build_search_query
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter
+from recommendation.utils.size_helper import matches_article_size_filter, matches_section_size_filter
 
 
 class SearchRecommender(BaseRecommender):
@@ -28,6 +31,7 @@ class SearchRecommender(BaseRecommender):
         self.include_pageviews = request_model.include_pageviews
         self.min_size = request_model.min_size
         self.max_size = request_model.max_size
+        self.lead_section = request_model.lead_section
 
     @property
     def debug_request_params(self) -> Dict:
@@ -42,6 +46,7 @@ class SearchRecommender(BaseRecommender):
             "include_pageviews": self.include_pageviews,
             "min_size": self.min_size,
             "max_size": self.max_size,
+            "lead_section": self.lead_section,
         }
 
     def match(self) -> bool:
@@ -57,7 +62,10 @@ class SearchRecommender(BaseRecommender):
         recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
 
-        return await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
+        if not self.lead_section:
+            recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
+
+        return recommendations
 
     async def recommend_sections(self) -> List[SectionTranslationRecommendation]:
         """
@@ -82,24 +90,55 @@ class SearchRecommender(BaseRecommender):
             log.debug(f"Recommendation request {self.debug_request_params} does not map to an article")
             return []
 
+        # Store initial index as rank, because the index can change after filtering
+        # start=1, so that the rank begins at 1
+        for index, page in enumerate(results, start=1):
+            page["rank"] = index
+
+        # Filter out articles with "disambiguation" page prop
+        results = [page for page in results if "disambiguation" not in page.get("pageprops", {})]
+
+        # Filter out based on "missing" status
+        results = [
+            page
+            for page in results
+            if missing
+            == is_missing_in_target_language(
+                self.target_language, [langlink["lang"] for langlink in page.get("langlinks", [])]
+            )
+        ]
+
+        # Filter by size
+        if not self.lead_section:
+            results = [page for page in results if matches_article_size_filter(page.get("size", 0), min_size, max_size)]
+        else:
+
+            def filter_by_lead_section_size(lead_section_size: Dict[str, int]) -> bool:
+                return matches_section_size_filter(lead_section_size, min_size, max_size)
+
+            lead_section_sizes = await get_limited_lead_section_sizes(
+                results, self.source_language, self.count, filter_by_lead_section_size
+            )
+            flat_lead_section_sizes = {
+                list(size_info.keys())[0]: list(size_info.values())[0] for size_info in lead_section_sizes
+            }
+            results = [
+                {**page, "lead_section_size": flat_lead_section_sizes[page.get("title")]}
+                for page in results
+                if page.get("title") in flat_lead_section_sizes
+            ]
+
         recommendations = []
-
         for page in results:
-            if "disambiguation" not in page.get("pageprops", {}):
-                languages = [langlink["lang"] for langlink in page.get("langlinks", [])]
-                size = page.get("size", 0)
-
-                if missing == is_missing_in_target_language(
-                    self.target_language, languages
-                ) and matches_article_size_filter(size, min_size, max_size):
-                    rec = TranslationRecommendation(
-                        title=page["title"],
-                        rank=page["index"],
-                        langlinks_count=int(page.get("langlinkscount", 0)),
-                        size=size,
-                        wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
-                    )
-                    recommendations.append(rec)
+            rec = TranslationRecommendation(
+                title=page["title"],
+                rank=page.get("rank", page["index"]),
+                langlinks_count=int(page.get("langlinkscount", 0)),
+                size=page.get("size", 0),
+                lead_section_size=page.get("lead_section_size", None),
+                wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
+            )
+            recommendations.append(rec)
 
         return sort_recommendations(recommendations, self.rank_method)
 

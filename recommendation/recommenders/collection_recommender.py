@@ -10,10 +10,13 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
-from recommendation.utils.lead_section_size_helper import add_lead_section_sizes_to_recommendations
+from recommendation.utils.lead_section_size_helper import (
+    add_lead_section_sizes_to_recommendations,
+    get_limited_lead_section_sizes,
+)
 from recommendation.utils.logger import log
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter
+from recommendation.utils.size_helper import matches_article_size_filter, matches_section_size_filter
 
 
 class CollectionRecommender(BaseRecommender):
@@ -25,21 +28,25 @@ class CollectionRecommender(BaseRecommender):
         self.count = request_model.count
         self.min_size = request_model.min_size
         self.max_size = request_model.max_size
+        self.lead_section = request_model.lead_section
 
     def match(self) -> bool:
         return self.collections
 
     async def recommend(self) -> List[TranslationRecommendation]:
-        recommendations = self.get_recommendations_by_status(
+        recommendations = await self.get_recommendations_by_status(
             missing=True, min_size=self.min_size, max_size=self.max_size
         )
 
-        return await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
+        if not self.lead_section:
+            recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
+
+        return recommendations
 
     async def recommend_sections(
         self,
     ) -> List[SectionTranslationRecommendation]:
-        recommendations = self.get_recommendations_by_status(missing=False, min_size=None, max_size=None)
+        recommendations = await self.get_recommendations_by_status(missing=False, min_size=None, max_size=None)
         recommendations = await get_section_suggestions_for_recommendations(
             recommendations, self.source_language, self.target_language, self.count, self.min_size, self.max_size
         )
@@ -58,7 +65,7 @@ class CollectionRecommender(BaseRecommender):
         for collection in page_collections:
             random.shuffle(collection.articles)
 
-    def get_recommendations_by_status(self, missing=True, min_size=None, max_size=None):  # noqa: C901
+    async def get_recommendations_by_status(self, missing=True, min_size=None, max_size=None):  # noqa: C901
         page_collection_cache = get_page_collection_cache()
         page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
 
@@ -135,6 +142,31 @@ class CollectionRecommender(BaseRecommender):
                 active_iterators = cycle(article_iterators)
                 if not article_iterators:
                     break
+
+        # Apply lead section filtering if requested
+        if self.lead_section and (min_size is not None or max_size is not None):
+
+            def filter_by_lead_section_size(lead_section_size: Dict[str, int]) -> bool:
+                return matches_section_size_filter(lead_section_size, min_size, max_size)
+
+            # Convert recommendations to the format expected by get_limited_lead_section_sizes
+            articles = [{"title": rec.title} for rec in recommendations]
+
+            lead_section_sizes = await get_limited_lead_section_sizes(
+                articles, self.source_language, len(recommendations), filter_by_lead_section_size
+            )
+            flat_lead_section_sizes = {
+                list(size_info.keys())[0]: list(size_info.values())[0] for size_info in lead_section_sizes
+            }
+
+            # Filter recommendations to only those with matching lead section sizes
+            filtered_recommendations = []
+            for rec in recommendations:
+                if rec.title in flat_lead_section_sizes:
+                    rec.lead_section_size = flat_lead_section_sizes[rec.title]
+                    filtered_recommendations.append(rec)
+
+            recommendations = filtered_recommendations
 
         return recommendations
 

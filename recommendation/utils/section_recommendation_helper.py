@@ -88,6 +88,7 @@ async def fetch_section_suggestions(
         candidate_titles (List[str]): List of article titles, for which this method will
         try to fetch suggestions for sections to translate.
         count (int): Number of articles for which section suggestions will be fetched.
+        is_suggestion_valid_callback: callback that validates a section suggestion
 
     Returns:
         List: A list of Dicts, containing the section suggestions for each article,

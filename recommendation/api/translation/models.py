@@ -78,6 +78,10 @@ class TranslationRecommendationRequest(BaseModel):
         description="Whether to fetch recommendations from page collections",
         default=False,
     )
+    lead_section: bool = Field(
+        description="Whether only the lead section needs to be considered during size filtering",
+        default=False,
+    )
     include_pageviews: bool = Field(
         description="Whether to include pageview counts",
         default=False,
@@ -131,7 +135,7 @@ class TranslationRecommendation(BaseModel):
     title: str
     pageviews: Optional[int] = 0
     wikidata_id: Optional[str] = None
-    rank: Optional[float] = 0.0
+    rank: Optional[int] = 0
     langlinks_count: Optional[int] = 0
     size: Optional[int] = Field(default=None, description="Article size in bytes")
     lead_section_size: Optional[int] = Field(default=None, description="Lead section size in bytes")
