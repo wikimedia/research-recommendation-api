@@ -9,7 +9,7 @@ handlers:
     console:
         class: logging.StreamHandler
         level: DEBUG
-        formatter: default
+        formatter: ecsformatter
     access_file:
         class: logging.FileHandler
         formatter: ecsformatter
