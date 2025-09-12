@@ -160,10 +160,7 @@ async def fetch_appendix_section_titles(language: str, english_appendix: List[st
     headers = set_headers_with_host_header(configuration.CXSERVER_HEADER)
 
     try:
-        response = await get(cxserver_url, headers=headers)
-        response.raise_for_status()
-
-        data = response.json()
+        data = await get(cxserver_url, headers=headers)
         return [item for values in data.values() for item in values]
 
     except ValueError:
