@@ -27,20 +27,24 @@ async def get_lead_section_size(page_title: str, lang: str) -> Optional[Dict[str
         "format": "json",
         "formatversion": 2,
         "prop": "sections",
-        "page": page_title,  # we assume section_title is also the page title
+        "redirects": True,
+        "page": page_title,
     }
 
     try:
         response = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        log.error(f"Could not fetch section sizes for page {page_title} and language {lang}")
+    except ValueError as e:
+        log.error(f"Could not fetch section sizes for page {page_title} and language {lang}: {e}")
         return None
 
     if "parse" not in response or "sections" not in response["parse"]:
-        log.error(f"Could not fetch section sizes for page {page_title} and language {lang}")
+        log.error(f"Invalid response from fetch section sizes for page {page_title} and language {lang}")
         return None
 
     sections = response["parse"]["sections"]
+    if not sections:
+        log.error(f"No sections returned for page {page_title} and language {lang}")
+        return None
 
     return {page_title: sections[0]["byteoffset"]}
 
