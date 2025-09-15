@@ -12,7 +12,9 @@ default_headers = {"user-agent": configuration.USER_AGENT_HEADER}
 httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive_connections=5, max_connections=20))
 
 
-async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all: bool = False):
+async def get(
+    api_url: str, params: dict = None, headers: dict = None, fetch_all: bool = False, treat_404_as_error: bool = True
+):
     if headers:
         headers = {**default_headers, **headers}
     else:
@@ -44,6 +46,11 @@ async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all
                 headers=headers,
                 follow_redirects=False,
             )
+            # Handle 404s based on the treat_404_as_error parameter
+            if response.status_code == 404 and not treat_404_as_error:
+                log.debug(f"Resource not found (404): {url}")
+                return None
+
             response.raise_for_status()
             result = response.json()
 
@@ -64,7 +71,7 @@ async def get(api_url: str, params: dict = None, headers: dict = None, fetch_all
     return results
 
 
-async def post(url, data=None, headers: dict = None):
+async def post(url, data=None, headers: dict = None, treat_404_as_error: bool = True):
     log.debug(f"POST: {url}")
     if headers:
         headers = {**default_headers, **headers}
@@ -72,6 +79,12 @@ async def post(url, data=None, headers: dict = None):
         headers = default_headers
     try:
         response = await httpx_client.post(url, data=data, headers=headers)
+
+        # Handle 404s based on the treat_404_as_error parameter
+        if response.status_code == 404 and not treat_404_as_error:
+            log.debug(f"Resource not found (404): {url}")
+            return None
+
         response.raise_for_status()
         return response.json()
     except httpx.HTTPError as exc:
@@ -160,7 +173,9 @@ async def fetch_appendix_section_titles(language: str, english_appendix: List[st
     headers = set_headers_with_host_header(configuration.CXSERVER_HEADER)
 
     try:
-        data = await get(cxserver_url, headers=headers)
+        data = await get(cxserver_url, headers=headers, treat_404_as_error=False)
+        if data is None:
+            return []
         return [item for values in data.values() for item in values]
 
     except ValueError:

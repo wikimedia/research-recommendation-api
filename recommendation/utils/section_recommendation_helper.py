@@ -116,7 +116,7 @@ async def fetch_section_suggestions(
 
     async def fetch_with_semaphore(url):
         async with semaphore:
-            return await get(url, headers=headers)
+            return await get(url, headers=headers, treat_404_as_error=False)
 
     async def process_urls():
         tasks = [asyncio.create_task(fetch_with_semaphore(url)) for url in urls]
@@ -124,7 +124,7 @@ async def fetch_section_suggestions(
         for task in asyncio.as_completed(tasks):
             try:
                 result = await task
-                if is_suggestion_valid_callback(result):
+                if result is not None and is_suggestion_valid_callback(result):
                     results.append(result)
             except Exception as e:
                 log.error(f"Error fetching section suggestions: {e}")
