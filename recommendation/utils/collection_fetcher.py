@@ -100,7 +100,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             links.extend(response["query"]["pages"][0][page_prop])
 
     if len(links) == 0:
-        log.error(f"No {page_prop} found for {page.wiki}:{page.title}")
+        log.warning(f"Page collection {page.wiki}:{page.title} contains no valid {page_prop}")
         return []
 
     # Then query each interwiki link to complete the request with langlinks included
