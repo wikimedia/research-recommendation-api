@@ -267,7 +267,11 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     endpoint, headers = get_endpoint_and_headers("wikidata")
     dbname = get_dbname_by_prefix(source)
     if not dbname:
-        log.error(f"Could not find dbname for wiki prefix {source}")
+        # Given source is not a valid wiki prefix and can be safely ignored
+        # in the context of extracting interwiki links from page collections
+        # for the purpose of translation recommendations.
+        # Known irrelevant prefixes include: mw, xtools, toollabs
+        log.debug(f"Unknown wiki prefix {source}")
         return []
 
     params = {
