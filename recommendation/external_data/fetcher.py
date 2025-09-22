@@ -9,7 +9,7 @@ from recommendation.utils.logger import log
 
 default_headers = {"user-agent": configuration.USER_AGENT_HEADER}
 
-httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive_connections=5, max_connections=20))
+httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10))
 
 
 async def get(
