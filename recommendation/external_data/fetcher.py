@@ -12,6 +12,27 @@ default_headers = {"user-agent": configuration.USER_AGENT_HEADER}
 httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10))
 
 
+def _log_http_error(exc: httpx.HTTPError) -> None:
+    """Log HTTP error with response body if available."""
+    error_message = f"HTTP Exception for {exc.request.url} - {exc}"
+
+    # Try to include response body if available
+    if hasattr(exc, "response") and exc.response is not None:
+        try:
+            response_body = exc.response.text
+            if response_body:
+                # Truncate very long response bodies to keep logs manageable
+                max_body_length = 1000
+                if len(response_body) > max_body_length:
+                    response_body = response_body[:max_body_length] + "... [truncated]"
+                error_message += f" - Response body: {response_body}"
+        except Exception:
+            # If we can't read the response body, just continue with the original error
+            pass
+
+    log.error(error_message)
+
+
 async def get(
     api_url: str, params: dict = None, headers: dict = None, fetch_all: bool = False, treat_404_as_error: bool = True
 ):
@@ -65,7 +86,7 @@ async def get(
             log.debug("Continue: %s", result["continue"])
             last_continue = result["continue"]
         except httpx.HTTPError as exc:
-            log.error(f"HTTP Exception for {exc.request.url} - {exc}")
+            _log_http_error(exc)
             raise ValueError(exc) from exc
 
     return results
@@ -88,7 +109,7 @@ async def post(url, data=None, headers: dict = None, treat_404_as_error: bool = 
         response.raise_for_status()
         return response.json()
     except httpx.HTTPError as exc:
-        log.error(f"HTTP Exception for {exc.request.url} - {exc}")
+        _log_http_error(exc)
         raise ValueError(exc) from exc
 
 
