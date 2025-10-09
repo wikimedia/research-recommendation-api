@@ -59,7 +59,7 @@ async def add_lead_section_sizes_to_recommendations(
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    for rec, result in zip(recommendations, results):
+    for rec, result in zip(recommendations, results, strict=True):
         if isinstance(result, Exception):
             # log the error and skip
             log.error(f"Error fetching lead section size for {rec.title}: {result}")

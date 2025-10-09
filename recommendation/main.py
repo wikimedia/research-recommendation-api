@@ -39,20 +39,20 @@ async def periodic_cache_update():
         if has_lowest_pid():
             await initialize_interwiki_map_cache()
     except Exception as e:
-        log.error(f"Failed to initialize interwiki map cache: {e}")
+        log.error(f"Periodic cache update: Failed to initialize interwiki map cache: {e}")
         return
     try:
         if has_lowest_pid():
             await initialize_sitematrix_cache()
     except Exception as e:
-        log.error(f"Failed to initialize sitematrix cache: {e}")
+        log.error(f"Periodic cache update: Failed to initialize sitematrix cache: {e}")
         return
     while True:
         try:
             if has_lowest_pid():
                 await update_page_collection_cache()
         except Exception:
-            log.error(f"Failed to update page collection cache: {traceback.format_exc()}")
+            log.error(f"Periodic cache update: Failed to update page collection cache: {traceback.format_exc()}")
         await asyncio.sleep(60 * 60)  # Sleep for 1 hour
 
 
