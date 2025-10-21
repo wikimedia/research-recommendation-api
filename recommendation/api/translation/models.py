@@ -220,7 +220,7 @@ class PageCollection(BaseModel):
         page_keys = sorted([page.key for page in self.pages])
         # Cache key will depend on revision id of all pages where this page-collection applies
         # So when any of the pages are updated, the cache will be invalidated
-        return "-".join(page_keys)
+        return self.name + ":" + "-".join(page_keys)
 
     @computed_field
     @property

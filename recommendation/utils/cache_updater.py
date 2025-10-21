@@ -83,12 +83,13 @@ async def update_page_collection_cache():
             cached_page_collections, live_page_collection.cache_key
         )
 
-        if cached_page_collection:
+        if cached_page_collection and cached_page_collection.articles_count > 0:
             page_collections_list.add(cached_page_collection)
             log.debug(f"Found page collection {cached_page_collection} in cache")
         else:
             await live_page_collection.fetch_articles()
-            page_collections_list.add(live_page_collection)
+            if live_page_collection.articles_count > 0:
+                page_collections_list.add(live_page_collection)
 
     page_collection_cache.set_page_collections(page_collections_list)
     log.info("Page collection cache updated successfully.")
