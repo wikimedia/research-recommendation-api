@@ -148,6 +148,12 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         if skipped > 0:
             log.debug(f"Skipped {skipped}/{initial_count} links for {language} as they are already in the cache")
 
+        if len(titles) == 0:
+            log.debug(
+                f"All links from {page.wiki}:{page.title} for {language} are already in the cache, skipping fetch"
+            )
+            continue
+
         # Split the remaining titles into batches of 50
         batches = [titles[i : i + 50] for i in range(0, len(titles), 50)]
 
@@ -304,7 +310,7 @@ async def fetch_articles(params: dict, endpoint: str, headers: dict) -> List[Wik
         return []
 
     if "error" in data:
-        log.error("Error fetching articles: %s", data["error"])
+        log.error("Error fetching articles (wikidata entities): %s", params)
         return []
 
     if "entities" in data:
