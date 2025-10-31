@@ -59,6 +59,8 @@ def initialize_language_pairs():
             _language_pairs = pairs
         except httpx.RequestError as e:
             log.warning(f"Unable to load data from {language_pairs_endpoint}. {e}")
+        except httpx.HTTPStatusError as e:
+            log.warning(f"Unable to load data from {language_pairs_endpoint}. {e}")
         except (AttributeError, ValueError):
             log.warning("language pairs were invalid")
 
