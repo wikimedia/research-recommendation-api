@@ -25,18 +25,23 @@ def matches_article_size_filter(size: int, min_size: Optional[int], max_size: Op
     return True
 
 
-def matches_section_size_filter(section_sizes: dict, min_size: Optional[int], max_size: Optional[int]) -> bool:
+def matches_section_size_filter(
+    section_sizes: Optional[dict], min_size: Optional[int], max_size: Optional[int]
+) -> bool:
     """
     Check if any section matches the requested size filter.
 
     Args:
-        section_sizes: Dict mapping section titles to their sizes in bytes
+        section_sizes: Dict mapping section titles to their sizes in bytes, or None if it could not be fetched
         min_size: Minimum size in bytes, or None for no minimum
         max_size: Maximum size in bytes, or None for no maximum
 
     Returns:
         True if any section matches the filter or no filter is applied
     """
+    if section_sizes is None:
+        return False
+
     if min_size is None and max_size is None:
         return True
 

@@ -50,6 +50,12 @@ class TestMatchesSectionSizeFilter:
     def test_empty_sections_returns_true(self):
         assert matches_section_size_filter({}, 1000, 2000) is True
 
+    def test_none_sections_returns_false(self):
+        assert matches_section_size_filter(None, 1000, 2000) is False
+
+    def test_none_sections_with_no_filter_returns_false(self):
+        assert matches_section_size_filter(None, None, None) is False
+
     def test_min_size_filter_matches(self):
         section_sizes = {"section1": 1000}
         assert matches_section_size_filter(section_sizes, 500, None) is True
