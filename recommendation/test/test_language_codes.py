@@ -1,4 +1,4 @@
-from recommendation.utils.language_pairs import is_missing_in_target_language
+from recommendation.utils.language_codes import is_missing_in_target_language
 
 
 def test_is_missing_in_target_language():

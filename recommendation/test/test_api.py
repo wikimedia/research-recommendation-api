@@ -1,6 +1,7 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from recommendation.cache import get_sitematrix_cache
 from recommendation.main import app
 
 
@@ -10,7 +11,39 @@ def anyio_backend():
 
 
 @pytest.fixture(scope="session")
-async def client():
+def setup_test_language_codes():
+    """Setup basic language codes for testing"""
+    cache = get_sitematrix_cache()
+    # Add basic language codes that should be valid for tests
+    # Include special language codes that have domain mappings
+    language_codes = [
+        "en",
+        "es",
+        "fr",
+        "de",
+        "it",
+        "pt",
+        "ru",
+        "zh",
+        "ja",
+        "ar",
+        "be-tarask",
+        "bho",
+        "gsw",
+        "lzh",
+        "nan",
+        "nb",
+        "rup",
+        "sgs",
+        "vro",
+        "yue",
+    ]
+    cache.set_language_codes(language_codes)
+    return cache
+
+
+@pytest.fixture(scope="session")
+async def client(setup_test_language_codes):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url=f"http://test{app.root_path}") as client:
         yield client

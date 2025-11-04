@@ -108,12 +108,12 @@ class TranslationRecommendationRequest(BaseModel):
     @model_validator(mode="after")
     def verify_languages(self) -> Self:
         # This import is here to avoid circular imports
-        from recommendation.utils import language_pairs
+        from recommendation.utils import language_codes
 
-        if not language_pairs.is_valid_source_language(self.source):
+        if not language_codes.is_valid_language(self.source):
             raise ValueError("Invalid source language code")
 
-        if not language_pairs.is_valid_target_language(self.target):
+        if not language_codes.is_valid_language(self.target):
             raise ValueError("Invalid target language code")
         if self.source == self.target:
             raise ValueError("Source and target languages must be different")

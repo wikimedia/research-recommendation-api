@@ -7,7 +7,7 @@ from recommendation.api.translation.models import (
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.recommenders.base_recommender import BaseRecommender
-from recommendation.utils.language_pairs import get_language_to_domain_mapping, is_missing_in_target_language
+from recommendation.utils.language_codes import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.lead_section_size_helper import (
     add_lead_section_sizes_to_recommendations,
     get_limited_lead_section_sizes,

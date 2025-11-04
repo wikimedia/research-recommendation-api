@@ -71,6 +71,12 @@ class SiteMatrixCache(Cache):
     def get_sitematrix(self) -> List | None:
         return self.get("sitematrix")
 
+    def set_language_codes(self, language_codes: List[str]):
+        self.set("language_codes", language_codes)
+
+    def get_language_codes(self) -> List[str] | None:
+        return self.get("language_codes")
+
 
 class InterWikiMapCache(Cache):
     def __init__(self, *args, **kwargs):

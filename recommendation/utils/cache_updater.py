@@ -108,6 +108,18 @@ async def initialize_sitematrix_cache():
     sitematrix_cache = get_sitematrix_cache()
     sitematrix_cache.set_sitematrix(sitematrix)
 
+    # Extract language codes for fast validation - only consider Wikipedias
+    language_codes = []
+    for entry in sitematrix:
+        if entry.get("code") and entry.get("site"):
+            # Check if this language has an active Wikipedia (not closed)
+            has_active_wikipedia = any(
+                site.get("code") == "wiki" and not site.get("closed", False) for site in entry["site"]
+            )
+            if has_active_wikipedia:
+                language_codes.append(entry["code"])
+    sitematrix_cache.set_language_codes(language_codes)
+
 
 def start():
     import asyncio

@@ -17,11 +17,9 @@ class Settings(BaseSettings):
     API_VERSION: str = "v1"
     COLLECTIONS_NAMESPACE: int = 0
     COLLECTIONS_CATEGORY: str = "Pages including a page collection"
-    LANGUAGE_PAIRS_API: AnyUrl = "https://cxserver.wikimedia.org/v2/list/languagepairs"
     CXSERVER_URL: AnyUrl = "https://cxserver.wikimedia.org"
     CXSERVER_HEADER: str | None = "cxserver.wikimedia.org"
     API_CONCURRENCY_LIMIT: int = 10
-    LANGUAGE_PAIRS_API_HEADER: str | None = None
     WIKIPEDIA_API: AnyUrl = "https://{source}.wikipedia.org/w/api.php"
     WIKIPEDIA_API_HEADER: str | None = "{source}.wikipedia.org"
     WIKIDATA_API: AnyUrl = "https://www.wikidata.org/w/api.php"
