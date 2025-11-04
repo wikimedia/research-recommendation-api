@@ -76,8 +76,8 @@ class InterWikiMapCache(Cache):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def set_interwiki_map(self, sitematrix: List):
-        self.set("interwiki_map", sitematrix)
+    def set_interwiki_map(self, interwiki_map: List):
+        self.set("interwiki_map", interwiki_map)
 
     def get_interwiki_map(self) -> List | None:
         return self.get("interwiki_map")
