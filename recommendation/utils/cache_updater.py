@@ -92,7 +92,6 @@ async def update_page_collection_cache():
                 page_collections_list.add(live_page_collection)
 
     page_collection_cache.set_page_collections(page_collections_list)
-    log.info("Page collection cache updated successfully.")
 
 
 async def initialize_interwiki_map_cache():
