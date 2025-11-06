@@ -163,24 +163,23 @@ async def get_sitematrix() -> List:
         "smlangprop": "code|site",
     }
 
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-        sitematrix = data["sitematrix"]
-        del sitematrix["count"]
-        return list(sitematrix.values())
-    except ValueError:
-        return []
+    data = await get(endpoint, params=params, headers=headers)
+    sitematrix = data.get("sitematrix")
+    if not sitematrix:
+        raise ValueError(f"Invalid response from fetch sitematrix {data}")
+    del sitematrix["count"]
+    return list(sitematrix.values())
 
 
 async def get_interwiki_map() -> List:
     endpoint, headers = get_endpoint_and_headers("meta")
     params = {"action": "query", "format": "json", "formatversion": "2", "meta": "siteinfo", "siprop": "interwikimap"}
 
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-        return data["query"]["interwikimap"]
-    except ValueError:
-        return []
+    data = await get(endpoint, params=params, headers=headers)
+    iwmap = data.get("query", {}).get("interwikimap")
+    if not iwmap:
+        raise ValueError(f"Invalid response from fetch interwiki map {data}")
+    return iwmap
 
 
 async def fetch_appendix_section_titles(language: str, english_appendix: List[str]) -> List[str]:
