@@ -91,6 +91,9 @@ async def update_page_collection_cache():
             if live_page_collection.articles_count > 0:
                 page_collections_list.add(live_page_collection)
 
+    # Sort collections alphabetically by name before caching (case-insensitive)
+    page_collections_list.list.sort(key=lambda collection: collection.name.lower())
+
     page_collection_cache.set_page_collections(page_collections_list)
 
 

@@ -145,10 +145,16 @@ async def get_page_collection_groups(
         else:
             ungrouped.append(collection)
 
-    # Step 2: Filter groups that have at least 2 items
-    final_groups = {
-        group_name: group_collections for group_name, group_collections in grouped.items() if len(group_collections) > 1
-    }
+    # Step 2: Filter groups that have at least 2 items and sort collections within each group
+    final_groups = {}
+    for group_name, group_collections in grouped.items():
+        if len(group_collections) > 1:
+            # Sort collections within each group alphabetically by name (case-insensitive)
+            group_collections.sort(key=lambda collection: collection.name.lower())
+            final_groups[group_name] = group_collections
+
+    # Sort ungrouped collections alphabetically by name (case-insensitive)
+    ungrouped.sort(key=lambda collection: collection.name.lower())
 
     grouped = {**final_groups, "ungrouped": ungrouped}
 
