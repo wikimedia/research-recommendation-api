@@ -10,13 +10,12 @@ from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.language_codes import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.lead_section_size_helper import (
     add_lead_section_sizes_to_recommendations,
-    get_limited_lead_section_sizes,
 )
 from recommendation.utils.logger import log
-from recommendation.utils.recommendation_helper import sort_recommendations
+from recommendation.utils.recommendation_helper import filter_recommendations_by_lead_section_size, sort_recommendations
 from recommendation.utils.search_query_builder import build_search_query
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter, matches_section_size_filter
+from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class SearchRecommender(BaseRecommender):
@@ -62,7 +61,10 @@ class SearchRecommender(BaseRecommender):
         recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
 
-        if not self.lead_section:
+        # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
+        # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
+        # the recommendation during lead section size filtering, thus no need to add it again here.
+        if self.lead_section and not self.should_filter_by_lead_section_size(self.min_size, self.max_size):
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
         return recommendations
@@ -109,24 +111,12 @@ class SearchRecommender(BaseRecommender):
         ]
 
         # Filter by size
-        if not self.lead_section:
+        if self.should_filter_by_article_size(min_size, max_size):
             results = [page for page in results if matches_article_size_filter(page.get("size", 0), min_size, max_size)]
-        else:
-
-            def filter_by_lead_section_size(lead_section_size: Dict[str, int]) -> bool:
-                return matches_section_size_filter(lead_section_size, min_size, max_size)
-
-            lead_section_sizes = await get_limited_lead_section_sizes(
-                results, self.source_language, self.count, filter_by_lead_section_size
+        elif self.should_filter_by_lead_section_size(min_size, max_size):
+            results = await filter_recommendations_by_lead_section_size(
+                results, self.source_language, min_size, max_size
             )
-            flat_lead_section_sizes = {
-                list(size_info.keys())[0]: list(size_info.values())[0] for size_info in lead_section_sizes
-            }
-            results = [
-                {**page, "lead_section_size": flat_lead_section_sizes[page.get("title")]}
-                for page in results
-                if page.get("title") in flat_lead_section_sizes
-            ]
 
         recommendations = []
         for page in results:

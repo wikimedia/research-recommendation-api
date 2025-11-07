@@ -41,7 +41,8 @@ async def filter_recommendations_by_lead_section_size(
 
     async def fetch_size(rec):
         async with semaphore:
-            return rec, await get_lead_section_size(rec.title, language)
+            title = rec["title"] if isinstance(rec, dict) else getattr(rec, "title", None)
+            return rec, await get_lead_section_size(title, language)
 
     filtered_recommendations = []
     tasks = [asyncio.create_task(fetch_size(rec)) for rec in recommendations]
@@ -52,7 +53,10 @@ async def filter_recommendations_by_lead_section_size(
             lead_size = list(size_dict.values())[0]  # assume single-key dict
             section_sizes = {"__LEAD_SECTION__": lead_size}
             if matches_section_size_filter(section_sizes, min_size, max_size):
-                rec.lead_section_size = lead_size
+                if hasattr(rec, "lead_section_size"):
+                    rec.lead_section_size = lead_size
+                else:
+                    rec["lead_section_size"] = lead_size
                 filtered_recommendations.append(rec)
         except Exception as e:
             log.error(f"Error fetching lead section size: {e}")
