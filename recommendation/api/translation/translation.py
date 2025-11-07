@@ -152,7 +152,9 @@ async def get_page_collection_groups(
             # Sort collections within each group alphabetically by name (case-insensitive)
             group_collections.sort(key=lambda collection: collection.name.lower())
             final_groups[group_name] = group_collections
-
+        else:
+            # Move single-item "slash collections" to ungrouped
+            ungrouped.extend(group_collections)
     # Sort ungrouped collections alphabetically by name (case-insensitive)
     ungrouped.sort(key=lambda collection: collection.name.lower())
 
