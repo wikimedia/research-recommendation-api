@@ -12,11 +12,11 @@ from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.lead_section_size_helper import (
     add_lead_section_sizes_to_recommendations,
-    get_limited_lead_section_sizes,
 )
 from recommendation.utils.logger import log
+from recommendation.utils.recommendation_helper import filter_recommendations_by_lead_section_size
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter, matches_section_size_filter
+from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class CollectionRecommender(BaseRecommender):
@@ -38,7 +38,10 @@ class CollectionRecommender(BaseRecommender):
             missing=True, min_size=self.min_size, max_size=self.max_size
         )
 
-        if not self.lead_section:
+        # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
+        # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
+        # the recommendation during lead section size filtering, thus no need to add it again here.
+        if self.lead_section and not self.should_filter_by_lead_section_size(self.min_size, self.max_size):
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
         return recommendations
@@ -121,8 +124,10 @@ class CollectionRecommender(BaseRecommender):
                         article_size = wikidata_article.sizes.get(self.source_language)
 
                         # Apply size filtering
-                        if article_size is not None and not matches_article_size_filter(
-                            article_size, min_size, max_size
+                        if (
+                            self.should_filter_by_article_size(min_size, max_size)
+                            and article_size is not None
+                            and not matches_article_size_filter(article_size, min_size, max_size)
                         ):
                             continue
 
@@ -144,29 +149,10 @@ class CollectionRecommender(BaseRecommender):
                     break
 
         # Apply lead section filtering if requested
-        if self.lead_section and (min_size is not None or max_size is not None):
-
-            def filter_by_lead_section_size(lead_section_size: Dict[str, int]) -> bool:
-                return matches_section_size_filter(lead_section_size, min_size, max_size)
-
-            # Convert recommendations to the format expected by get_limited_lead_section_sizes
-            articles = [{"title": rec.title} for rec in recommendations]
-
-            lead_section_sizes = await get_limited_lead_section_sizes(
-                articles, self.source_language, len(recommendations), filter_by_lead_section_size
+        if self.should_filter_by_lead_section_size(min_size, max_size):
+            recommendations = await filter_recommendations_by_lead_section_size(
+                recommendations, self.source_language, min_size, max_size
             )
-            flat_lead_section_sizes = {
-                list(size_info.keys())[0]: list(size_info.values())[0] for size_info in lead_section_sizes
-            }
-
-            # Filter recommendations to only those with matching lead section sizes
-            filtered_recommendations = []
-            for rec in recommendations:
-                if rec.title in flat_lead_section_sizes:
-                    rec.lead_section_size = flat_lead_section_sizes[rec.title]
-                    filtered_recommendations.append(rec)
-
-            recommendations = filtered_recommendations
 
         return recommendations
 
