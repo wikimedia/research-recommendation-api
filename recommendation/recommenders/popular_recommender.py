@@ -11,12 +11,11 @@ from recommendation.utils.configuration import configuration
 from recommendation.utils.language_codes import get_language_to_domain_mapping, is_missing_in_target_language
 from recommendation.utils.lead_section_size_helper import (
     add_lead_section_sizes_to_recommendations,
-    get_limited_lead_section_sizes,
 )
 from recommendation.utils.logger import log
-from recommendation.utils.recommendation_helper import sort_recommendations
+from recommendation.utils.recommendation_helper import filter_recommendations_by_lead_section_size, sort_recommendations
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter, matches_section_size_filter
+from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class PopularRecommender(BaseRecommender):
@@ -36,7 +35,10 @@ class PopularRecommender(BaseRecommender):
         recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
 
-        if not self.lead_section:
+        # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
+        # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
+        # the recommendation during lead section size filtering, thus no need to add it again here.
+        if self.lead_section and not self.should_filter_by_lead_section_size(self.min_size, self.max_size):
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
         return recommendations
@@ -86,30 +88,16 @@ class PopularRecommender(BaseRecommender):
         ]
 
         # filter by size
-        if not self.lead_section:
+        if self.should_filter_by_article_size(min_size, max_size):
             articles = [
                 article
                 for article in articles
                 if matches_article_size_filter(article.get("length", 0), min_size, max_size)
             ]
-        else:
-
-            def filter_by_lead_section_size(lead_section_size: Dict[str, int]) -> bool:
-                return matches_section_size_filter(lead_section_size, min_size, max_size)
-
-            lead_section_sizes = await get_limited_lead_section_sizes(
-                articles, self.source_language, self.count, filter_by_lead_section_size
+        elif self.should_filter_by_lead_section_size(min_size, max_size):
+            articles = await filter_recommendations_by_lead_section_size(
+                articles, self.source_language, min_size, max_size
             )
-            flat_lead_section_sizes = {
-                list(size_info.keys())[0]: list(size_info.values())[0] for size_info in lead_section_sizes
-            }
-            articles = [
-                {**article, "lead_section_size": flat_lead_section_sizes[article.get("title")]}
-                for article in articles
-                if article.get("title") in flat_lead_section_sizes
-            ]
-
-        log.debug(f"articles {articles} ")
 
         for article in articles:
             rec = TranslationRecommendation(

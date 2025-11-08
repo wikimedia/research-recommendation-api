@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 
 from recommendation.api.translation.models import TranslationRecommendation
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
-from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
 
@@ -68,32 +67,3 @@ async def add_lead_section_sizes_to_recommendations(
             rec.lead_section_size = result[rec.title]
 
     return recommendations
-
-
-async def get_limited_lead_section_sizes(articles, language: str, count: int, filter_callback):
-    semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)  # Limit to 10 concurrent tasks
-
-    async def fetch_with_semaphore(page_title: str, lang: str):
-        async with semaphore:
-            return await get_lead_section_size(page_title, lang)
-
-    async def process_articles():
-        tasks = [asyncio.create_task(fetch_with_semaphore(article.get("title"), language)) for article in articles]
-        results = []
-        for task in asyncio.as_completed(tasks):
-            try:
-                result = await task
-                if filter_callback(result):
-                    results.append(result)
-            except Exception as e:
-                log.error(f"Error fetching section suggestions: {e}")
-
-            if len(results) >= count:
-                # Cancel remaining tasks
-                [task.cancel() for task in tasks if not task.done()]
-                break
-        return results
-
-    successful_results = await process_articles()
-
-    return successful_results
