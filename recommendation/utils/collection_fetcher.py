@@ -29,10 +29,7 @@ async def get_collection_pages() -> List[WikiPage]:
         "prop": "info",
     }
 
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        return []
+    data = await get(endpoint, params=params, headers=headers)
 
     if "query" not in data or "pages" not in data["query"] or len(data["query"]["pages"]) == 0:
         log.error(f"Could not fetch the list from category Category:{configuration.COLLECTIONS_CATEGORY}")
@@ -84,13 +81,11 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             "iwlimit": "max",
             "iwprop": "url",
         }
-    try:
-        responses = await get(endpoint, params=params, headers=headers, fetch_all=True)
-    except ValueError:
-        return []
+
+    responses = await get(endpoint, params=params, headers=headers, fetch_all=True)
 
     if len(responses) == 0:
-        log.error(f"Could not fetch the list of links for {page.wiki}:{page.title}")
+        log.warning(f"No {page_prop} returned for {page.wiki}:{page.title}")
         return []
 
     # Aggregate all the links from the responses
@@ -202,11 +197,8 @@ async def get_collection_metadata_by_pages(pages: List[WikiPage]) -> Dict[str, P
         "list": "pagecollectionsmetadata",
         "titles": "|".join(page.title for page in pages),
     }
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        log.error("Could not fetch the page collection metadata for the given pages")
-        return {}
+
+    data = await get(endpoint, params=params, headers=headers)
 
     result_property = "page_collections"
     if (
@@ -304,13 +296,10 @@ async def fetch_articles(params: dict, endpoint: str, headers: dict) -> List[Wik
         list: A list of WikiDataArticle instances
     """
     wikidata_articles: List[WikiDataArticle] = []
-    try:
-        data = await get(endpoint, params=params, headers=headers)
-    except ValueError:
-        return []
+    data = await get(endpoint, params=params, headers=headers)
 
     if "error" in data:
-        log.error("Error fetching articles (wikidata entities): %s", params)
+        log.error(f"Error fetching articles (wikidata entities): {data['error']}")
         return []
 
     if "entities" in data:

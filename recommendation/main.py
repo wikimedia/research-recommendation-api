@@ -53,10 +53,11 @@ async def periodic_cache_update():
 
                 await update_page_collection_cache()
                 log.info("Page collection cache updated successfully.")
+
+                await asyncio.sleep(60 * 60)  # Sleep for 1 hour
         except Exception as e:
             log.error(f"Periodic cache update failed: {e}")
-
-        await asyncio.sleep(60 * 60)  # Sleep for 1 hour
+            await asyncio.sleep(10 * 60)  # Sleep for 10 minutes before retrying the failed update
 
 
 @asynccontextmanager

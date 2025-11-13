@@ -85,14 +85,19 @@ async def update_page_collection_cache():
 
         if cached_page_collection and cached_page_collection.articles_count > 0:
             page_collections_list.add(cached_page_collection)
-            log.debug(f"Found page collection {cached_page_collection} in cache")
+            log.debug(f"Page collection '{cached_page_collection}': found in cache")
         else:
             await live_page_collection.fetch_articles()
             if live_page_collection.articles_count > 0:
+                log.debug(f"Page collection '{cached_page_collection}': newly fetched")
                 page_collections_list.add(live_page_collection)
 
     # Sort collections alphabetically by name before caching (case-insensitive)
     page_collections_list.list.sort(key=lambda collection: collection.name.lower())
+
+    if len(page_collections_list.list) == 0:
+        log.warning("New page collections list is empty, not updating cache")
+        return
 
     page_collection_cache.set_page_collections(page_collections_list)
 
