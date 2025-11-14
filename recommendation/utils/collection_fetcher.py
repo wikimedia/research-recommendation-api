@@ -262,6 +262,9 @@ async def get_articles_by_titles(titles, source) -> List[WikiDataArticle]:
     Returns:
         list: A list of articles
     """
+    if len(titles) == 0:
+        return []
+
     endpoint, headers = get_endpoint_and_headers("wikidata")
     dbname = get_dbname_by_prefix(source)
     if not dbname:
