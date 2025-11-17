@@ -1,9 +1,10 @@
 from typing import Dict, List, Optional
 
 from recommendation.api.translation.models import (
-    SectionTranslationRecommendation,
+    SectionTranslationRecommendationResponse,
     TranslationRecommendation,
     TranslationRecommendationRequest,
+    TranslationRecommendationResponse,
 )
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
 from recommendation.recommenders.base_recommender import BaseRecommender
@@ -51,7 +52,7 @@ class SearchRecommender(BaseRecommender):
     def match(self) -> bool:
         return bool(self.topic or self.seed or self.country)
 
-    async def recommend(self) -> List[TranslationRecommendation]:
+    async def recommend(self) -> TranslationRecommendationResponse:
         """
         Retrieves translation recommendation candidates based on the request source/target languages, topics and seeds.
 
@@ -67,9 +68,9 @@ class SearchRecommender(BaseRecommender):
         if self.lead_section and not self.should_filter_by_lead_section_size(self.min_size, self.max_size):
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
-        return recommendations
+        return TranslationRecommendationResponse(recommendations=recommendations)
 
-    async def recommend_sections(self) -> List[SectionTranslationRecommendation]:
+    async def recommend_sections(self) -> SectionTranslationRecommendationResponse:
         """
         Retrieves section translation recommendation candidates,
         based on the request source/target languages, topics and seeds.
@@ -79,9 +80,11 @@ class SearchRecommender(BaseRecommender):
         """
         recommendations = await self.get_recommendations_by_status(False, None, None)
 
-        return await get_section_suggestions_for_recommendations(
+        section_recommendations = await get_section_suggestions_for_recommendations(
             recommendations, self.source_language, self.target_language, self.count, self.min_size, self.max_size
         )
+
+        return SectionTranslationRecommendationResponse(recommendations=section_recommendations)
 
     async def get_recommendations_by_status(
         self, missing: bool, min_size: Optional[int], max_size: Optional[int]

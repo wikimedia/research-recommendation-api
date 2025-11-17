@@ -1,9 +1,10 @@
 from typing import Dict, List, Optional
 
 from recommendation.api.translation.models import (
-    SectionTranslationRecommendation,
+    SectionTranslationRecommendationResponse,
     TranslationRecommendation,
     TranslationRecommendationRequest,
+    TranslationRecommendationResponse,
 )
 from recommendation.external_data.fetcher import get, get_formatted_endpoint, set_headers_with_host_header
 from recommendation.recommenders.base_recommender import BaseRecommender
@@ -31,7 +32,7 @@ class PopularRecommender(BaseRecommender):
     def match(self) -> bool:
         return True
 
-    async def recommend(self) -> List[TranslationRecommendation]:
+    async def recommend(self) -> TranslationRecommendationResponse:
         recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
         recommendations = recommendations[: self.count]
 
@@ -41,14 +42,16 @@ class PopularRecommender(BaseRecommender):
         if self.lead_section and not self.should_filter_by_lead_section_size(self.min_size, self.max_size):
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
-        return recommendations
+        return TranslationRecommendationResponse(recommendations=recommendations)
 
-    async def recommend_sections(self) -> List[SectionTranslationRecommendation]:
+    async def recommend_sections(self) -> SectionTranslationRecommendationResponse:
         recommendations = await self.get_recommendations_by_status(False, None, None)
 
-        return await get_section_suggestions_for_recommendations(
+        section_recommendations = await get_section_suggestions_for_recommendations(
             recommendations, self.source_language, self.target_language, self.count, self.min_size, self.max_size
         )
+
+        return SectionTranslationRecommendationResponse(recommendations=section_recommendations)
 
     async def get_recommendations_by_status(
         self, missing: bool, min_size: Optional[int], max_size: Optional[int]

@@ -104,6 +104,16 @@ class TranslationRecommendationRequest(BaseModel):
         default=None,
         examples=[50000, 100000],
     )
+    continue_offset: Optional[int] = Field(
+        description="The source title (i.e. title in source language) of the last wikidata article to be skipped",
+        default=None,
+        examples=[20],
+    )
+    continue_seed: Optional[int] = Field(
+        description="The continue seed",
+        default=None,
+        examples=[2929388239],
+    )
 
     @model_validator(mode="after")
     def verify_languages(self) -> Self:
@@ -255,3 +265,15 @@ class PageCollectionsList(BaseModel):
 
     def add(self, collection: PageCollection):
         self.list.append(collection)
+
+
+class TranslationRecommendationResponse(BaseModel):
+    recommendations: List[TranslationRecommendation]
+    continue_offset: Optional[int] = None
+    continue_seed: Optional[int] = None
+
+
+class SectionTranslationRecommendationResponse(BaseModel):
+    recommendations: List[SectionTranslationRecommendation]
+    continue_offset: Optional[int] = None
+    continue_seed: Optional[int] = None

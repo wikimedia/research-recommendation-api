@@ -79,7 +79,8 @@ async def test_language_validation(client: AsyncClient):
 async def test_recommendations_morelike(client: AsyncClient):
     response = await client.get("/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike")
     assert response.status_code == 200
-    results = response.json()
+    data = response.json()
+    results = data["recommendations"]
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
@@ -93,7 +94,8 @@ async def test_recommendations_morelike(client: AsyncClient):
 async def test_recommendations_mostpopular(client: AsyncClient):
     response = await client.get("/v1/translation?source=en&target=es&search_algorithm=mostpopular")
     assert response.status_code == 200
-    results = response.json()
+    data = response.json()
+    results = data["recommendations"]
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
@@ -107,7 +109,8 @@ async def test_recommendations_mostpopular(client: AsyncClient):
 async def test_recommendations_country(client: AsyncClient):
     response = await client.get("/v1/translation?source=en&target=es&country=ita")
     assert response.status_code == 200
-    results = response.json()
+    data = response.json()
+    results = data["recommendations"]
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") == 0
@@ -123,7 +126,8 @@ async def test_recommendations_with_pageviews(client: AsyncClient):
         "/v1/translation?source=en&target=es&seed=Apple&search_algorithm=morelike&include_pageviews=True"
     )
     assert response.status_code == 200
-    results = response.json()
+    data = response.json()
+    results = data["recommendations"]
     assert len(results) > 0
     assert results[0].get("title")
     assert results[0].get("pageviews") >= 0
@@ -139,7 +143,8 @@ async def test_section_recommendations(client: AsyncClient):
         "/v1/translation/sections?source=en&target=es&seed=Apple&search_algorithm=morelike&count=12"
     )
     assert response.status_code == 200
-    results = response.json()
+    data = response.json()
+    results = data["recommendations"]
     assert len(results) == 12
     assert results[0].get("source_title")
     assert results[0].get("target_title")

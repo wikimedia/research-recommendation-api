@@ -55,13 +55,13 @@ async def test_recommend(targetLanguage, lllangInput, langlinksOutput):
         assert recommender.match() is True
 
         # Call the method
-        result = await recommender.recommend()
-
+        response = await recommender.recommend()
+        recommendations = response.recommendations
         # Assert mock 'get' function was called with the right lllang parameter
         assert mock_get.call_args[1]["params"]["lllang"] == lllangInput
 
         # Assert suggestions
-        assert len(result) == 2
-        titles = [rec.title for rec in result]
+        assert len(recommendations) == 2
+        titles = [rec.title for rec in recommendations]
         assert "Page 1" in titles
         assert "Page 3" in titles

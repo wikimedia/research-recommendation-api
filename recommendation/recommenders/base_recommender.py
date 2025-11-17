@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Optional
 
 from recommendation.api.translation.models import (
-    SectionTranslationRecommendation,
-    TranslationRecommendation,
+    SectionTranslationRecommendationResponse,
+    TranslationRecommendationResponse,
 )
 
 
@@ -16,12 +16,12 @@ class BaseRecommender(ABC):
         pass
 
     @abstractmethod
-    def recommend(self) -> List[TranslationRecommendation]:
+    def recommend(self) -> TranslationRecommendationResponse:
         """Generate recommendations based on input parameters."""
         pass
 
     @abstractmethod
-    def recommend_sections(self) -> List[SectionTranslationRecommendation]:
+    def recommend_sections(self) -> SectionTranslationRecommendationResponse:
         """Generate section recommendations based on input parameters."""
         pass
 
