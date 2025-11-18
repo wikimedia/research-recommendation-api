@@ -112,7 +112,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         if qid_match and url.startswith("https://www.wikidata.org"):
             qid = qid_match.group(1)
             qids.append(qid)
-        elif ":" not in title:  # exclude links outside of NS_MAIN
+        elif title and ":" not in title:  # exclude links outside of NS_MAIN
             # Interwiki links that are not Wikidata QIDs
             if prefix not in links_group_by_language:
                 links_group_by_language[prefix] = []
