@@ -6,7 +6,7 @@ from recommendation.api.translation.models import PageCollectionMetadata, WikiDa
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers, get_wikipedia_article_sizes
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
-from recommendation.utils.sitematrix_helper import get_dbname_by_prefix
+from recommendation.utils.sitematrix_helper import get_dbname_by_prefix, get_language_by_dbname, get_language_by_prefix
 
 
 async def get_collection_pages() -> List[WikiPage]:
@@ -73,7 +73,7 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
         params = {
             "action": "query",
             "format": "json",
-            "formatversion": "2",
+            "formatversion": 2,
             "prop": page_prop,
             "titles": page.title,
             # This param doesn't exist so it has to be filtered below
@@ -114,22 +114,19 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
             qids.append(qid)
         elif title and ":" not in title:  # exclude links outside of NS_MAIN
             # Interwiki links that are not Wikidata QIDs
-            if prefix not in links_group_by_language:
-                links_group_by_language[prefix] = []
-            links_group_by_language[prefix].append(title)
+            language_code = get_language_by_prefix(prefix)
+            links_group_by_language.setdefault(language_code, []).append(title)
 
     # Split the qids into batches of 50
     batches = [qids[i : i + 50] for i in range(0, len(qids), 50)]
 
     # Create a list to store the results
-    wikidata_articles = await process_batches(batches, get_articles_by_qids)
+    wikidata_articles: List[WikiDataArticle] = await process_batches(batches, get_articles_by_qids)
 
     wikidata_articles_links_by_language = {}
     for wikidata_article in wikidata_articles:
         for language, title in wikidata_article.langlinks.items():
-            if language not in wikidata_articles_links_by_language:
-                wikidata_articles_links_by_language[language] = []
-            wikidata_articles_links_by_language[language].append(title)
+            wikidata_articles_links_by_language.setdefault(language, []).append(title)
 
     for language in links_group_by_language:
         # Filter out language links that were already retrieve from wikidata
@@ -309,7 +306,9 @@ async def fetch_articles(params: dict, endpoint: str, headers: dict) -> List[Wik
         for qid, entity in data["entities"].items():
             sitelinks = entity.get("sitelinks", {})
             interlanguage_links = {
-                site.split("wiki")[0]: info["title"] for site, info in sitelinks.items() if site.endswith("wiki")
+                get_language_by_dbname(dbname): info["title"]
+                for dbname, info in sitelinks.items()
+                if dbname.endswith("wiki") and get_language_by_dbname(dbname)
             }
             wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
 
