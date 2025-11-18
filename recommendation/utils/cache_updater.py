@@ -89,7 +89,7 @@ async def update_page_collection_cache():
         else:
             await live_page_collection.fetch_articles()
             if live_page_collection.articles_count > 0:
-                log.debug(f"Page collection '{cached_page_collection}': newly fetched")
+                log.debug(f"Page collection '{live_page_collection}': newly fetched")
                 page_collections_list.add(live_page_collection)
 
     # Sort collections alphabetically by name before caching (case-insensitive)
