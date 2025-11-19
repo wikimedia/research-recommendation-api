@@ -68,7 +68,7 @@ async def update_page_collection_cache():
         for result in batch_results:
             collection_metadata_by_pages.update(result)
     except Exception as e:
-        log.error(f"Failed to fetch page collection metadata: {e}")
+        log.error(f"Failed to fetch page collection metadata: {repr(e)}")
         return
 
     fetched_page_collections: Set[PageCollection] = combine_collection_pages_and_metadata(

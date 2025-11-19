@@ -59,7 +59,7 @@ async def filter_recommendations_by_lead_section_size(
                     rec["lead_section_size"] = lead_size
                 filtered_recommendations.append(rec)
         except Exception as e:
-            log.error(f"Error fetching lead section size: {e}")
+            log.error(f"Error fetching lead section size: {repr(e)}")
 
         if max_results and len(filtered_recommendations) >= max_results:
             # Cancel remaining tasks

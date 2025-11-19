@@ -33,7 +33,7 @@ async def get_lead_section_size(page_title: str, lang: str) -> Optional[Dict[str
     try:
         response = await get(endpoint, params=params, headers=headers)
     except ValueError as e:
-        log.error(f"Could not fetch section sizes for page {page_title} and language {lang}: {e}")
+        log.error(f"Could not fetch section sizes for page {page_title} and language {lang}: {repr(e)}")
         return None
 
     if "parse" not in response or "sections" not in response["parse"]:

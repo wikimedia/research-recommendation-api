@@ -56,7 +56,7 @@ async def periodic_cache_update():
 
                 await asyncio.sleep(60 * 60)  # Sleep for 1 hour
         except Exception as e:
-            log.error(f"Periodic cache update failed: {e}")
+            log.error(f"Periodic cache update failed: {repr(e)}")
             await asyncio.sleep(10 * 60)  # Sleep for 10 minutes before retrying the failed update
 
 
@@ -70,7 +70,7 @@ async def lifespan(app: FastAPI):
         log.info("Shutting down the service")
 
     except Exception as e:
-        log.exception(f"An unexpected error occurred in the lifespan context: {e}")
+        log.exception(f"An unexpected error occurred in the lifespan context: {repr(e)}")
         yield  # Ensure the app doesn't crash due to unhandled exceptions
 
 

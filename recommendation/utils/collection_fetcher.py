@@ -343,4 +343,4 @@ async def populate_article_sizes(wikidata_articles: List[WikiDataArticle], langu
                 if title in article_to_title:
                     article_to_title[title].sizes[language] = size
         except Exception as e:
-            log.warning(f"Failed to fetch {language} Wikipedia article sizes: {e}")
+            log.warning(f"Failed to fetch {language} Wikipedia article sizes: {repr(e)}")

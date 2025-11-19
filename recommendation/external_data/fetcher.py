@@ -14,7 +14,7 @@ httpx_client = httpx.AsyncClient(timeout=30.0, limits=httpx.Limits(max_keepalive
 
 def _log_http_error(exc: httpx.HTTPError) -> None:
     """Log HTTP error with response body if available."""
-    error_message = f"HTTP Exception for {exc.request.url} - {exc}"
+    error_message = f"HTTP Exception for {exc.request.url} - {repr(exc)}"
 
     # Try to include response body if available
     if hasattr(exc, "response") and exc.response is not None:

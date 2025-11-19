@@ -127,7 +127,7 @@ async def fetch_section_suggestions(
                 if result is not None and is_suggestion_valid_callback(result):
                     results.append(result)
             except Exception as e:
-                log.error(f"Error fetching section suggestions: {e}")
+                log.error(f"Error fetching section suggestions: {repr(e)}")
 
             if len(results) >= count:
                 # Cancel remaining tasks
