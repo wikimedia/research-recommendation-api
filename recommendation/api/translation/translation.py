@@ -8,6 +8,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from recommendation.api.translation import pageviews
 from recommendation.api.translation.models import (
     PageCollection,
+    PageCollectionMembershipRequest,
     PageCollectionResponse,
     SectionTranslationRecommendationResponse,
     TranslationRecommendationRequest,
@@ -172,3 +173,58 @@ async def get_page_collection_groups(
     log.info("Request processed in %f seconds", t2 - t1)
 
     return grouped
+
+
+@router.get("/translation/page-collection-membership")
+async def check_page_collection_membership(
+    request_model: Annotated[PageCollectionMembershipRequest, Depends()],
+    request: Request,
+) -> Dict[str, bool]:
+    """
+    Checks which Wikidata QIDs are contained in a specific page collection.
+
+    Returns a dictionary mapping each provided QID to a boolean indicating
+    whether it exists in the specified collection.
+    """
+    t1 = time.time()
+
+    # Parse QIDs from pipe-delimited string
+    qids_list = request_model.qids.split("|") if request_model.qids else []
+
+    # Initialize result with all QIDs as False
+    result = dict.fromkeys(qids_list, False)
+
+    # If no QIDs provided, return empty dict
+    if not qids_list:
+        t2 = time.time()
+        log.info("Request processed in %f seconds", t2 - t1)
+        return result
+
+    # Get page collections from cache
+    page_collection_cache = get_page_collection_cache()
+    page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
+
+    # Find the matching collection (case-insensitive)
+    matching_collection = None
+    for collection in page_collections:
+        if collection.name.casefold() == request_model.collection.casefold():
+            matching_collection = collection
+            break
+
+    # If collection not found or empty, return all False
+    if not matching_collection or not matching_collection.articles:
+        t2 = time.time()
+        log.info("Request processed in %f seconds", t2 - t1)
+        return result
+
+    # Build a set of QIDs in the collection
+    collection_qids = {article.wikidata_id for article in matching_collection.articles}
+
+    # Check membership for each QID
+    for qid in qids_list:
+        result[qid] = qid in collection_qids
+
+    t2 = time.time()
+    log.info("Request processed in %f seconds", t2 - t1)
+
+    return result

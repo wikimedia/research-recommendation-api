@@ -151,3 +151,33 @@ async def test_section_recommendations(client: AsyncClient):
     assert results[0].get("source_sections")
     assert results[0].get("target_sections")
     assert results[0].get("missing"), results[0].get("source_title")
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_qids(client: AsyncClient):
+    """Test checking membership using Wikidata QIDs"""
+    response = await client.get("/v1/translation/page-collection-membership?collection=Test&qids=Q123|Q456")
+    assert response.status_code == 200
+    result = response.json()
+    assert "Q123" in result
+    assert "Q456" in result
+    assert isinstance(result["Q123"], bool)
+    assert isinstance(result["Q456"], bool)
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_empty_qids(client: AsyncClient):
+    """Test with empty QIDs"""
+    response = await client.get("/v1/translation/page-collection-membership?collection=Test&qids=")
+    assert response.status_code == 200
+    result = response.json()
+    assert result == {}
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_nonexistent_collection(client: AsyncClient):
+    """Test with collection that doesn't exist - should return all false"""
+    response = await client.get("/v1/translation/page-collection-membership?collection=NonExistent&qids=Q123|Q456")
+    assert response.status_code == 200
+    result = response.json()
+    assert result == {"Q123": False, "Q456": False}

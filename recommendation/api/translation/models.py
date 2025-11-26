@@ -130,6 +130,20 @@ class TranslationRecommendationRequest(BaseModel):
         return self
 
 
+class PageCollectionMembershipRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=False)
+
+    collection: str = Field(
+        ...,
+        description="Name of the page collection to check against",
+    )
+
+    qids: str = Field(
+        ...,
+        description="Pipe-delimited list of Wikidata QIDs to check (e.g., Q123|Q456)",
+    )
+
+
 class PageCollectionMetadata(BaseModel):
     name: str
     description: Optional[str] = None
