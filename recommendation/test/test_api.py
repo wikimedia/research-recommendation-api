@@ -181,3 +181,51 @@ async def test_page_collection_membership_nonexistent_collection(client: AsyncCl
     assert response.status_code == 200
     result = response.json()
     assert result == {"Q123": False, "Q456": False}
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_invalid_language(client: AsyncClient):
+    """Test validation error for invalid language code"""
+    response = await client.get(
+        "/v1/translation/page-collection-membership?collection=Test&language=invalid123&titles=Apple"
+    )
+    assert response.status_code == 422
+    assert "Invalid language code" in response.json().get("detail")[0].get("msg")
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_empty_titles(client: AsyncClient):
+    """Test with no titles provided"""
+    response = await client.get("/v1/translation/page-collection-membership?collection=Test&language=en&titles=")
+    assert response.status_code == 200
+    result = response.json()
+    assert result == {}
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_nonexistent_collection_titles(client: AsyncClient):
+    """Test with collection that doesn't exist - should return all false"""
+    response = await client.get(
+        "/v1/translation/page-collection-membership?collection=NonExistent&language=en&titles=Apple|Orange"
+    )
+    assert response.status_code == 200
+    result = response.json()
+    assert result == {"Apple": False, "Orange": False}
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_missing_parameters(client: AsyncClient):
+    """Test validation error when neither language/titles nor qids provided"""
+    response = await client.get("/v1/translation/page-collection-membership?collection=Test")
+    assert response.status_code == 422
+    assert "Must provide either" in response.json().get("detail")[0].get("msg")
+
+
+@pytest.mark.anyio
+async def test_page_collection_membership_conflicting_parameters(client: AsyncClient):
+    """Test validation error when both language/titles and qids provided"""
+    response = await client.get(
+        "/v1/translation/page-collection-membership?collection=Test&language=en&titles=Apple&qids=Q123"
+    )
+    assert response.status_code == 422
+    assert "Cannot provide both" in response.json().get("detail")[0].get("msg")

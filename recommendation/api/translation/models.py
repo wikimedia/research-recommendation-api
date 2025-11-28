@@ -138,10 +138,40 @@ class PageCollectionMembershipRequest(BaseModel):
         description="Name of the page collection to check against",
     )
 
-    qids: str = Field(
-        ...,
+    language: Optional[str] = Field(
+        default=None,
+        description="Language code for the titles being checked",
+    )
+
+    titles: Optional[str] = Field(
+        default=None,
+        description="Pipe-delimited list of article titles to check",
+    )
+
+    qids: Optional[str] = Field(
+        default=None,
         description="Pipe-delimited list of Wikidata QIDs to check (e.g., Q123|Q456)",
     )
+
+    @model_validator(mode="after")
+    def verify_parameters(self) -> Self:
+        from recommendation.utils import language_codes
+
+        # Must provide either (language + titles) or qids
+        has_language_titles = self.language is not None and self.titles is not None
+        has_qids = self.qids is not None
+
+        if not has_language_titles and not has_qids:
+            raise ValueError("Must provide either 'language' and 'titles' parameters, or 'qids' parameter")
+
+        if has_language_titles and has_qids:
+            raise ValueError("Cannot provide both 'language/titles' and 'qids' parameters")
+
+        # Validate language if provided
+        if self.language and not language_codes.is_valid_language(self.language):
+            raise ValueError("Invalid language code")
+
+        return self
 
 
 class PageCollectionMetadata(BaseModel):
