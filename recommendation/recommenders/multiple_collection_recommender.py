@@ -1,6 +1,6 @@
 import random
 from itertools import cycle
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from recommendation.api.translation.models import (
     PageCollection,
@@ -22,7 +22,7 @@ from recommendation.utils.section_recommendation_helper import get_section_sugge
 from recommendation.utils.size_helper import matches_article_size_filter
 
 
-class CollectionRecommender(BaseRecommender):
+class MultipleCollectionRecommender(BaseRecommender):
     def __init__(self, request_model: TranslationRecommendationRequest):
         self.source_language = request_model.source
         self.target_language = request_model.target
@@ -32,14 +32,26 @@ class CollectionRecommender(BaseRecommender):
         self.min_size = request_model.min_size
         self.max_size = request_model.max_size
         self.lead_section = request_model.lead_section
-        self.continue_offset = request_model.continue_offset
-        self.continue_seed = request_model.continue_seed
+
+        page_collection_cache = get_page_collection_cache()
+        self.page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
 
     def match(self) -> bool:
-        return self.collections
+        return self.collections and len(self.get_matched_collections()) != 1
+
+    def get_matched_collections(self) -> List[PageCollection]:
+        if not self.collection_name:
+            return []
+
+        return [
+            collection
+            for collection in self.page_collections
+            if collection.name.casefold() == self.collection_name.casefold()
+            or collection.name.casefold().startswith(f"{self.collection_name.casefold()}/")
+        ]
 
     async def recommend(self) -> TranslationRecommendationResponse:
-        recommendation_response = await self.get_recommendations_by_status(
+        recommendation_response = self.get_recommendations_by_status(
             missing=True, min_size=self.min_size, max_size=self.max_size
         )
 
@@ -61,7 +73,7 @@ class CollectionRecommender(BaseRecommender):
     async def recommend_sections(
         self,
     ) -> SectionTranslationRecommendationResponse:
-        recommendation_response = await self.get_recommendations_by_status(missing=False, min_size=None, max_size=None)
+        recommendation_response = self.get_recommendations_by_status(missing=False, min_size=None, max_size=None)
         section_recommendations: List[
             SectionTranslationRecommendation
         ] = await get_section_suggestions_for_recommendations(
@@ -73,18 +85,9 @@ class CollectionRecommender(BaseRecommender):
             self.max_size,
         )
 
-        if self.continue_offset is not None:
-            # Preserve the ordering of the original page list
-            index_map = {rec.title: i for i, rec in enumerate(recommendation_response.recommendations)}
-            section_recommendations.sort(key=lambda x: index_map.get(x.source_title, float("inf")))
-        else:
-            section_recommendations = self.reorder_page_collection_section_recommendations(section_recommendations)
+        section_recommendations = self.reorder_page_collection_section_recommendations(section_recommendations)
 
-        return SectionTranslationRecommendationResponse(
-            recommendations=section_recommendations,
-            continue_offset=recommendation_response.continue_offset,
-            continue_seed=recommendation_response.continue_seed,
-        )
+        return SectionTranslationRecommendationResponse(recommendations=section_recommendations)
 
     def get_valid_collection_recommendation_for_wikidata_article(
         self,
@@ -123,20 +126,6 @@ class CollectionRecommender(BaseRecommender):
             collection=page_collection.get_metadata(self.target_language),
         )
 
-    def apply_continue_offset(self, collection: PageCollection) -> Tuple[List[WikiDataArticle], Optional[int]]:
-        """
-        Applies a deterministic shuffled order (based on a seed) to the article list,
-        then returns articles starting from the continue_offset position.
-        """
-        # Sort based on a random seed
-        seed = self.continue_seed if self.continue_seed else random.randint(0, 2**32 - 1)
-        sorted_articles: List[WikiDataArticle] = self.shuffle_articles_with_seed(collection.articles, seed)
-        # If continue_offset == 0 → start from beginning
-        if self.continue_offset == 0:
-            return sorted_articles, seed
-
-        return sorted_articles[self.continue_offset :], seed
-
     @staticmethod
     def shuffle_collections(page_collections: List[PageCollection]):
         """
@@ -149,52 +138,14 @@ class CollectionRecommender(BaseRecommender):
         for collection in page_collections:
             random.shuffle(collection.articles)
 
-    @staticmethod
-    def shuffle_articles_with_seed(articles: List, seed: int) -> List:
-        rng = random.Random(seed)
-        rng.shuffle(articles)
-
-        return articles
-
-    def get_recommendations_for_single_collection(
-        self,
-        page_collection: PageCollection,
-        missing: bool,
-        min_size: Optional[int],
-        max_size: Optional[int],
-        continue_seed: Optional[int],
+    def get_recommendations_by_status(
+        self, missing: bool = True, min_size: Optional[int] = None, max_size: Optional[int] = None
     ) -> TranslationRecommendationResponse:
-        recommendations = []
-        articles = page_collection.articles
-        i = 0
-        while len(recommendations) < self.count and i < len(articles):
-            wikidata_article = articles[i]
-            i = i + 1
-            valid_recommendation_for_collection = self.get_valid_collection_recommendation_for_wikidata_article(
-                page_collection, wikidata_article, recommendations, missing, min_size, max_size
-            )
-            if valid_recommendation_for_collection:
-                recommendations.append(valid_recommendation_for_collection)
+        page_collections = self.page_collections
 
-        if self.continue_offset is None:
-            continue_offset = None
-        elif i == len(articles):
-            # if available collection articles have been exhausted, return -1 to signal end of "pagination"
-            continue_offset = -1
-        else:
-            continue_offset = max(self.continue_offset, 0) + i
+        if self.collection_name:
+            page_collections = self.get_matched_collections()
 
-        return TranslationRecommendationResponse(
-            recommendations=recommendations, continue_offset=continue_offset, continue_seed=continue_seed
-        )
-
-    def get_recommendations_for_multiple_collections(
-        self,
-        page_collections: List[PageCollection],
-        missing: bool,
-        min_size: Optional[int],
-        max_size: Optional[int],
-    ) -> TranslationRecommendationResponse:
         active_collections = []
         for page_collection in page_collections:
             if len(page_collection.articles) == 0:
@@ -203,7 +154,9 @@ class CollectionRecommender(BaseRecommender):
                 active_collections.append(page_collection)
 
         if not active_collections:
-            return []  # Exit early if no page collections have articles
+            return TranslationRecommendationResponse(
+                recommendations=[]
+            )  # Exit early if no page collections have articles
 
         self.shuffle_collections(active_collections)
 
@@ -241,42 +194,6 @@ class CollectionRecommender(BaseRecommender):
 
         return TranslationRecommendationResponse(recommendations=recommendations)
 
-    async def get_recommendations_by_status(
-        self, missing: bool = True, min_size: Optional[int] = None, max_size: Optional[int] = None
-    ) -> TranslationRecommendationResponse:
-        page_collection_cache = get_page_collection_cache()
-        page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
-        continue_seed = None
-
-        if self.collection_name:
-            normalized_collection_name = self.collection_name.casefold()
-            if self.continue_offset is None:
-                page_collections = [
-                    collection
-                    for collection in page_collections
-                    if collection.name.casefold() == normalized_collection_name
-                    or collection.name.casefold().startswith(f"{normalized_collection_name}/")
-                ]
-            else:
-                matched_collection = None
-                for collection in page_collections:
-                    if collection.name.casefold() == normalized_collection_name:
-                        matched_collection = collection
-
-                if not matched_collection:
-                    return TranslationRecommendationResponse(recommendations=[])
-
-                sorted_articles, continue_seed = self.apply_continue_offset(matched_collection)
-                matched_collection.articles = sorted_articles
-                page_collections = [matched_collection]
-
-        if len(page_collections) == 1:
-            return self.get_recommendations_for_single_collection(
-                page_collections[0], missing, min_size, max_size, continue_seed
-            )
-        else:
-            return self.get_recommendations_for_multiple_collections(page_collections, missing, min_size, max_size)
-
     @staticmethod
     def reorder_page_collection_section_recommendations(
         recommendations: List[SectionTranslationRecommendation],
@@ -306,7 +223,7 @@ class CollectionRecommender(BaseRecommender):
             >>> rec4 = SectionTranslationRecommendation( source_title="Article 4", collection=collection2 )
             >>> rec5 = SectionTranslationRecommendation( source_title="Article 5", collection=collection3 )
             >>> test_recommendations = [rec1, rec2, rec3, rec4, rec5]
-            >>> CollectionRecommender.reorder_page_collection_section_recommendations(test_recommendations)
+            >>> MultipleCollectionRecommender.reorder_page_collection_section_recommendations(test_recommendations)
             [rec1, rec3, rec5, rec2, rec4]
         """
         recommendations_by_collection: Dict[str, List[SectionTranslationRecommendation]] = {}
