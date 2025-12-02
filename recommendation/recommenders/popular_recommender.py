@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from recommendation.api.translation.models import (
     SectionTranslationRecommendationResponse,
@@ -33,19 +33,34 @@ class PopularRecommender(BaseRecommender):
         return True
 
     async def recommend(self) -> TranslationRecommendationResponse:
-        recommendations = await self.get_recommendations_by_status(True, self.min_size, self.max_size)
-        recommendations = recommendations[: self.count]
+        candidates = await self.get_recommendations_by_status(True)
 
-        # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
-        # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
-        # the recommendation during lead section size filtering, thus no need to add it again here.
-        if self.lead_section and not self.should_filter_by_lead_section_size(self.min_size, self.max_size):
+        # filter by article size if requested
+        if self.should_filter_by_article_size(self.min_size, self.max_size):
+            recommendations = [
+                candidate
+                for candidate in candidates
+                if matches_article_size_filter(candidate.size, self.min_size, self.max_size)
+            ]
+            recommendations = recommendations[: self.count]
+        # filter by lead section size if requested
+        elif self.should_filter_by_lead_section_size(self.min_size, self.max_size):
+            recommendations = await filter_recommendations_by_lead_section_size(
+                candidates, self.source_language, self.min_size, self.max_size, self.count
+            )
+        elif self.lead_section:
+            # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
+            # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
+            # the recommendation during lead section size filtering, thus no need to add it again here.
+            recommendations = candidates[: self.count]
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
+        else:
+            recommendations = candidates[: self.count]
 
         return TranslationRecommendationResponse(recommendations=recommendations)
 
     async def recommend_sections(self) -> SectionTranslationRecommendationResponse:
-        recommendations = await self.get_recommendations_by_status(False, None, None)
+        recommendations = await self.get_recommendations_by_status(False)
 
         section_recommendations = await get_section_suggestions_for_recommendations(
             recommendations, self.source_language, self.target_language, self.count, self.min_size, self.max_size
@@ -53,17 +68,13 @@ class PopularRecommender(BaseRecommender):
 
         return SectionTranslationRecommendationResponse(recommendations=section_recommendations)
 
-    async def get_recommendations_by_status(
-        self, missing: bool, min_size: Optional[int], max_size: Optional[int]
-    ) -> List[TranslationRecommendation]:
+    async def get_recommendations_by_status(self, missing: bool) -> List[TranslationRecommendation]:
         """
         Retrieves the top pageview candidates based on the given source and target language, and the
         given present/missing status - as indicated by the "missing" argument.
 
         Args:
             missing: A boolean indicating whether we need to return present or missing recommendations.
-            min_size: Minimum size in bytes to filter recommendations.
-            max_size: Maximum size in bytes to filter recommendations.
 
         Returns:
             list: A list of TranslationRecommendation objects representing the top pageview candidates.
@@ -89,18 +100,6 @@ class PopularRecommender(BaseRecommender):
                 self.target_language, [langlink["lang"] for langlink in article.get("langlinks", [])]
             )
         ]
-
-        # filter by size
-        if self.should_filter_by_article_size(min_size, max_size):
-            articles = [
-                article
-                for article in articles
-                if matches_article_size_filter(article.get("length", 0), min_size, max_size)
-            ]
-        elif self.should_filter_by_lead_section_size(min_size, max_size):
-            articles = await filter_recommendations_by_lead_section_size(
-                articles, self.source_language, min_size, max_size
-            )
 
         for article in articles:
             rec = TranslationRecommendation(

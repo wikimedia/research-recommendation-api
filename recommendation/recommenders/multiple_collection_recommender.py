@@ -1,6 +1,5 @@
 import random
-from itertools import cycle
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from recommendation.api.translation.models import (
     PageCollection,
@@ -9,7 +8,6 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationRequest,
     TranslationRecommendationResponse,
-    WikiDataArticle,
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
@@ -51,80 +49,47 @@ class MultipleCollectionRecommender(BaseRecommender):
         ]
 
     async def recommend(self) -> TranslationRecommendationResponse:
-        recommendation_response = self.get_recommendations_by_status(
-            missing=True, min_size=self.min_size, max_size=self.max_size
-        )
+        candidates = self.get_recommendations_by_status(missing=True)
 
+        if self.should_filter_by_article_size(self.min_size, self.max_size):
+            recommendations = [
+                candidate
+                for candidate in candidates
+                if matches_article_size_filter(candidate.size, self.min_size, self.max_size)
+            ]
+            recommendations = self.reorder_page_collection_recommendations(recommendations)
+            recommendations = recommendations[: self.count]
         # Apply lead section filtering if requested
-        if self.should_filter_by_lead_section_size(self.min_size, self.max_size):
-            recommendation_response.recommendations = await filter_recommendations_by_lead_section_size(
-                recommendation_response.recommendations, self.source_language, self.min_size, self.max_size
+        elif self.should_filter_by_lead_section_size(self.min_size, self.max_size):
+            # at most "count" recommendations will be returned. Once enough recommendations have been fetched
+            # the lead section requests will stop
+            recommendations = await filter_recommendations_by_lead_section_size(
+                candidates, self.source_language, self.min_size, self.max_size, self.count
             )
+            recommendations = self.reorder_page_collection_recommendations(recommendations)
         elif self.lead_section:
             # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
             # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
             # the recommendation during lead section size filtering, thus no need to add it again here.
-            recommendation_response.recommendations = await add_lead_section_sizes_to_recommendations(
-                recommendation_response.recommendations, self.source_language
-            )
+            recommendations = self.reorder_page_collection_recommendations(candidates)
+            recommendations = recommendations[: self.count]
+            recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
+        else:
+            recommendations = self.reorder_page_collection_recommendations(candidates)
+            recommendations = recommendations[: self.count]
 
-        return recommendation_response
+        return TranslationRecommendationResponse(recommendations=recommendations)
 
-    async def recommend_sections(
-        self,
-    ) -> SectionTranslationRecommendationResponse:
-        recommendation_response = self.get_recommendations_by_status(missing=False, min_size=None, max_size=None)
-        section_recommendations: List[
-            SectionTranslationRecommendation
-        ] = await get_section_suggestions_for_recommendations(
-            recommendation_response.recommendations,
-            self.source_language,
-            self.target_language,
-            self.count,
-            self.min_size,
-            self.max_size,
+    async def recommend_sections(self) -> SectionTranslationRecommendationResponse:
+        candidates = self.get_recommendations_by_status(missing=False)
+        candidates = self.reorder_page_collection_recommendations(candidates)
+        recommendations = await get_section_suggestions_for_recommendations(
+            candidates, self.source_language, self.target_language, self.count, self.min_size, self.max_size
         )
 
-        section_recommendations = self.reorder_page_collection_section_recommendations(section_recommendations)
+        recommendations = self.reorder_page_collection_recommendations(recommendations)
 
-        return SectionTranslationRecommendationResponse(recommendations=section_recommendations)
-
-    def get_valid_collection_recommendation_for_wikidata_article(
-        self,
-        page_collection: PageCollection,
-        wikidata_article: WikiDataArticle,
-        recommendations: List[TranslationRecommendation],
-        missing: bool,
-        min_size: Optional[int],
-        max_size: Optional[int],
-    ) -> Optional[TranslationRecommendation]:
-        candidate_source_article_title = wikidata_article.langlinks.get(self.source_language)
-        candidate_target_article_title = wikidata_article.langlinks.get(self.target_language)
-        already_exists = any(
-            wikidata_article.wikidata_id == recommendation.wikidata_id for recommendation in recommendations
-        )
-
-        if not candidate_source_article_title or bool(candidate_target_article_title) == missing or already_exists:
-            return None
-
-        # Get article size from cached data for source language only
-        article_size = wikidata_article.sizes.get(self.source_language)
-
-        # Apply size filtering
-        if (
-            self.should_filter_by_article_size(min_size, max_size)
-            and article_size is not None
-            and not matches_article_size_filter(article_size, min_size, max_size)
-        ):
-            return None
-
-        return TranslationRecommendation(
-            title=candidate_source_article_title,
-            wikidata_id=wikidata_article.wikidata_id,
-            langlinks_count=len(wikidata_article.langlinks),
-            size=article_size,
-            collection=page_collection.get_metadata(self.target_language),
-        )
+        return SectionTranslationRecommendationResponse(recommendations=recommendations)
 
     @staticmethod
     def shuffle_collections(page_collections: List[PageCollection]):
@@ -138,9 +103,7 @@ class MultipleCollectionRecommender(BaseRecommender):
         for collection in page_collections:
             random.shuffle(collection.articles)
 
-    def get_recommendations_by_status(
-        self, missing: bool = True, min_size: Optional[int] = None, max_size: Optional[int] = None
-    ) -> TranslationRecommendationResponse:
+    def get_recommendations_by_status(self, missing: bool = True) -> List[TranslationRecommendation]:
         page_collections = self.page_collections
 
         if self.collection_name:
@@ -154,79 +117,50 @@ class MultipleCollectionRecommender(BaseRecommender):
                 active_collections.append(page_collection)
 
         if not active_collections:
-            return TranslationRecommendationResponse(
-                recommendations=[]
-            )  # Exit early if no page collections have articles
+            return []  # Exit early if no page collections have articles
 
         self.shuffle_collections(active_collections)
+        recommendations: Dict = {}
 
-        # Create iterators for the articles of each page collection, paired with their collection
-        article_iterators = [(iter(collection.articles), collection) for collection in active_collections]
-        # Use cycle to iterate through the iterators in a round-robin fashion
-        active_iterators = cycle(article_iterators)
+        for page_collection in active_collections:
+            collection_metadata = page_collection.get_metadata(self.target_language)
 
-        recommendations = []
-        active_iterator = None
-        while article_iterators and len(recommendations) < self.count:
-            try:
-                # Get the next iterator and its associated page collection
-                active_iterator = next(active_iterators)
-                article_iterator = active_iterator[0]
-                page_collection = active_iterator[1]
-
-                valid_recommendation_for_collection = None
-                while not valid_recommendation_for_collection:
-                    # Fetch the next article from the current iterator
-                    wikidata_article = next(article_iterator)
-
-                    valid_recommendation_for_collection = self.get_valid_collection_recommendation_for_wikidata_article(
-                        page_collection, wikidata_article, recommendations, missing, min_size, max_size
+            for wikidata_article in page_collection.articles:
+                candidate_source_article_title = wikidata_article.langlinks.get(self.source_language)
+                candidate_target_article_title = wikidata_article.langlinks.get(self.target_language)
+                if (
+                    candidate_source_article_title
+                    and bool(candidate_target_article_title) != missing
+                    and wikidata_article.wikidata_id not in recommendations
+                ):
+                    recommendations[wikidata_article.wikidata_id] = TranslationRecommendation(
+                        title=candidate_source_article_title,
+                        wikidata_id=wikidata_article.wikidata_id,
+                        langlinks_count=len(wikidata_article.langlinks),
+                        size=wikidata_article.sizes.get(self.source_language),
+                        collection=collection_metadata,
                     )
 
-                recommendations.append(valid_recommendation_for_collection)
-
-            except StopIteration:
-                # Remove exhausted iterator
-                article_iterators.remove(active_iterator)
-                active_iterators = cycle(article_iterators)
-                if not article_iterators:
-                    break
-
-        return TranslationRecommendationResponse(recommendations=recommendations)
+        return list(recommendations.values())
 
     @staticmethod
-    def reorder_page_collection_section_recommendations(
-        recommendations: List[SectionTranslationRecommendation],
-    ) -> List[SectionTranslationRecommendation]:
+    def reorder_page_collection_recommendations(
+        recommendations: List[TranslationRecommendation | SectionTranslationRecommendation],
+    ) -> List[TranslationRecommendation | SectionTranslationRecommendation]:
         """
-        Reorders a list of section recommendations such that recommendations from different collections are
+        Reorders a list of recommendations such that recommendations from different collections are
         interleaved. The method distributes the recommendations by cycling through their collections,
         ensuring that each collection's recommendations are listed in a round-robin fashion.
-        This is used only for section recommendations, because we cannot know beforehand which article will
-        produce a valid section recommendation, thus we need to re-order the section recommendations, once
-        they have been fetched.
 
         Args:
-            recommendations (List[SectionTranslationRecommendation]): A list of section translation recommendations.
+            recommendations: A list of article or section translation recommendations.
 
         Returns:
-            List[SectionTranslationRecommendation]: A reordered list of recommendations.
-
-        Example:
-            >>> collection1 = PageCollectionMetadata( name="Collection One" )
-            >>> collection2 = PageCollectionMetadata( name="Collection Two" )
-            >>> collection3 = PageCollectionMetadata( name="Collection Three" )
-
-            >>> rec1 = SectionTranslationRecommendation( source_title="Article 1", collection=collection1 )
-            >>> rec2 = SectionTranslationRecommendation( source_title="Article 2", collection=collection1 )
-            >>> rec3 = SectionTranslationRecommendation( source_title="Article 3", collection=collection2 )
-            >>> rec4 = SectionTranslationRecommendation( source_title="Article 4", collection=collection2 )
-            >>> rec5 = SectionTranslationRecommendation( source_title="Article 5", collection=collection3 )
-            >>> test_recommendations = [rec1, rec2, rec3, rec4, rec5]
-            >>> MultipleCollectionRecommender.reorder_page_collection_section_recommendations(test_recommendations)
-            [rec1, rec3, rec5, rec2, rec4]
+            List[TranslationRecommendation|SectionTranslationRecommendation]: A reordered list of recommendations.
         """
-        recommendations_by_collection: Dict[str, List[SectionTranslationRecommendation]] = {}
+        recommendations_by_collection: Dict[
+            str, List[TranslationRecommendation | SectionTranslationRecommendation]
+        ] = {}
 
         for recommendation in recommendations:
             collection_name = recommendation.collection.name
@@ -234,7 +168,9 @@ class MultipleCollectionRecommender(BaseRecommender):
                 recommendations_by_collection[collection_name] = []  # Initialize a list for this collection
             recommendations_by_collection[collection_name].append(recommendation)
 
-        collection_groups: List[List[SectionTranslationRecommendation]] = list(recommendations_by_collection.values())
+        collection_groups: List[List[TranslationRecommendation | SectionTranslationRecommendation]] = list(
+            recommendations_by_collection.values()
+        )
         max_len = max((len(group) for group in collection_groups), default=0)
 
         # Interleave the recommendations so each one has a different collection
