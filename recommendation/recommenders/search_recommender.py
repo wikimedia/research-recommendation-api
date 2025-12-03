@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 
 from recommendation.api.translation.models import (
     TranslationRecommendation,
@@ -46,86 +46,49 @@ class SearchRecommender(BaseRecommender):
         return bool(self.topic or self.seed or self.country)
 
     async def get_recommendations_by_status(self, missing: bool) -> List[TranslationRecommendation]:
-        results = await self.search_wiki()
+        base_search_query, gsrsort = self.get_search_query_properties()
+        pages = await self.fetch_search_results(base_search_query, gsrsort)
 
-        if len(results) == 0:
+        if len(pages) == 0:
             log.debug(f"Recommendation request {self.debug_request_params} does not map to an article")
             return []
 
         # Store initial index as rank, because the index can change after filtering
         # start=1, so that the rank begins at 1
-        for index, page in enumerate(results, start=1):
+        for index, page in enumerate(pages, start=1):
             page["rank"] = index
 
-        # Filter out articles with "disambiguation" page prop
-        results = [page for page in results if "disambiguation" not in page.get("pageprops", {})]
+        pages = self.filter_by_missing_status(pages, missing)
+        recs = [
+            TranslationRecommendation(
+                title=page["title"],
+                rank=page.get("rank", page.get("index")),
+                langlinks_count=int(page.get("langlinkscount", 0)),
+                size=page.get("size", 0),
+                lead_section_size=page.get("lead_section_size", None),
+                wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
+            )
+            for page in pages
+        ]
 
+        return sort_recommendations(recs, self.rank_method)
+
+    def filter_by_missing_status(self, pages: List[Dict], missing: bool) -> List[Dict]:
         # Filter out based on "missing" status
-        results = [
+        return [
             page
-            for page in results
+            for page in pages
             if missing
             == is_missing_in_target_language(
                 self.target_language, [langlink["lang"] for langlink in page.get("langlinks", [])]
             )
         ]
 
-        recommendations = [
-            TranslationRecommendation(
-                title=page["title"],
-                rank=page.get("rank", page["index"]),
-                langlinks_count=int(page.get("langlinkscount", 0)),
-                size=page.get("size", 0),
-                lead_section_size=page.get("lead_section_size", None),
-                wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
-            )
-            for page in results
-        ]
-
-        return sort_recommendations(recommendations, self.rank_method)
-
-    async def search_wiki(self):
-        """
-        This method sends a request to the source Wikipedia API, to fetch the related pages based on the
-        request parameters.
-
-        Returns:
-            list: A list of pages that match the search query.
-        """
-        endpoint, params, headers = self.build_wiki_search()
-
-        try:
-            response = await get(endpoint, params=params, headers=headers)
-        except ValueError:
-            log.error(
-                f"Could not search for articles related to search {self.debug_request_params}. Choose another language."
-            )
-            return []
-
-        if "query" not in response or "pages" not in response["query"]:
-            log.debug(f"Recommendation request {self.debug_request_params} does not map to an article")
-            return []
-
-        pages = response["query"]["pages"]
-
-        if len(pages) == 0:
-            log.debug(f"Recommendation request {self.debug_request_params} does not map to an article")
-            return []
-
-        return pages
-
-    def build_wiki_search(self):
-        """
-        Builds the parameters and headers required for making a Wikipedia search API request.
-
-        Returns:
-            tuple: A tuple containing the endpoint URL, parameters, and headers for the API request.
-        """
-        endpoint, headers = get_endpoint_and_headers(self.source_language)
-
-        # langlinks filtering uses the domain code when it differs from the language code
+    def get_base_search_payload(self) -> Dict:
+        """Construct common search payload used by fetch_search_results."""
         lllang = get_language_to_domain_mapping().get(self.target_language, self.target_language)
-        params = {
+
+        return {
             "action": "query",
             "format": "json",
             "formatversion": 2,
@@ -141,31 +104,61 @@ class SearchRecommender(BaseRecommender):
             "gsrqiprofile": "classic_noboostlinks",
         }
 
-        gsrsearch_query = []
-
+    def get_search_query_properties(self) -> Tuple[str, Optional[str]]:
+        """Build the base search query string and optional sort order."""
+        base_search_query_strings = []
+        gsrsort = None
         if self.topic:
-            params["gsrsort"] = "random"
+            gsrsort = "random"
             topics = self.topic.replace(" ", "-").lower()
             search_expression = build_search_query("articletopic", topics)
             if search_expression:
-                gsrsearch_query.append(search_expression)
+                base_search_query_strings.append(search_expression)
 
         if self.country:
-            params["gsrsort"] = "random"
+            gsrsort = "random"
             search_expression = build_search_query("articlecountry", self.country)
             if search_expression:
-                gsrsearch_query.append(search_expression)
+                base_search_query_strings.append(search_expression)
 
         if self.seed:
             # morelike is a "greedy" keyword, meaning that it cannot be combined with other search queries.
             # To use other search queries, use morelikethis in your search:
             # https://www.mediawiki.org/wiki/Help:CirrusSearch#morelike
-            if len(gsrsearch_query):
-                gsrsearch_query.append(f"morelikethis:{self.seed}")
+            if len(base_search_query_strings):
+                base_search_query_strings.append(f"morelikethis:{self.seed}")
             else:
-                gsrsearch_query.append(f"morelike:{self.seed}")
+                base_search_query_strings.append(f"morelike:{self.seed}")
 
-        params["gsrsearch"] = " ".join(gsrsearch_query)
+        base_search_query = " ".join(base_search_query_strings)
+        return base_search_query, gsrsort
 
-        log.debug(f"Search params: {params}")
-        return endpoint, params, headers
+    async def fetch_search_results(self, query: str, gsrsort: Optional[str]) -> List[Dict]:
+        """Execute the Wikipedia search API request and return filtered pages."""
+        endpoint, headers = get_endpoint_and_headers(self.source_language)
+        base_params = self.get_base_search_payload()
+
+        params = {**base_params, "gsrsearch": query}
+        if gsrsort:
+            params["gsrsort"] = gsrsort
+
+        log.debug(f"Sending search query {params}")
+        try:
+            response = await get(endpoint, params=params, headers=headers)
+        except ValueError:
+            log.error(f"Could not search for articles related to search {self.debug_request_params}.")
+            return []
+
+        if "query" not in response or "pages" not in response["query"]:
+            log.debug(f"Search query '{query}' returned no pages.")
+            return []
+
+        pages = response["query"]["pages"]
+        if not pages:
+            log.debug(f"Search query '{query}' returned empty pages.")
+            return []
+
+        # Filter out `disambiguation` pages
+        pages = [page for page in pages if "disambiguation" not in page.get("pageprops", {})]
+
+        return pages

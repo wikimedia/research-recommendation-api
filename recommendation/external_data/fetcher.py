@@ -260,6 +260,57 @@ async def get_wikipedia_article_sizes(language: str, titles: List[str]) -> Dict[
     return all_sizes
 
 
+async def get_wikipedia_page_ids(language: str, titles: List[str]) -> Dict[str, int]:
+    """
+    Fetch Wikipedia page IDs for a list of article titles using the Wikipedia API.
+
+    Args:
+        language (str): Language code (e.g. "en", "es", "fr").
+        titles (List[str]): List of article titles.
+
+    Returns:
+        Dict[str, int]: Mapping of article titles to their page IDs.
+    """
+    if not titles:
+        return {}
+
+    endpoint, headers = get_endpoint_and_headers(language)
+
+    batch_size = 50  # Wikipedia API limit per request
+    results = {}
+
+    async def fetch_batch(batch_titles: List[str]) -> Dict[str, int]:
+        params = {
+            "action": "query",
+            "format": "json",
+            "formatversion": "2",
+            "titles": "|".join(batch_titles),
+        }
+        try:
+            data = await get(endpoint, params=params, headers=headers)
+            batch_result = {}
+            if "query" in data and "pages" in data["query"]:
+                for page in data["query"]["pages"]:
+                    if "title" in page and "pageid" in page:
+                        batch_result[page["title"]] = page["pageid"]
+            return batch_result
+        except ValueError:
+            log.error(f"Failed to fetch page IDs for language {language}, batch: {batch_titles}")
+            return {}
+
+    batches = [titles[i : i + batch_size] for i in range(0, len(titles), batch_size)]
+    batch_tasks = [fetch_batch(batch) for batch in batches]
+    batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+
+    for result in batch_results:
+        if isinstance(result, dict):
+            results.update(result)
+        elif isinstance(result, Exception):
+            log.error(f"Error fetching page IDs batch: {repr(result)}")
+
+    return results
+
+
 def get_endpoint_and_headers(source: str) -> Tuple[str, Dict[str, str]]:
     """
     Retrieves the API endpoint and headers based on the given source.

@@ -74,6 +74,11 @@ class TranslationRecommendationRequest(BaseModel):
         default=None,
         examples=["blz", "can+usa", "prk|kor"],
     )
+    featured_collection: Optional[str] = Field(
+        description="Featured collection for filtering recommendations.",
+        default=None,
+        examples=["Essential Articles", "Wiki99/food"],
+    )
     collections: bool = Field(
         description="Whether to fetch recommendations from page collections",
         default=False,

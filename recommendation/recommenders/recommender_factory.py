@@ -1,4 +1,5 @@
 from recommendation.api.translation.models import TranslationRecommendationRequest
+from recommendation.recommenders.featured_collection_search_recommender import FeaturedCollectionSearchRecommender
 from recommendation.recommenders.multiple_collection_recommender import MultipleCollectionRecommender
 from recommendation.recommenders.popular_recommender import PopularRecommender
 from recommendation.recommenders.search_recommender import SearchRecommender
@@ -11,6 +12,7 @@ class RecommenderFactory:
         self.recommenders = [
             SingleCollectionRecommender(request_model),
             MultipleCollectionRecommender(request_model),
+            FeaturedCollectionSearchRecommender(request_model),
             SearchRecommender(request_model),
             PopularRecommender(request_model),
         ]
