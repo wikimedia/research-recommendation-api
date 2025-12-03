@@ -1,6 +1,6 @@
 import asyncio
 import urllib.parse
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import httpx
 
@@ -202,7 +202,7 @@ async def fetch_appendix_section_titles(language: str, english_appendix: List[st
         return []
 
 
-async def get_wikipedia_article_sizes(language: str, titles: List[str]) -> Dict[str, int]:
+async def get_wikipedia_article_sizes_and_page_ids(language: str, titles: List[str]) -> Dict[str, Dict]:
     """
     Fetch article sizes from Wikipedia API for a list of titles.
 
@@ -213,51 +213,17 @@ async def get_wikipedia_article_sizes(language: str, titles: List[str]) -> Dict[
     Returns:
         Dict[str, int]: Mapping of article titles to their sizes in bytes
     """
-    if not titles:
-        return {}
+    extra_params = {"prop": "info"}
+    pages = await fetch_wikipedia_pages_in_batches(language, titles, extra_params)
+    result = {}
 
-    endpoint, headers = get_endpoint_and_headers(language)
-
-    # Wikipedia API can handle up to 50 titles per request
-    batch_size = 50
-
-    async def fetch_batch_sizes(batch_titles: List[str]) -> Dict[str, int]:
-        params = {
-            "action": "query",
-            "format": "json",
-            "formatversion": "2",
-            "prop": "info",
-            "titles": "|".join(batch_titles),
+    for page in pages:
+        result[page["title"]] = {
+            "length": page["length"],
+            "pageid": page["pageid"],
         }
 
-        try:
-            data = await get(endpoint, params=params, headers=headers)
-            batch_sizes = {}
-            if "query" in data and "pages" in data["query"]:
-                for page in data["query"]["pages"]:
-                    if "length" in page and "title" in page:
-                        batch_sizes[page["title"]] = page["length"]
-            return batch_sizes
-        except ValueError:
-            log.error(f"Failed to fetch article sizes for language {language}, batch: {batch_titles}")
-            return {}
-
-    # Create batches and tasks
-    batches = [titles[i : i + batch_size] for i in range(0, len(titles), batch_size)]
-    batch_tasks = [fetch_batch_sizes(batch) for batch in batches]
-
-    # Execute all batches concurrently
-    batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
-
-    # Merge results
-    all_sizes = {}
-    for result in batch_results:
-        if isinstance(result, dict):
-            all_sizes.update(result)
-        elif isinstance(result, Exception):
-            log.error(f"Error fetching article sizes batch: {result}")
-
-    return all_sizes
+    return result
 
 
 async def get_wikipedia_page_ids(language: str, titles: List[str]) -> Dict[str, int]:
@@ -271,42 +237,55 @@ async def get_wikipedia_page_ids(language: str, titles: List[str]) -> Dict[str, 
     Returns:
         Dict[str, int]: Mapping of article titles to their page IDs.
     """
+    pages = await fetch_wikipedia_pages_in_batches(language, titles)
+    page_ids = {}
+
+    for page in pages:
+        page_ids[page["title"]] = page["pageid"]
+
+    return page_ids
+
+
+async def fetch_wikipedia_pages_in_batches(
+    language: str, titles: List[str], extra_params: Optional[Dict] = None
+) -> List[Dict]:
     if not titles:
-        return {}
+        return []
 
     endpoint, headers = get_endpoint_and_headers(language)
 
     batch_size = 50  # Wikipedia API limit per request
-    results = {}
+    base_params = {
+        "action": "query",
+        "format": "json",
+        "formatversion": "2",
+    }
 
-    async def fetch_batch(batch_titles: List[str]) -> Dict[str, int]:
-        params = {
-            "action": "query",
-            "format": "json",
-            "formatversion": "2",
-            "titles": "|".join(batch_titles),
-        }
+    extra_params = {} if extra_params is None else extra_params
+    params = base_params | extra_params
+
+    async def fetch_batch(batch_titles: List[str]) -> List[Dict]:
+        params["titles"] = "|".join(batch_titles)
+
         try:
             data = await get(endpoint, params=params, headers=headers)
-            batch_result = {}
-            if "query" in data and "pages" in data["query"]:
-                for page in data["query"]["pages"]:
-                    if "title" in page and "pageid" in page:
-                        batch_result[page["title"]] = page["pageid"]
+            batch_result: List[Dict] = []
+
+            for page in data.get("query", {}).get("pages", []):
+                batch_result.append(page)
+
             return batch_result
         except ValueError:
-            log.error(f"Failed to fetch page IDs for language {language}, batch: {batch_titles}")
-            return {}
+            log.error(f"Failed Wikipedia pages batch fetch for {language}, titles: {batch_titles}")
+            return []
 
     batches = [titles[i : i + batch_size] for i in range(0, len(titles), batch_size)]
     batch_tasks = [fetch_batch(batch) for batch in batches]
     batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
 
+    results: List[Dict] = []
     for result in batch_results:
-        if isinstance(result, dict):
-            results.update(result)
-        elif isinstance(result, Exception):
-            log.error(f"Error fetching page IDs batch: {repr(result)}")
+        results.extend(result)
 
     return results
 

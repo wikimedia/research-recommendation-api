@@ -3,7 +3,7 @@ import re
 from typing import Dict, List
 
 from recommendation.api.translation.models import PageCollectionMetadata, WikiDataArticle, WikiPage
-from recommendation.external_data.fetcher import get, get_endpoint_and_headers, get_wikipedia_article_sizes
+from recommendation.external_data.fetcher import get, get_endpoint_and_headers, get_wikipedia_article_sizes_and_page_ids
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 from recommendation.utils.sitematrix_helper import get_dbname_by_prefix, get_language_by_dbname, get_language_by_prefix
@@ -313,12 +313,12 @@ async def fetch_articles(params: dict, endpoint: str, headers: dict) -> List[Wik
             wikidata_articles.append(WikiDataArticle(wikidata_id=qid, langlinks=interlanguage_links))
 
     # Fetch English Wikipedia article sizes
-    await populate_article_sizes(wikidata_articles, "en")
+    await populate_article_sizes_and_page_ids(wikidata_articles, "en")
 
     return wikidata_articles
 
 
-async def populate_article_sizes(wikidata_articles: List[WikiDataArticle], language: str) -> None:
+async def populate_article_sizes_and_page_ids(wikidata_articles: List[WikiDataArticle], language: str) -> None:
     """
     Helper function to populate Wikipedia article sizes for WikiDataArticle instances.
 
@@ -337,9 +337,10 @@ async def populate_article_sizes(wikidata_articles: List[WikiDataArticle], langu
 
     if titles:
         try:
-            sizes = await get_wikipedia_article_sizes(language, titles)
-            for title, size in sizes.items():
+            pages = await get_wikipedia_article_sizes_and_page_ids(language, titles)
+            for title, page in pages.items():
                 if title in article_to_title:
-                    article_to_title[title].sizes[language] = size
+                    article_to_title[title].sizes[language] = page["length"]
+                    article_to_title[title].page_ids[language] = page["pageid"]
         except Exception as e:
             log.warning(f"Failed to fetch {language} Wikipedia article sizes: {repr(e)}")

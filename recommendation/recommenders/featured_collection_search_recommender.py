@@ -144,19 +144,22 @@ class FeaturedCollectionSearchRecommender(BaseRecommender):
         if not asked_collection:
             return batched_queries
 
-        # Collect all source-language titles present in the collection
-        pages = [
-            wikidata_article.langlinks.get(self.base.source_language)
+        cached_page_ids = [
+            wikidata_article.page_ids.get(self.base.source_language)
             for wikidata_article in asked_collection.articles
             if wikidata_article.langlinks.get(self.base.source_language) is not None
+            and wikidata_article.page_ids.get(self.base.source_language) is not None
         ]
 
-        if not pages:
-            return batched_queries
+        titles_without_page_ids = [
+            wikidata_article.langlinks.get(self.base.source_language)
+            for wikidata_article in asked_collection.articles
+            if wikidata_article.page_ids.get(self.base.source_language) is not None
+            and wikidata_article.page_ids.get(self.base.source_language) is None
+        ]
 
-        # Resolve titles -> pageids via helper
-        response = await get_wikipedia_page_ids(self.base.source_language, pages)
-        page_ids = list(response.values())
+        response = await get_wikipedia_page_ids(self.base.source_language, titles_without_page_ids)
+        page_ids = cached_page_ids + list(response.values())
 
         # Compose base query and batch
         base_query = (base_search_query + " " if base_search_query else "") + "pageid:"
