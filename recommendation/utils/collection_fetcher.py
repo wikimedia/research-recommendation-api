@@ -170,7 +170,7 @@ async def process_batches(batches, fetch_function, *args) -> List[WikiDataArticl
     articles = []
     for result in results:
         if isinstance(result, Exception):
-            log.error(f"Error fetching articles: {result}")
+            log.error(f"Error fetching articles: {repr(result)}")
         else:
             articles.extend(result)
 
