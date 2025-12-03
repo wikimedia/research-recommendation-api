@@ -30,6 +30,7 @@ class SingleCollectionRecommender(BaseRecommender):
         page_collection_cache = get_page_collection_cache()
         self.page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
         self.sorted_collection_articles = []
+        self.should_preserve_recommendations_order = True
 
     def match(self) -> bool:
         return self.collections and len(self.get_matched_collections()) == 1

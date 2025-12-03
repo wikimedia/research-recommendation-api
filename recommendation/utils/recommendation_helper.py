@@ -1,16 +1,92 @@
 import asyncio
 import random
-from typing import List, Set
+from typing import Callable, List, Set
 
 from recommendation.api.translation.models import (
     RankMethodEnum,
     SectionTranslationRecommendation,
     TranslationRecommendation,
 )
-from recommendation.utils.configuration import configuration
-from recommendation.utils.lead_section_size_helper import get_lead_section_size
 from recommendation.utils.logger import log
-from recommendation.utils.size_helper import matches_section_size_filter
+
+
+async def collect_results_ordered(items: List, fetch_fn: Callable, process_fn: Callable, limit: int) -> List:
+    """
+    Fetches and processes items in parallel with bounded concurrency, preserving input order.
+
+    This is a generic async utility that applies a fetch-process pipeline to a list of items.
+    It maintains bounded concurrency by only keeping (successful + pending) ≤ limit tasks
+    active at any time. Results maintain their original position in the input list, even
+    though tasks complete in arbitrary order.
+
+    Args:
+        items (List): List of items to fetch and process. Can be any type that fetch_fn accepts.
+        fetch_fn (Callable): Async function that takes an item and returns raw data.
+            Signature: async def fetch_fn(item) -> raw_result
+        process_fn (Callable): Sync function that validates/transforms fetched data.
+            Should return the processed item if valid, or None to filter it out.
+            Signature: def process_fn(item, raw_result) -> processed_item | None
+        limit (int): Maximum number of successful (non-None) results to return.
+            Also controls maximum concurrent tasks: successful + pending ≤ limit.
+
+    Returns:
+        List: Processed items that passed validation (process_fn returned non-None),
+            in the same order as the input list. Length ≤ limit.
+
+    Note:
+        - Failed fetches are logged but don't stop processing
+        - Process function can filter by returning None
+        - Use this when order matters; use asyncio.as_completed for speed
+
+    See Also:
+        filter_recommendations_by_lead_section_size_ordered: Specialized use case
+    """
+    if not items:
+        return []
+
+    items_length = len(items)
+    total_limit = min(limit, items_length)
+    ordered_results = [None] * total_limit
+
+    running_tasks = {i: asyncio.create_task(fetch_fn(items[i])) for i in range(total_limit)}
+
+    task_to_idx = {task: i for i, task in running_tasks.items()}
+    next_to_start = total_limit
+
+    successful = 0
+
+    while running_tasks and successful < total_limit:
+        done, _ = await asyncio.wait(
+            running_tasks.values(),
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+
+        for finished in done:
+            idx = task_to_idx.pop(finished)
+            del running_tasks[idx]
+
+            try:
+                raw_result = await finished
+                processed = process_fn(items[idx], raw_result)
+                if processed is not None:
+                    ordered_results[idx] = processed
+                    successful += 1
+            except Exception as e:
+                log.error(f"Error in ordered fetch: {repr(e)}")
+
+            if successful >= total_limit:
+                break
+
+            if next_to_start < items_length and successful + len(running_tasks) < total_limit:
+                new_task = asyncio.create_task(fetch_fn(items[next_to_start]))
+                running_tasks[next_to_start] = new_task
+                task_to_idx[new_task] = next_to_start
+                next_to_start += 1
+
+    for task in running_tasks.values():
+        task.cancel()
+
+    return [result for result in ordered_results if result is not None][:total_limit]
 
 
 def sort_recommendations(recommendations, rank_method):
@@ -20,57 +96,6 @@ def sort_recommendations(recommendations, rank_method):
     else:
         # shuffle recommendations
         return sorted(recommendations, key=lambda x: random.random())
-
-
-async def filter_recommendations_by_lead_section_size(
-    recommendations: List, language: str, min_size: int, max_size: int, max_results: int = None
-) -> List:
-    """
-    Filters recommendations based on lead section size.
-
-    Args:
-        recommendations: List of recommendation objects with a 'title' attribute.
-        language: Language code for fetching lead section sizes.
-        min_size: Minimum allowed lead section size.
-        max_size: Maximum allowed lead section size.
-        max_results: Optional limit on the number of filtered recommendations.
-
-    Returns:
-        List of recommendation objects that match the size criteria,
-        each with a 'lead_section_size' attribute set.
-    """
-    semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)
-
-    async def fetch_size(rec):
-        async with semaphore:
-            title = rec["title"] if isinstance(rec, dict) else getattr(rec, "title", None)
-            return rec, await get_lead_section_size(title, language)
-
-    filtered_recommendations = []
-    tasks = [asyncio.create_task(fetch_size(rec)) for rec in recommendations]
-
-    for task in asyncio.as_completed(tasks):
-        try:
-            rec, size_dict = await task
-            lead_size = list(size_dict.values())[0]  # assume single-key dict
-            section_sizes = {"__LEAD_SECTION__": lead_size}
-            if matches_section_size_filter(section_sizes, min_size, max_size):
-                if hasattr(rec, "lead_section_size"):
-                    rec.lead_section_size = lead_size
-                else:
-                    rec["lead_section_size"] = lead_size
-                filtered_recommendations.append(rec)
-        except Exception as e:
-            log.error(f"Error fetching lead section size: {repr(e)}")
-
-        if max_results and len(filtered_recommendations) >= max_results:
-            # Cancel remaining tasks
-            for t in tasks:
-                if not t.done():
-                    t.cancel()
-            break
-
-    return filtered_recommendations
 
 
 def do_interleave_recommendations(

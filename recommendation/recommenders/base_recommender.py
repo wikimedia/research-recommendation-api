@@ -7,8 +7,10 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationResponse,
 )
-from recommendation.utils.lead_section_size_helper import add_lead_section_sizes_to_recommendations
-from recommendation.utils.recommendation_helper import filter_recommendations_by_lead_section_size
+from recommendation.utils.lead_section_size_helper import (
+    add_lead_section_sizes_to_recommendations,
+    filter_recommendations_by_lead_section_size,
+)
 from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
 from recommendation.utils.size_helper import matches_article_size_filter
 
@@ -21,6 +23,7 @@ class BaseRecommender(ABC):
     min_size: Optional[int]
     max_size: Optional[int]
     lead_section: bool = False
+    should_preserve_recommendations_order: bool = False
 
     @abstractmethod
     def match(self) -> bool:
@@ -57,7 +60,12 @@ class BaseRecommender(ABC):
 
         elif self.should_filter_by_lead_section_size(self.min_size, self.max_size):
             recommendations = await filter_recommendations_by_lead_section_size(
-                candidates, self.source_language, self.min_size, self.max_size, self.count
+                candidates,
+                self.source_language,
+                self.min_size,
+                self.max_size,
+                self.count,
+                should_preserve_order=self.should_preserve_recommendations_order,
             )
             recommendations = self.post_filter_article_translation_hook(recommendations)
 
