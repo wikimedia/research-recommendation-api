@@ -3,7 +3,6 @@ from typing import Dict, List
 
 from recommendation.api.translation.models import (
     PageCollection,
-    SectionTranslationRecommendation,
     SectionTranslationRecommendationResponse,
     TranslationRecommendation,
     TranslationRecommendationRequest,
@@ -12,12 +11,6 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
-from recommendation.utils.lead_section_size_helper import (
-    add_lead_section_sizes_to_recommendations,
-)
-from recommendation.utils.recommendation_helper import filter_recommendations_by_lead_section_size
-from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class SingleCollectionRecommender(BaseRecommender):
@@ -52,32 +45,7 @@ class SingleCollectionRecommender(BaseRecommender):
             or collection.name.casefold().startswith(f"{self.collection_name.casefold()}/")
         ]
 
-    async def recommend(self) -> TranslationRecommendationResponse:
-        candidates = self.get_recommendations_by_status(missing=True)
-
-        if self.should_filter_by_article_size(self.min_size, self.max_size):
-            recommendations = [
-                candidate
-                for candidate in candidates
-                if matches_article_size_filter(candidate.size, self.min_size, self.max_size)
-            ]
-            recommendations = recommendations[: self.count]
-        # Apply lead section filtering if requested
-        elif self.should_filter_by_lead_section_size(self.min_size, self.max_size):
-            # at most "count" recommendations will be returned. Once enough recommendations have been fetched
-            # the lead section requests will stop
-            recommendations = await filter_recommendations_by_lead_section_size(
-                candidates, self.source_language, self.min_size, self.max_size, self.count
-            )
-        elif self.lead_section:
-            # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
-            # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
-            # the recommendation during lead section size filtering, thus no need to add it again here.
-            recommendations = candidates[: self.count]
-            recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
-        else:
-            recommendations = candidates[: self.count]
-
+    def build_translation_recommendation_response(self, recommendations):
         if not recommendations:
             continue_offset = -1
         else:
@@ -89,25 +57,13 @@ class SingleCollectionRecommender(BaseRecommender):
             continue_seed=self.continue_seed,
         )
 
-    async def recommend_sections(
-        self,
-    ) -> SectionTranslationRecommendationResponse:
-        candidates = self.get_recommendations_by_status(missing=False)
-        section_recommendations: List[
-            SectionTranslationRecommendation
-        ] = await get_section_suggestions_for_recommendations(
-            candidates,
-            self.source_language,
-            self.target_language,
-            self.count,
-            self.min_size,
-            self.max_size,
-        )
-
-        # Preserve the ordering of the original page list
+    def post_section_suggestions_hook(self, candidates, section_recommendations):
+        # Preserve ordering of original page list
         index_map = {rec.title: i for i, rec in enumerate(candidates)}
         section_recommendations.sort(key=lambda x: index_map.get(x.source_title, float("inf")))
+        return section_recommendations
 
+    def build_section_response(self, section_recommendations):
         if not section_recommendations:
             continue_offset = -1
         else:
@@ -156,7 +112,7 @@ class SingleCollectionRecommender(BaseRecommender):
 
         return articles
 
-    def get_recommendations_by_status(self, missing: bool = True) -> List[TranslationRecommendation]:
+    async def get_recommendations_by_status(self, missing: bool = True) -> List[TranslationRecommendation]:
         page_collection = self.get_matched_collections()[0]
         self.sorted_collection_articles = self.apply_continue_offset(page_collection)
 

@@ -4,20 +4,12 @@ from typing import Dict, List
 from recommendation.api.translation.models import (
     PageCollection,
     SectionTranslationRecommendation,
-    SectionTranslationRecommendationResponse,
     TranslationRecommendation,
     TranslationRecommendationRequest,
-    TranslationRecommendationResponse,
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
-from recommendation.utils.lead_section_size_helper import (
-    add_lead_section_sizes_to_recommendations,
-)
 from recommendation.utils.logger import log
-from recommendation.utils.recommendation_helper import filter_recommendations_by_lead_section_size
-from recommendation.utils.section_recommendation_helper import get_section_suggestions_for_recommendations
-from recommendation.utils.size_helper import matches_article_size_filter
 
 
 class MultipleCollectionRecommender(BaseRecommender):
@@ -48,48 +40,14 @@ class MultipleCollectionRecommender(BaseRecommender):
             or collection.name.casefold().startswith(f"{self.collection_name.casefold()}/")
         ]
 
-    async def recommend(self) -> TranslationRecommendationResponse:
-        candidates = self.get_recommendations_by_status(missing=True)
+    def post_filter_article_translation_hook(self, recommendations):
+        return self.reorder_page_collection_recommendations(recommendations)
 
-        if self.should_filter_by_article_size(self.min_size, self.max_size):
-            recommendations = [
-                candidate
-                for candidate in candidates
-                if matches_article_size_filter(candidate.size, self.min_size, self.max_size)
-            ]
-            recommendations = self.reorder_page_collection_recommendations(recommendations)
-            recommendations = recommendations[: self.count]
-        # Apply lead section filtering if requested
-        elif self.should_filter_by_lead_section_size(self.min_size, self.max_size):
-            # at most "count" recommendations will be returned. Once enough recommendations have been fetched
-            # the lead section requests will stop
-            recommendations = await filter_recommendations_by_lead_section_size(
-                candidates, self.source_language, self.min_size, self.max_size, self.count
-            )
-            recommendations = self.reorder_page_collection_recommendations(recommendations)
-        elif self.lead_section:
-            # We always want to add the lead_section_size to the recommendations when "lead_section" URL param is set
-            # When "min_size" and/or "max_size" URL param is also provided, we already add the lead_section_size to
-            # the recommendation during lead section size filtering, thus no need to add it again here.
-            recommendations = self.reorder_page_collection_recommendations(candidates)
-            recommendations = recommendations[: self.count]
-            recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
-        else:
-            recommendations = self.reorder_page_collection_recommendations(candidates)
-            recommendations = recommendations[: self.count]
+    def pre_section_suggestions_hook(self, candidates):
+        return self.reorder_page_collection_recommendations(candidates)
 
-        return TranslationRecommendationResponse(recommendations=recommendations)
-
-    async def recommend_sections(self) -> SectionTranslationRecommendationResponse:
-        candidates = self.get_recommendations_by_status(missing=False)
-        candidates = self.reorder_page_collection_recommendations(candidates)
-        recommendations = await get_section_suggestions_for_recommendations(
-            candidates, self.source_language, self.target_language, self.count, self.min_size, self.max_size
-        )
-
-        recommendations = self.reorder_page_collection_recommendations(recommendations)
-
-        return SectionTranslationRecommendationResponse(recommendations=recommendations)
+    def post_section_suggestions_hook(self, candidates, section_recommendations):
+        return self.reorder_page_collection_recommendations(section_recommendations)
 
     @staticmethod
     def shuffle_collections(page_collections: List[PageCollection]):
@@ -103,7 +61,7 @@ class MultipleCollectionRecommender(BaseRecommender):
         for collection in page_collections:
             random.shuffle(collection.articles)
 
-    def get_recommendations_by_status(self, missing: bool = True) -> List[TranslationRecommendation]:
+    async def get_recommendations_by_status(self, missing: bool = True) -> List[TranslationRecommendation]:
         page_collections = self.page_collections
 
         if self.collection_name:
