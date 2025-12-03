@@ -102,6 +102,7 @@ class BaseRecommender(ABC):
             self.count,
             self.min_size,
             self.max_size,
+            should_preserve_order=self.should_preserve_recommendations_order,
         )
 
         section_recommendations = self.post_section_suggestions_hook(candidates, section_recommendations)

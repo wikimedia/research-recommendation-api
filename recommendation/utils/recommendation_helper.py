@@ -46,7 +46,7 @@ async def collect_results_ordered(items: List, fetch_fn: Callable, process_fn: C
 
     items_length = len(items)
     total_limit = min(limit, items_length)
-    ordered_results = [None] * total_limit
+    ordered_results = [None] * items_length
 
     running_tasks = {i: asyncio.create_task(fetch_fn(items[i])) for i in range(total_limit)}
 
