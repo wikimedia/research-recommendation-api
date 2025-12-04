@@ -288,7 +288,7 @@ class PageCollection(BaseModel):
         return len(self.articles)
 
     def articles_in_language_count(self, language) -> int:
-        return sum(1 for article in self.articles if any(language in key for key in article.langlinks))
+        return sum(1 for article in self.articles if language in article.langlinks)
 
     def get_metadata(self, target_language) -> PageCollectionMetadata:
         return PageCollectionMetadata(

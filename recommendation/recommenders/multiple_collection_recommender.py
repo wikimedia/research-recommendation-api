@@ -1,4 +1,5 @@
 import random
+from itertools import zip_longest
 from typing import Dict, List
 
 from recommendation.api.translation.models import (
@@ -9,7 +10,8 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
-from recommendation.utils.logger import log
+
+MAX_RECOMMENDATIONS = 500
 
 
 class MultipleCollectionRecommender(BaseRecommender):
@@ -67,36 +69,37 @@ class MultipleCollectionRecommender(BaseRecommender):
         if self.collection_name:
             page_collections = self.get_matched_collections()
 
-        active_collections = []
+        self.shuffle_collections(page_collections)
+
+        collection_articles = []
         for page_collection in page_collections:
-            if len(page_collection.articles) == 0:
-                log.warning(f"Found empty page-collection {page_collection}")
-            else:
-                active_collections.append(page_collection)
-
-        if not active_collections:
-            return []  # Exit early if no page collections have articles
-
-        self.shuffle_collections(active_collections)
-        recommendations: Dict = {}
-
-        for page_collection in active_collections:
             collection_metadata = page_collection.get_metadata(self.target_language)
 
-            for wikidata_article in page_collection.articles:
-                candidate_source_article_title = wikidata_article.langlinks.get(self.source_language)
-                candidate_target_article_title = wikidata_article.langlinks.get(self.target_language)
-                if (
-                    candidate_source_article_title
-                    and bool(candidate_target_article_title) != missing
-                    and wikidata_article.wikidata_id not in recommendations
-                ):
-                    recommendations[wikidata_article.wikidata_id] = TranslationRecommendation(
-                        title=candidate_source_article_title,
-                        wikidata_id=wikidata_article.wikidata_id,
-                        langlinks_count=len(wikidata_article.langlinks),
-                        size=wikidata_article.sizes.get(self.source_language),
-                        collection=collection_metadata,
+            articles_list = [
+                (article, collection_metadata)
+                for article in page_collection.articles
+                if article.langlinks.get(self.source_language)
+                and bool(article.langlinks.get(self.target_language)) != missing
+            ]
+
+            if articles_list:
+                collection_articles.append(articles_list)
+
+        recommendations: Dict = {}
+        # Interleave and add to recommendations with limit
+        for articles_tuple in zip_longest(*collection_articles):
+            for article_data in articles_tuple:
+                if len(recommendations) >= MAX_RECOMMENDATIONS:
+                    break  # Exit when limit reached
+
+                if article_data and article_data[0].wikidata_id not in recommendations:
+                    article, metadata = article_data
+                    recommendations[article.wikidata_id] = TranslationRecommendation(
+                        title=article.langlinks.get(self.source_language),
+                        wikidata_id=article.wikidata_id,
+                        langlinks_count=len(article.langlinks),
+                        size=article.sizes.get(self.source_language),
+                        collection=metadata,
                     )
 
         return list(recommendations.values())
