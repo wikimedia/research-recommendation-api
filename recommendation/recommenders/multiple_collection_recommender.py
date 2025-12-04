@@ -1,6 +1,6 @@
 import random
 from itertools import zip_longest
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from recommendation.api.translation.models import (
     PageCollection,
@@ -10,6 +10,7 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
+from recommendation.utils.recommendation_helper import interleave_by_ratio
 
 MAX_RECOMMENDATIONS = 500
 
@@ -27,9 +28,44 @@ class MultipleCollectionRecommender(BaseRecommender):
 
         page_collection_cache = get_page_collection_cache()
         self.page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
+        self.featured_collection: Optional[PageCollection] = self.get_collection(request_model.featured_collection)
 
     def match(self) -> bool:
         return self.collections and len(self.get_matched_collections()) != 1
+
+    def get_collection(self, collection_name):
+        if not collection_name:
+            return None
+
+        found = None
+        for collection in self.page_collections:
+            if collection.name.casefold() == collection_name.casefold():
+                found = collection
+                break
+
+        return found
+
+    def get_featured_collection_recommendations_by_status(self, missing):
+        if not self.featured_collection:
+            return []
+
+        recommendations = []
+        collection_metadata = self.featured_collection.get_metadata(self.target_language)
+        for article in self.featured_collection.articles:
+            if (
+                article.langlinks.get(self.source_language)
+                and bool(article.langlinks.get(self.target_language)) != missing
+            ):
+                recommendation = TranslationRecommendation(
+                    title=article.langlinks.get(self.source_language),
+                    wikidata_id=article.wikidata_id,
+                    langlinks_count=len(article.langlinks),
+                    size=article.sizes.get(self.source_language),
+                    collection=collection_metadata,
+                )
+                recommendations.append(recommendation)
+
+        return recommendations
 
     def get_matched_collections(self) -> List[PageCollection]:
         if not self.collection_name:
@@ -45,11 +81,26 @@ class MultipleCollectionRecommender(BaseRecommender):
     def post_filter_article_translation_hook(self, recommendations):
         return self.reorder_page_collection_recommendations(recommendations)
 
-    def pre_section_suggestions_hook(self, candidates):
-        return self.reorder_page_collection_recommendations(candidates)
-
     def post_section_suggestions_hook(self, candidates, section_recommendations):
         return self.reorder_page_collection_recommendations(section_recommendations)
+
+    def reorder_page_collection_recommendations(
+        self, recommendations: List[TranslationRecommendation | SectionTranslationRecommendation]
+    ) -> List[TranslationRecommendation | SectionTranslationRecommendation]:
+        if not self.featured_collection:
+            return self.interleave_by_collection(recommendations)
+
+        simple_recommendations = []
+        featured_recommendations = []
+        for recommendation in recommendations:
+            if recommendation.collection.name == self.featured_collection.name:
+                featured_recommendations.append(recommendation)
+            else:
+                simple_recommendations.append(recommendation)
+
+        simple_recommendations = self.interleave_by_collection(simple_recommendations)
+
+        return interleave_by_ratio(simple_recommendations, featured_recommendations)
 
     @staticmethod
     def shuffle_collections(page_collections: List[PageCollection]):
@@ -68,6 +119,13 @@ class MultipleCollectionRecommender(BaseRecommender):
 
         if self.collection_name:
             page_collections = self.get_matched_collections()
+
+        if self.featured_collection:
+            page_collections = [
+                collection
+                for collection in page_collections
+                if collection.name.casefold() != self.featured_collection.name.casefold()
+            ]
 
         self.shuffle_collections(page_collections)
 
@@ -102,10 +160,12 @@ class MultipleCollectionRecommender(BaseRecommender):
                         collection=metadata,
                     )
 
-        return list(recommendations.values())
+        featured_recommendations = self.get_featured_collection_recommendations_by_status(missing)
+
+        return interleave_by_ratio(list(recommendations.values()), featured_recommendations)
 
     @staticmethod
-    def reorder_page_collection_recommendations(
+    def interleave_by_collection(
         recommendations: List[TranslationRecommendation | SectionTranslationRecommendation],
     ) -> List[TranslationRecommendation | SectionTranslationRecommendation]:
         """

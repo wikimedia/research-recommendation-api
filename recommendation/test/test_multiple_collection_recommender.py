@@ -62,7 +62,7 @@ def test_reorder_collection_section_recommendations():
     test_recommendations = [rec1, rec2, rec3, rec4, rec5]
 
     # Act
-    reordered = MultipleCollectionRecommender.reorder_page_collection_recommendations(test_recommendations)
+    reordered = MultipleCollectionRecommender.interleave_by_collection(test_recommendations)
 
     # Assert: expected order from the docstring
     assert reordered == [rec1, rec3, rec5, rec2, rec4]
@@ -113,7 +113,7 @@ def test_reorder_collection_article_recommendations():
 
     recommendations = [rec1, rec2, rec3, rec4, rec5]
 
-    reordered = MultipleCollectionRecommender.reorder_page_collection_recommendations(recommendations)
+    reordered = MultipleCollectionRecommender.interleave_by_collection(recommendations)
 
     # Assert: round‑robin order, preserving order within each collection
     assert reordered == [rec1, rec3, rec5, rec2, rec4]

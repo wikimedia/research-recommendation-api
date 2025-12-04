@@ -236,6 +236,14 @@ class SectionTranslationRecommendation(BaseModel):
         default=None,
     )
 
+    @property
+    def title(self) -> str:
+        """Returns the source title"""
+        return self.source_title
+
+    def __hash__(self) -> int:
+        return hash(self.source_title)
+
 
 class PageCollection(BaseModel):
     name: str = Field(

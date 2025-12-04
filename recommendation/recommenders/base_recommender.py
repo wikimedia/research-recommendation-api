@@ -62,21 +62,13 @@ class BaseRecommender(ABC):
             recommendations = self.post_filter_article_translation_hook(recommendations)
 
         elif self.lead_section:
-            recommendations = self.post_filter_article_translation_hook(candidates)
-            recommendations = recommendations[: self.count]
+            recommendations = candidates[: self.count]
             recommendations = await add_lead_section_sizes_to_recommendations(recommendations, self.source_language)
 
         else:
-            recommendations = self.post_filter_article_translation_hook(candidates)
-            recommendations = recommendations[: self.count]
+            recommendations = candidates[: self.count]
 
         return self.build_translation_recommendation_response(recommendations)
-
-    def pre_section_suggestions_hook(
-        self, candidates: List[TranslationRecommendation]
-    ) -> List[TranslationRecommendation]:
-        """Override to transform candidates before fetching section suggestions."""
-        return candidates
 
     def post_section_suggestions_hook(
         self,
@@ -94,7 +86,6 @@ class BaseRecommender(ABC):
 
     async def recommend_sections(self) -> SectionTranslationRecommendationResponse:
         candidates = await self.get_recommendations_by_status(missing=False)
-        candidates = self.pre_section_suggestions_hook(candidates)
 
         section_recommendations = await get_section_suggestions_for_recommendations(
             candidates,

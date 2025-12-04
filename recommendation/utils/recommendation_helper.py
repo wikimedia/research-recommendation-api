@@ -4,6 +4,7 @@ from typing import List, Set
 
 from recommendation.api.translation.models import (
     RankMethodEnum,
+    SectionTranslationRecommendation,
     TranslationRecommendation,
 )
 from recommendation.utils.configuration import configuration
@@ -73,10 +74,10 @@ async def filter_recommendations_by_lead_section_size(
 
 
 def do_interleave_recommendations(
-    primary: List[TranslationRecommendation],
-    featured: List[TranslationRecommendation],
+    primary: List[TranslationRecommendation | SectionTranslationRecommendation],
+    featured: List[TranslationRecommendation | SectionTranslationRecommendation],
     featured_positions: List[int],
-) -> List[TranslationRecommendation]:
+) -> List[TranslationRecommendation | SectionTranslationRecommendation]:
     """
     Merges two recommendation lists by inserting featured items at specific positions.
 
@@ -102,8 +103,8 @@ def do_interleave_recommendations(
         - Featured items take precedence if a duplicate exists
         - Order of primary items is preserved in non-featured positions
     """
-    result: List[TranslationRecommendation] = []
-    seen: Set[TranslationRecommendation] = set()
+    result: List[TranslationRecommendation | SectionTranslationRecommendation] = []
+    seen: Set[TranslationRecommendation | SectionTranslationRecommendation] = set()
     featured_index = 0
     total_featured = len(featured)
 
@@ -125,10 +126,10 @@ def do_interleave_recommendations(
 
 
 def interleave_by_ratio(
-    primary_recommendations: List[TranslationRecommendation],
-    featured_recommendations: List[TranslationRecommendation],
+    primary_recommendations: List[TranslationRecommendation | SectionTranslationRecommendation],
+    featured_recommendations: List[TranslationRecommendation | SectionTranslationRecommendation],
     ratio: float = 0.5,
-) -> List[TranslationRecommendation]:
+) -> List[TranslationRecommendation | SectionTranslationRecommendation]:
     """
     Interleaves two recommendation lists according to a specified ratio.
 
@@ -137,16 +138,16 @@ def interleave_by_ratio(
     to equal length for interleaving, then appends remaining items.
 
     Args:
-        primary_recommendations (List[TranslationRecommendation]): Base list of
+        primary_recommendations (List): Base list of
             recommendations that forms the majority of the result.
-        featured_recommendations (List[TranslationRecommendation]): Special
+        featured_recommendations (List): Special
             recommendations to be distributed throughout the result.
         ratio (float): Target proportion of featured items in the interleaved portion.
             Must be between 0 and 1. For example, 0.5 means aim for 50% featured items.
             Defaults to 0.5.
 
     Returns:
-        List[TranslationRecommendation]: Merged list with featured items evenly
+        List[TranslationRecommendation|SectionTranslationRecommendation]: Merged list with featured items evenly
             distributed, followed by any leftover items from either list.
 
     Algorithm:
