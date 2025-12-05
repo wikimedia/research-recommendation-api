@@ -92,7 +92,7 @@ class FeaturedCollectionSearchRecommender(BaseRecommender):
                 size=page.get("size", 0),
                 lead_section_size=page.get("lead_section_size", None),
                 wikidata_id=page.get("pageprops", {}).get("wikibase_item"),
-                collection=featured_page_collection.get_metadata(self.base.target_language)
+                collection=featured_page_collection.get_metadata(self.target_language)
                 if featured_page_collection
                 else None,
             )
@@ -145,20 +145,20 @@ class FeaturedCollectionSearchRecommender(BaseRecommender):
             return batched_queries
 
         cached_page_ids = [
-            wikidata_article.page_ids.get(self.base.source_language)
+            wikidata_article.page_ids.get(self.source_language)
             for wikidata_article in asked_collection.articles
-            if wikidata_article.langlinks.get(self.base.source_language) is not None
-            and wikidata_article.page_ids.get(self.base.source_language) is not None
+            if wikidata_article.langlinks.get(self.source_language) is not None
+            and wikidata_article.page_ids.get(self.source_language) is not None
         ]
 
         titles_without_page_ids = [
-            wikidata_article.langlinks.get(self.base.source_language)
+            wikidata_article.langlinks.get(self.source_language)
             for wikidata_article in asked_collection.articles
-            if wikidata_article.page_ids.get(self.base.source_language) is not None
-            and wikidata_article.page_ids.get(self.base.source_language) is None
+            if wikidata_article.langlinks.get(self.source_language) is not None
+            and wikidata_article.page_ids.get(self.source_language) is None
         ]
 
-        response = await get_wikipedia_page_ids(self.base.source_language, titles_without_page_ids)
+        response = await get_wikipedia_page_ids(self.source_language, titles_without_page_ids)
         page_ids = cached_page_ids + list(response.values())
 
         # Compose base query and batch
