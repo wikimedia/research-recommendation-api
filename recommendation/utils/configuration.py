@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     USER_AGENT_HEADER: str = "WMF Recommendation API (https://recommend.wmcloud.org/; leila@wikimedia.org)"
     CACHE_DIRECTORY: str = ".cache"
     DEBUG: bool = False
+    HTTPX_TIMEOUT_SECONDS: float = 30.0
+    HTTPX_MAX_KEEPALIVE_CONNECTIONS: int = 10
+    HTTPX_MAX_CONNECTIONS: int = 20
 
 
 configuration = Settings()
