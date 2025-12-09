@@ -64,7 +64,7 @@ class SingleCollectionRecommender(BaseRecommender):
         section_recommendations.sort(key=lambda x: index_map.get(x.source_title, float("inf")))
         return section_recommendations
 
-    def build_section_response(self, section_recommendations):
+    def build_section_translation_response(self, section_recommendations):
         if not section_recommendations:
             continue_offset = -1
         else:
