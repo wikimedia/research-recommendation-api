@@ -11,7 +11,6 @@ from recommendation.cache import get_appendix_titles_cache
 from recommendation.external_data.fetcher import fetch_appendix_section_titles, get, set_headers_with_host_header
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
-from recommendation.utils.recommendation_helper import collect_results_ordered
 from recommendation.utils.size_helper import matches_section_size_filter
 
 
@@ -51,18 +50,16 @@ async def create_suggestion_validator(language: str, min_size: Optional[int], ma
     """
     source_appendix_titles = await get_appendix_titles(language)
 
-    def process_suggestion_result(title, result):
-        if not (result and result.get("sections", {}).get("missing")):
+    def process_suggestion_result(result):
+        if not (result and result.get("missing")):
             return None
 
-        sections_data = result["sections"]
-        missing_source_sections = sections_data["missing"].keys()
-
+        missing_source_sections = result["missing"].keys()
         not_appendix_missing = [title for title in missing_source_sections if title not in source_appendix_titles]
         if not not_appendix_missing:
             return None
 
-        source_section_sizes = sections_data.get("sourceSectionSizes", {})
+        source_section_sizes = result.get("sourceSectionSizes", {})
         if min_size is not None or max_size is not None:
             missing_section_sizes = {
                 section: source_section_sizes[section]
@@ -84,18 +81,38 @@ def create_section_suggestion_fetcher(source: str, target: str):
     Sets up API configuration and returns a reusable async function that fetches
     section suggestions for article titles with bounded concurrency.
     """
-    section_suggestion_api = f"{configuration.CXSERVER_URL}v2/suggest/sections/"
+    section_suggestion_api = f"{configuration.CXSERVER_URL}v2/suggest/sections"
     headers = set_headers_with_host_header(configuration.CXSERVER_HEADER, source)
     semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)
 
-    async def fetch_with_semaphore(recommendation_title: str):
-        encoded_title = urllib.parse.quote(recommendation_title, safe="")
-        url = f"{section_suggestion_api}{encoded_title}/{source}/{target}?include_section_sizes=true"
+    async def fetch_with_semaphore(recommendation_titles: str):
+        encoded_titles = urllib.parse.quote(recommendation_titles, safe="")
+        url = f"{section_suggestion_api}/{source}/{target}?titles={encoded_titles}&include_section_sizes=true"
 
         async with semaphore:
             return await get(url, headers=headers, treat_404_as_error=False)
 
     return fetch_with_semaphore
+
+
+def batch_titles(titles: List[str], batch_size: int = 10) -> List[str]:
+    return ["|".join(titles[i : i + batch_size]) for i in range(0, len(titles), batch_size)]
+
+
+def process_batch_response(response, validate_result):
+    validated_results = []
+
+    if response and "results" in response:
+        for result in response["results"]:
+            # Skip failed results
+            if not result.get("success", True) or "error" in result:
+                continue
+
+            validated = validate_result(result)
+            if validated:
+                validated_results.append(validated)
+
+    return validated_results
 
 
 async def get_section_suggestions_for_recommendations(
@@ -142,18 +159,17 @@ async def get_section_suggestions_for_recommendations(
     section_suggestions: List[SectionTranslationRecommendation] = []
 
     for result in results:
-        data = result["sections"]
-        source_section_sizes = data.get("sourceSectionSizes", {})
+        source_section_sizes = result.get("sourceSectionSizes", {})
 
         recommendation = SectionTranslationRecommendation(
-            source_title=data["sourceTitle"],
-            target_title=data["targetTitle"],
-            source_sections=data["sourceSections"],
-            target_sections=data["targetSections"],
-            present=data["present"],
-            missing=data["missing"],
+            source_title=result["sourceTitle"],
+            target_title=result["targetTitle"],
+            source_sections=result["sourceSections"],
+            target_sections=result["targetSections"],
+            present=result["present"],
+            missing=result["missing"],
             source_section_sizes=source_section_sizes,
-            collection=title_to_collection_map[data["sourceTitle"]],
+            collection=title_to_collection_map[result["sourceTitle"]],
         )
         section_suggestions.append(recommendation)
 
@@ -195,19 +211,22 @@ async def fetch_section_suggestions_unordered(
     if not candidate_titles:
         return []
 
-    fetch_section = create_section_suggestion_fetcher(source_language, target_language)
+    fetch_section_suggestions = create_section_suggestion_fetcher(source_language, target_language)
     validate_result = await create_suggestion_validator(source_language, min_size, max_size)
 
-    # Fire all tasks at once
-    tasks = [asyncio.create_task(fetch_section(title)) for title in candidate_titles]
+    # Batch titles into groups of 50 — CXServer handles large batches comfortably
+    # and 50 is a safe ceiling regardless of the requested count
+    batched_titles = batch_titles(candidate_titles, 50)
+
+    # Fire all tasks at once with batched titles
+    tasks = [asyncio.create_task(fetch_section_suggestions(batch)) for batch in batched_titles]
     results = []
 
     for task in asyncio.as_completed(tasks):
         try:
-            result = await task
-            result = validate_result(None, result)
-            if result:
-                results.append(result)
+            response = await task
+            validated_results = process_batch_response(response, validate_result)
+            results.extend(validated_results)
         except Exception as e:
             log.error(f"Error fetching section suggestions: {repr(e)}")
 
@@ -255,7 +274,23 @@ async def fetch_section_suggestions_ordered(
     if not candidate_titles:
         return []
 
-    fetch_section_suggestion = create_section_suggestion_fetcher(source_language, target_language)
+    fetch_section_suggestions = create_section_suggestion_fetcher(source_language, target_language)
     validate_result = await create_suggestion_validator(source_language, min_size, max_size)
 
-    return await collect_results_ordered(candidate_titles, fetch_section_suggestion, validate_result, count)
+    # Batch titles into groups of 50 — CXServer handles large batches comfortably
+    # and 50 is a safe ceiling regardless of the requested count
+    batched_titles = batch_titles(candidate_titles, 50)
+
+    results = []
+    for batch in batched_titles:
+        try:
+            response = await fetch_section_suggestions(batch)
+            validated_results = process_batch_response(response, validate_result)
+            results.extend(validated_results)
+        except Exception as e:
+            log.error(f"Error fetching section suggestions: {repr(e)}")
+
+        if len(results) >= count:
+            break
+
+    return results[:count]
