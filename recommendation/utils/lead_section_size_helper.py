@@ -231,6 +231,8 @@ async def filter_recommendations_by_lead_section_size_unordered(
     for task in asyncio.as_completed(tasks):
         try:
             size_dict = await task
+            if size_dict is None:
+                continue
             # size_dict is a dict in this format: { "Moon": 1000 }
             title = list(size_dict.keys())[0]
             rec = title_to_recommendation_map[title]
