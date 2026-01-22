@@ -55,10 +55,14 @@ async def create_suggestion_validator(language: str, min_size: Optional[int], ma
         if not (result and result.get("sections", {}).get("missing")):
             return None
 
-        my_data = result["sections"]
-        missing_source_sections = my_data["missing"].keys()
+        sections_data = result["sections"]
+        missing_source_sections = sections_data["missing"].keys()
+
         not_appendix_missing = [title for title in missing_source_sections if title not in source_appendix_titles]
-        source_section_sizes = my_data.get("sourceSectionSizes", {})
+        if not not_appendix_missing:
+            return None
+
+        source_section_sizes = sections_data.get("sourceSectionSizes", {})
         if min_size is not None or max_size is not None:
             missing_section_sizes = {
                 section: source_section_sizes[section]
