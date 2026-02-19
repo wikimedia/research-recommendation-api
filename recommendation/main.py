@@ -1,5 +1,6 @@
 import asyncio
 import os
+import random
 import sys
 import traceback
 from contextlib import asynccontextmanager
@@ -56,8 +57,10 @@ async def periodic_cache_update():
 
                 await asyncio.sleep(60 * 60)  # Sleep for 1 hour
         except Exception as e:
-            log.error(f"Periodic cache update failed: {repr(e)}")
-            await asyncio.sleep(10 * 60)  # Sleep for 10 minutes before retrying the failed update
+            sleep_time = random.randint(120, 360)  # 2-6 minutes
+            log.error(f"Periodic cache update failed: {repr(e)}. Sleeping for {sleep_time} seconds.")
+            # sleep for some time to minimize retry concurrency during deployment
+            await asyncio.sleep(sleep_time)
 
 
 @asynccontextmanager
