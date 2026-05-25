@@ -55,7 +55,7 @@ async def periodic_cache_update():
                 await update_page_collection_cache()
                 log.info("Page collection cache updated successfully.")
 
-                await asyncio.sleep(60 * 60)  # Sleep for 1 hour
+            await asyncio.sleep(60 * 60)  # Sleep for 1 hour
         except Exception as e:
             sleep_time = random.randint(120, 360)  # 2-6 minutes
             log.error(f"Periodic cache update failed: {repr(e)}. Sleeping for {sleep_time} seconds.")

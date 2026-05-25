@@ -90,6 +90,10 @@ async def test_recommendations_morelike(client: AsyncClient):
     assert results[0].get("size") > 0
 
 
+# generator=mostviewed depends on Wikipedia's PageViewInfo (PVI) backend. When that
+# backend fails, the API caches the error and returns {"error": {"code": "pvi-cached-error"}}
+# for 30 minutes, causing this test to fail continuously. Skip until we have a better solution.
+@pytest.mark.skip(reason="flaky: depends on live Wikipedia PVI backend (pvi-cached-error)")
 @pytest.mark.anyio
 async def test_recommendations_mostpopular(client: AsyncClient):
     response = await client.get("/v1/translation?source=en&target=es&search_algorithm=mostpopular")
