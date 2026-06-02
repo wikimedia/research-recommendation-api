@@ -1,9 +1,9 @@
-import asyncio
 import urllib.parse
 from typing import Dict, List, Optional, Tuple
 
 import httpx
 
+from recommendation.utils.async_helper import gather_with_concurrency
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
@@ -287,7 +287,10 @@ async def fetch_wikipedia_pages_in_batches(
 
     batches = [titles[i : i + batch_size] for i in range(0, len(titles), batch_size)]
     batch_tasks = [fetch_batch(batch) for batch in batches]
-    batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+    # Bound concurrency: a large title list fans out one request per 50-title batch.
+    batch_results = await gather_with_concurrency(
+        configuration.API_CONCURRENCY_LIMIT, batch_tasks, return_exceptions=True
+    )
 
     results: List[Dict] = []
     for result in batch_results:

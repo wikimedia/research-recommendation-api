@@ -3,6 +3,7 @@ from typing import Callable, Dict, List, Optional
 
 from recommendation.api.translation.models import TranslationRecommendation
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers
+from recommendation.utils.async_helper import gather_with_concurrency
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 from recommendation.utils.recommendation_helper import collect_results_ordered
@@ -57,9 +58,10 @@ async def add_lead_section_sizes_to_recommendations(
     """
     Concurrently fetch lead section sizes and assign them to TranslationRecommendation models.
     """
-    tasks = [get_lead_section_size(rec.title, language) for rec in recommendations]
-
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    # Bound concurrency: this issues one request per recommendation, so an unbounded
+    # gather could fan out to hundreds of in-flight requests.
+    requests = [get_lead_section_size(rec.title, language) for rec in recommendations]
+    results = await gather_with_concurrency(configuration.API_CONCURRENCY_LIMIT, requests, return_exceptions=True)
 
     for rec, result in zip(recommendations, results, strict=True):
         if isinstance(result, Exception):

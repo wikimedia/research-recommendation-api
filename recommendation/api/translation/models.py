@@ -1,9 +1,11 @@
-import asyncio
 from enum import Enum
 from typing import Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 from typing_extensions import Self
+
+from recommendation.utils.async_helper import gather_with_concurrency
+from recommendation.utils.configuration import configuration
 
 
 class WikiPage(BaseModel):
@@ -275,8 +277,12 @@ class PageCollection(BaseModel):
         # This import is here to avoid circular imports
         from recommendation.utils.collection_fetcher import get_candidates_in_collection_page
 
-        tasks = [get_candidates_in_collection_page(page) for page in self.pages]
-        results = await asyncio.gather(*tasks)
+        # Bound concurrency in case a collection spans many pages.
+        results = await gather_with_concurrency(
+            configuration.API_CONCURRENCY_LIMIT,
+            [get_candidates_in_collection_page(page) for page in self.pages],
+            return_exceptions=False,
+        )
 
         for candidates in results:
             self.articles.extend(candidates)

@@ -9,7 +9,9 @@ from recommendation.api.translation.models import (
 )
 from recommendation.cache import get_interwiki_map_cache, get_page_collection_cache, get_sitematrix_cache
 from recommendation.external_data import fetcher
+from recommendation.utils.async_helper import gather_with_concurrency
 from recommendation.utils.collection_fetcher import get_collection_metadata_by_pages, get_collection_pages
+from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 
 
@@ -53,18 +55,18 @@ async def update_page_collection_cache():
     # Get metadata for each page
     batch_size = 20
     collection_metadata_by_pages: Dict[str, PageCollectionMetadata] = {}
-    semaphore = asyncio.Semaphore(10)  # Limit to 10 concurrent tasks
 
-    async def limited_task(task):
-        async with semaphore:
-            return await task
-
-    tasks = [
-        limited_task(get_collection_metadata_by_pages(collection_pages[i : i + batch_size]))
+    requests = [
+        get_collection_metadata_by_pages(collection_pages[i : i + batch_size])
         for i in range(0, len(collection_pages), batch_size)
     ]
     try:
-        batch_results = await asyncio.gather(*tasks)
+        # Bound concurrency via API_CONCURRENCY_LIMIT.
+        batch_results = await gather_with_concurrency(
+            configuration.API_CONCURRENCY_LIMIT,
+            requests,
+            return_exceptions=False,
+        )
         for result in batch_results:
             collection_metadata_by_pages.update(result)
     except Exception as e:
@@ -130,8 +132,6 @@ async def initialize_sitematrix_cache():
 
 
 def start():
-    import asyncio
-
     async def initialize_cache():
         await initialize_interwiki_map_cache()
         await initialize_sitematrix_cache()
