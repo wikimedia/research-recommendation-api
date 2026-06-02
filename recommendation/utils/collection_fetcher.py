@@ -1,9 +1,9 @@
-import asyncio
 import re
 from typing import Dict, List
 
 from recommendation.api.translation.models import PageCollectionMetadata, WikiDataArticle, WikiPage
 from recommendation.external_data.fetcher import get, get_endpoint_and_headers, get_wikipedia_article_sizes_and_page_ids
+from recommendation.utils.async_helper import gather_with_concurrency
 from recommendation.utils.configuration import configuration
 from recommendation.utils.logger import log
 from recommendation.utils.sitematrix_helper import get_dbname_by_prefix, get_language_by_dbname, get_language_by_prefix
@@ -157,15 +157,11 @@ async def get_candidates_in_collection_page(page: WikiPage) -> List[WikiDataArti
     return wikidata_articles_with_langlinks
 
 
-async def fetch_with_semaphore(batch, fetch_function, *args):
-    semaphore = asyncio.Semaphore(configuration.API_CONCURRENCY_LIMIT)  # Limit to 10 concurrent tasks
-    async with semaphore:
-        return await fetch_function(batch, *args)
-
-
 async def process_batches(batches, fetch_function, *args) -> List[WikiDataArticle]:
-    tasks = [asyncio.create_task(fetch_with_semaphore(batch, fetch_function, *args)) for batch in batches]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    results = await gather_with_concurrency(
+        configuration.API_CONCURRENCY_LIMIT,
+        [fetch_function(batch, *args) for batch in batches],
+    )
 
     articles = []
     for result in results:
