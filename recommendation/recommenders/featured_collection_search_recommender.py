@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 
 from recommendation.api.translation.models import (
     PageCollection,
@@ -6,7 +6,6 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationRequest,
 )
-from recommendation.cache import get_page_collection_cache
 from recommendation.external_data.fetcher import (
     get_wikipedia_page_ids,
 )
@@ -25,7 +24,11 @@ class FeaturedCollectionSearchRecommender(BaseRecommender):
     search recommendations.
     """
 
-    def __init__(self, request_model: TranslationRecommendationRequest):
+    def __init__(
+        self,
+        request_model: TranslationRecommendationRequest,
+        page_collections_provider: Callable[[], List[PageCollection]],
+    ):
         self.base = SearchRecommender(request_model)
         self.source_language = request_model.source
         self.target_language = request_model.target
@@ -34,6 +37,7 @@ class FeaturedCollectionSearchRecommender(BaseRecommender):
         self.max_size = request_model.max_size
         self.lead_section = request_model.lead_section
         self.featured_collection = request_model.featured_collection
+        self.page_collections_provider = page_collections_provider
 
     def match(self) -> bool:
         return self.base.match() and bool(self.featured_collection)
@@ -103,8 +107,9 @@ class FeaturedCollectionSearchRecommender(BaseRecommender):
         return interleave_by_ratio(base_recs, featured_recommendations)
 
     def get_featured_collection(self) -> Optional[PageCollection]:
-        page_collection_cache = get_page_collection_cache()
-        page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
+        # Reuse the factory's shared, request-scoped deserialization so we don't reload the
+        # (large) page-collection cache that earlier recommenders may already have read.
+        page_collections: List[PageCollection] = self.page_collections_provider()
         for collection in page_collections:
             if collection.name.casefold() == self.featured_collection.casefold():
                 return collection

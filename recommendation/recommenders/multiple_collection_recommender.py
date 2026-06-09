@@ -1,6 +1,7 @@
 import random
+from functools import cached_property
 from itertools import zip_longest
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 
 from recommendation.api.translation.models import (
     PageCollection,
@@ -8,7 +9,6 @@ from recommendation.api.translation.models import (
     TranslationRecommendation,
     TranslationRecommendationRequest,
 )
-from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
 from recommendation.utils.recommendation_helper import interleave_by_ratio
 
@@ -16,7 +16,11 @@ MAX_RECOMMENDATIONS = 500
 
 
 class MultipleCollectionRecommender(BaseRecommender):
-    def __init__(self, request_model: TranslationRecommendationRequest):
+    def __init__(
+        self,
+        request_model: TranslationRecommendationRequest,
+        page_collections_provider: Callable[[], List[PageCollection]],
+    ):
         self.source_language = request_model.source
         self.target_language = request_model.target
         self.collections = request_model.collections
@@ -25,10 +29,19 @@ class MultipleCollectionRecommender(BaseRecommender):
         self.min_size = request_model.min_size
         self.max_size = request_model.max_size
         self.lead_section = request_model.lead_section
+        self.featured_collection_name = request_model.featured_collection
+        self.page_collections_provider = page_collections_provider
 
-        page_collection_cache = get_page_collection_cache()
-        self.page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
-        self.featured_collection: Optional[PageCollection] = self.get_collection(request_model.featured_collection)
+    @cached_property
+    def page_collections(self) -> List[PageCollection]:
+        # Lazy: only deserialize the (large) page-collection cache when this recommender reads
+        # it. The factory supplies a shared, request-scoped provider so the deserialization is
+        # reused across recommenders and a single request never loads the cache more than once.
+        return self.page_collections_provider()
+
+    @cached_property
+    def featured_collection(self) -> Optional[PageCollection]:
+        return self.get_collection(self.featured_collection_name)
 
     def match(self) -> bool:
         return self.collections and len(self.get_matched_collections()) != 1

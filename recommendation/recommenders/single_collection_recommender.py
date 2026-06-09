@@ -1,5 +1,6 @@
 import random
-from typing import Dict, List
+from functools import cached_property
+from typing import Callable, Dict, List
 
 from recommendation.api.translation.models import (
     PageCollection,
@@ -9,12 +10,15 @@ from recommendation.api.translation.models import (
     TranslationRecommendationResponse,
     WikiDataArticle,
 )
-from recommendation.cache import get_page_collection_cache
 from recommendation.recommenders.base_recommender import BaseRecommender
 
 
 class SingleCollectionRecommender(BaseRecommender):
-    def __init__(self, request_model: TranslationRecommendationRequest):
+    def __init__(
+        self,
+        request_model: TranslationRecommendationRequest,
+        page_collections_provider: Callable[[], List[PageCollection]],
+    ):
         self.source_language = request_model.source
         self.target_language = request_model.target
         self.collections = request_model.collections
@@ -26,11 +30,18 @@ class SingleCollectionRecommender(BaseRecommender):
         # continue_offset is always expected for single collections
         self.continue_offset = request_model.continue_offset or 0
         self.continue_seed = request_model.continue_seed
+        self.page_collections_provider = page_collections_provider
 
-        page_collection_cache = get_page_collection_cache()
-        self.page_collections: List[PageCollection] = page_collection_cache.get_page_collections()
         self.sorted_collection_articles = []
         self.should_preserve_recommendations_order = True
+
+    @cached_property
+    def page_collections(self) -> List[PageCollection]:
+        # Lazy: only deserialize the (large) page-collection cache when this recommender
+        # actually reads it, not eagerly for every request. The factory supplies a shared,
+        # request-scoped provider so the deserialization is reused across recommenders and a
+        # single request never loads the cache more than once.
+        return self.page_collections_provider()
 
     def match(self) -> bool:
         return self.collections and len(self.get_matched_collections()) == 1
