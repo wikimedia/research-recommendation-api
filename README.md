@@ -2,7 +2,7 @@
 > ### Deprecation Notice
 > The GapFinder tool will be deprecated between July 1 and 15 2024. For detailed background information, please refer to the [Phabricator task T367549](https://phabricator.wikimedia.org/T367549).
 > #### API Migration
-> For tools utilizing the API, please migrate to the LiftWing endpoint. Documentation for the LiftWing API can be found [here](https://api.wikimedia.org/wiki/Lift_Wing_API/Reference/Get_content_translation_recommendation).
+> For tools utilizing the API, please migrate to the LiftWing endpoint. See the [documentation for the LiftWing API](https://www.mediawiki.org/w/index.php?api=lift-wing&title=Special%3ARestSandbox#/Countries%2C%20language%2C%20and%20translation/translation).
 > #### UI Alternative
 > For the user interface, please use the [Content Translation tool](https://www.mediawiki.org/wiki/Content_translation#Try_the_tool).
 
@@ -12,32 +12,45 @@ Given a source and target wiki, the API provides source articles missing in the 
 
 ## Sample Call
 
-https://api.wikimedia.org/service/lw/recommendation/v1/api?source=en&target=fr&count=3&seed=Apple
+https://api.wikimedia.org/service/lw/recommendation/api/v1/translation?source=en&target=fr&count=3&seed=Apple
 
 ```json
-[
-  {
-    "title": "Plum pox",
-    "pageviews": 0,
-    "wikidata_id": "Q1788571",
-    "rank": 10,
-    "langlinks_count": 5
-  },
-  {
-    "title": "Applecrab",
-    "pageviews": 0,
-    "wikidata_id": "Q19595924",
-    "rank": 12,
-    "langlinks_count": 0
-  },
-  {
-    "title": "Flamenco (apple)",
-    "pageviews": 0,
-    "wikidata_id": "Q19597233",
-    "rank": 17,
-    "langlinks_count": 1
-  }
-]
+{
+  "recommendations": [
+    {
+      "title": "Nurse grafting",
+      "pageviews": 0,
+      "wikidata_id": "Q24897497",
+      "rank": 449,
+      "langlinks_count": 1,
+      "size": 6238,
+      "lead_section_size": null,
+      "collection": null
+    },
+    {
+      "title": "List of food origins",
+      "pageviews": 0,
+      "wikidata_id": "Q6620581",
+      "rank": 361,
+      "langlinks_count": 1,
+      "size": 21210,
+      "lead_section_size": null,
+      "collection": null
+    },
+    {
+      "title": "Apple genome",
+      "pageviews": 0,
+      "wikidata_id": "Q96372263",
+      "rank": 474,
+      "langlinks_count": 0,
+      "size": 4448,
+      "lead_section_size": null,
+      "collection": null
+    }
+  ],
+  "continue_offset": null,
+  "continue_seed": null
+}
 ```
 
 ## Running the API
