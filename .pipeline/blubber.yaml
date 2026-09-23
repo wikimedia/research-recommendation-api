@@ -1,6 +1,6 @@
 # syntax=docker-registry.wikimedia.org/repos/releng/blubber/buildkit:v1.8.0
 version: v4
-base: docker-registry.wikimedia.org/python3-build-bookworm
+base: docker-registry.wikimedia.org/python3-build-trixie
 # Should allow internet access and write access on file system
 runs: {insecurely: true}
 lives:
@@ -8,12 +8,13 @@ lives:
 
 variants:
   build:
-    apt: {packages: [git, build-essential, gcc, wget, unzip, wmf-certificates, python3-venv]}
+    apt: {packages: [git, build-essential, gcc, wget, unzip, wmf-certificates]}
     builders:
       - python:
           version: python3
           poetry:
             version: ==1.8.2
+          tox-version: 4.24.2
           requirements: [pyproject.toml, poetry.lock]
     copies: [local]
 
